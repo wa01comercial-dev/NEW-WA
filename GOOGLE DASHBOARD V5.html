@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WA Comercial | Growth Command Center</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Configuração de Cores e Tema -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: 'var(--bg-dark)',
+                            panel: 'var(--bg-panel)',
+                            accent: '#ef4444',
+                            accentHover: '#dc2626',
+                            text: 'var(--text-main)',
+                            muted: 'var(--text-muted)',
+                            success: '#10b981',
+                            warning: '#f59e0b',
+                            info: '#3b82f6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- Variáveis de Tema (Dark Mode Default) --- */
+        :root {
+            --bg-dark: #0f0f13;
+            --bg-panel: #18181b;
+            --text-main: #e4e4e7;
+            --text-muted: #a1a1aa;
+            --border-color: #1f2937; /* gray-800 */
+            --input-bg: #111827; /* gray-900 */
+        }
+
+        /* --- Blue Light Mode --- */
+        body.light-mode {
+            --bg-dark: #f0f9ff; /* Alice Blue / Light Sky */
+            --bg-panel: #ffffff;
+            --text-main: #1e293b; /* Slate 800 */
+            --text-muted: #64748b; /* Slate 500 */
+            --border-color: #bfdbfe; /* Blue 200 */
+            --input-bg: #f8fafc; /* Slate 50 */
+        }
+
+        /* Overrides específicos para Light Mode para compatibilidade com classes Tailwind hardcoded */
+        body.light-mode .text-white { color: #1e3a8a !important; } /* Texto branco vira azul escuro */
+        body.light-mode .text-gray-400 { color: #64748b !important; }
+        body.light-mode .text-gray-500 { color: #94a3b8 !important; }
+        body.light-mode .bg-gray-800 { background-color: #dbeafe !important; } /* Badges viram azul claro */
+        body.light-mode .bg-gray-900 { background-color: #eff6ff !important; border-color: #bfdbfe !important; color: #1e293b !important; } /* Inputs */
+        body.light-mode .border-gray-800 { border-color: #bfdbfe !important; }
+        body.light-mode .border-gray-700 { border-color: #cbd5e1 !important; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-panel); }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+        
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
+
+        .card-animado { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-animado:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); }
+        
+        .borda-alta { border-left-color: #ef4444 !important; }
+        .borda-media { border-left-color: #f59e0b !important; }
+        .borda-baixa { border-left-color: #3b82f6 !important; }
+
+        .bg-entregue { background-color: rgba(16, 185, 129, 0.1) !important; border: 1px solid rgba(16, 185, 129, 0.2); color: #10b981 !important; }
+        .bg-realizando { background-color: rgba(59, 130, 246, 0.1) !important; border: 1px solid rgba(59, 130, 246, 0.2); color: #3b82f6 !important; }
+        
+        /* Ajuste badges light mode */
+        body.light-mode .bg-entregue { background-color: #d1fae5 !important; border-color: #34d399 !important; color: #065f46 !important; }
+        body.light-mode .bg-realizando { background-color: #dbeafe !important; border-color: #60a5fa !important; color: #1e40af !important; }
+    </style>
+</head>
+<body class="bg-brand-dark text-brand-text font-sans antialiased overflow-hidden transition-colors duration-300">
+
+    <!-- Input Invisível para Importação -->
+    <input type="file" id="fileInput" accept=".json" class="hidden" onchange="handleFileImport(this)">
+
+    <div class="flex h-screen">
+
+        <!-- Sidebar -->
+        <aside class="w-64 bg-brand-panel border-r border-[var(--border-color)] hidden md:flex flex-col z-20 shadow-xl transition-colors duration-300">
+            <div class="h-16 flex items-center px-6 border-b border-[var(--border-color)]">
+                <div class="flex items-center gap-2 text-brand-accent font-bold text-2xl tracking-tighter">
+                    <i class="fa-solid fa-rocket"></i>
+                    <span>WA<span class="text-white">COMERCIAL</span></span>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Analytics</p>
+                
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="w-full flex items-center gap-3 px-4 py-3 bg-brand-accent/10 text-brand-accent rounded-lg border-l-4 border-brand-accent transition-all text-left">
+                    <i class="fa-solid fa-chart-pie w-5"></i>
+                    <span class="font-medium">Visão Geral</span>
+                </button>
+
+                <button onclick="switchTab('clients')" id="btn-clients" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
+                    <i class="fa-solid fa-users w-5"></i>
+                    <span class="font-medium">Gerenciar Clientes</span>
+                </button>
+                
+                <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-2">Dados</p>
+                <button onclick="document.getElementById('fileInput').click()" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg transition-all text-left">
+                    <i class="fa-solid fa-file-import w-5"></i>
+                    <span>Importar JSON</span>
+                </button>
+                <button onclick="exportData()" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg transition-all text-left">
+                    <i class="fa-solid fa-file-export w-5"></i>
+                    <span>Exportar JSON</span>
+                </button>
+                
+                <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-2">Sistema</p>
+                <button onclick="resetData()" class="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-all text-left mt-auto">
+                    <i class="fa-solid fa-trash w-5"></i>
+                    <span>Limpar Tudo</span>
+                </button>
+            </nav>
+
+            <div class="p-4 border-t border-[var(--border-color)]">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-accent to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-purple-900/50">
+                        WA
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-brand-text">Administrador</p>
+                        <p class="text-xs text-green-400">● Online</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden relative bg-brand-dark transition-colors duration-300">
+            
+            <!-- Header -->
+            <header class="h-16 bg-brand-panel/80 backdrop-blur-md border-b border-[var(--border-color)] flex items-center justify-between px-6 sticky top-0 z-10 transition-colors duration-300">
+                <div class="md:hidden text-brand-accent font-bold text-xl">WA COMERCIAL</div>
+                
+                <div class="hidden md:flex items-center text-sm text-gray-400 gap-4">
+                    <span id="currentDate"></span>
+                    <span class="text-gray-600">|</span>
+                    <span id="totalRecordsBadge" class="bg-gray-800 px-2 py-1 rounded text-xs text-white">0 Registros</span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- BOTÃO TOGGLE THEME (Novo) -->
+                    <button onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-yellow-400 transition-all border border-gray-700" title="Alternar Tema">
+                        <i id="themeIcon" class="fa-solid fa-sun"></i>
+                    </button>
+
+                    <button onclick="abrirModalNovoCliente()" class="hidden md:flex bg-brand-accent hover:bg-brand-accentHover text-white px-4 py-2 rounded-md text-sm font-bold shadow-lg shadow-red-900/20 transition-all items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Novo Cliente
+                    </button>
+                    <div class="relative group cursor-pointer">
+                        <i class="fa-solid fa-bell text-gray-400 hover:text-brand-text text-lg"></i>
+                        <span class="absolute -top-1 -right-1 w-2 h-2 bg-brand-accent rounded-full animate-pulse"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTAINER PRINCIPAL -->
+            <div class="flex-1 overflow-y-auto p-6 relative">
+
+                <!-- DASHBOARD -->
+                <div id="view-dashboard" class="tab-content active space-y-6">
+                    <div class="flex justify-between items-end animate-fade-in">
+                        <div>
+                            <h1 class="text-3xl font-bold text-brand-text mb-1">Painel de Controle</h1>
+                            <p class="text-brand-muted">Indicadores em tempo real.</p>
+                        </div>
+                    </div>
+
+                    <!-- Cards Temporais -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-red-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Hoje</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardTodayCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardTodayValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-red-500/10 rounded-lg text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors"><i class="fa-regular fa-calendar-check"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-teal-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Ontem</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardYesterdayCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardYesterdayValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-teal-500/10 rounded-lg text-teal-500 group-hover:bg-teal-500 group-hover:text-white transition-colors"><i class="fa-regular fa-calendar-minus"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-emerald-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Essa Semana</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardWeekCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardWeekValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-emerald-500/10 rounded-lg text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-colors"><i class="fa-regular fa-calendar-plus"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-blue-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Mês Atual</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardMonthCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardMonthValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-blue-500/10 rounded-lg text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors"><i class="fa-regular fa-calendar"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-yellow-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Semana Passada</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardLastWeekCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardLastWeekValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-yellow-500/10 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-colors"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-purple-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Mês Passado</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardLastMonthCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardLastMonthValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-purple-500/10 rounded-lg text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors"><i class="fa-regular fa-calendar-xmark"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-cyan-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Este Ano</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardYearCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardYearValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-cyan-500/10 rounded-lg text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-colors"><i class="fa-solid fa-earth-americas"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-orange-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Mês Antepassado</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardMonthBeforeLastCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardMonthBeforeLastValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-orange-500/10 rounded-lg text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors"><i class="fa-solid fa-backward"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPIs -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in mt-8">
+                        <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-sack-dollar text-6xl text-green-500"></i></div>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Total Histórico</p>
+                            <h3 class="text-2xl font-bold text-brand-text mt-1" id="kpiTotalRevenue">R$ 0,00</h3>
+                        </div>
+                        <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-receipt text-6xl text-blue-500"></i></div>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Ticket Médio</p>
+                            <h3 class="text-2xl font-bold text-brand-text mt-1" id="kpiAvgTicket">R$ 0,00</h3>
+                        </div>
+                        <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-trophy text-6xl text-yellow-500"></i></div>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Melhor Mês</p>
+                            <h3 class="text-lg font-bold text-brand-text mt-1 truncate" id="kpiBestMonth">---</h3>
+                            <p class="text-xs text-yellow-500 font-mono" id="kpiBestMonthValue">R$ 0,00</p>
+                        </div>
+                        <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-arrow-trend-down text-6xl text-red-500"></i></div>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Pior Mês</p>
+                            <h3 class="text-lg font-bold text-brand-text mt-1 truncate" id="kpiWorstMonth">---</h3>
+                            <p class="text-xs text-red-500 font-mono" id="kpiWorstMonthValue">R$ 0,00</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-brand-text">Evolução de Vendas</h3>
+                                <select id="yearFilter" onchange="updateCharts()" class="bg-gray-800 text-xs text-white border border-gray-700 rounded p-1">
+                                    <option value="all">Todo o Período</option>
+                                </select>
+                            </div>
+                            <div class="relative h-72 w-full">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col">
+                            <h3 class="text-lg font-bold text-brand-text mb-4">Top Serviços</h3>
+                            <div class="relative h-48 w-full mb-4">
+                                <canvas id="servicesChart"></canvas>
+                            </div>
+                            <div class="mt-auto space-y-2" id="topServicesList"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Table Section -->
+                    <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg overflow-hidden flex flex-col max-h-[600px]">
+                        <div class="p-6 border-b border-[var(--border-color)] flex flex-col md:flex-row justify-between items-center gap-4">
+                            <h3 class="text-lg font-bold text-brand-text">Histórico de Transações</h3>
+                            <div class="flex gap-2 w-full md:w-auto">
+                                <input type="text" id="tableSearch" onkeyup="renderTable()" placeholder="Buscar..." class="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 w-full focus:border-brand-accent outline-none">
+                            </div>
+                        </div>
+                        <div class="overflow-auto flex-1">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-black/20 text-xs text-gray-500 uppercase sticky top-0 backdrop-blur-sm z-10">
+                                    <tr>
+                                        <th class="p-4 font-semibold border-b border-gray-800">Data</th>
+                                        <th class="p-4 font-semibold border-b border-gray-800">Cliente / Empresa</th>
+                                        <th class="p-4 font-semibold border-b border-gray-800">Serviço</th>
+                                        <th class="p-4 font-semibold border-b border-gray-800">Contato</th>
+                                        <th class="p-4 font-semibold border-b border-gray-800">Valor</th>
+                                        <th class="p-4 font-semibold border-b border-gray-800 text-center">Status</th>
+                                        <th class="p-4 font-semibold border-b border-gray-800 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataTableBody" class="text-sm text-gray-300 divide-y divide-gray-800"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CLIENTES -->
+                <div id="view-clients" class="tab-content space-y-6">
+                    
+                    <!-- Dashboard Resumo CRM -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-brand-panel border-l-4 border-blue-500 p-4 rounded-lg shadow-lg">
+                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total Realizando</h3>
+                            <p id="totalRealizando" class="text-2xl font-bold text-blue-400">0</p>
+                        </div>
+                        <div class="bg-brand-panel border-l-4 border-green-500 p-4 rounded-lg shadow-lg">
+                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total Entregue</h3>
+                            <p id="totalEntregue" class="text-2xl font-bold text-green-400">0</p>
+                        </div>
+                        <div class="bg-brand-panel border-l-4 border-gray-500 p-4 rounded-lg shadow-lg">
+                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total de Projetos</h3>
+                            <p id="totalClientes" class="text-2xl font-bold text-brand-text">0</p>
+                        </div>
+                        <div class="bg-brand-panel border-l-4 border-brand-accent p-4 rounded-lg shadow-lg">
+                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total em Valor</h3>
+                            <p id="totalValor" class="text-2xl font-bold text-brand-text">R$ 0,00</p>
+                        </div>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                        <div class="flex items-center gap-2 w-full md:w-auto flex-1">
+                            <input type="text" id="buscarCliente" placeholder="🔍 Buscar clientes..." onkeyup="renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                            <select id="filtroStatus" onchange="renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                                <option value="">Situação</option>
+                                <option value="realizando">Realizando</option>
+                                <option value="entregue">Entregue</option>
+                            </select>
+                            <select id="filtroServico" onchange="renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                                <option value="">Serviço</option>
+                                <option value="logotipo">Logotipo</option>
+                                <option value="site">Site</option>
+                                <option value="anuncio">Anúncio</option>
+                            </select>
+                            <select id="filtroPrioridade" onchange="renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                                <option value="">Prioridade</option>
+                                <option value="baixa">Baixa</option>
+                                <option value="média">Média</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Cards Grid -->
+                    <div id="listaClientes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+                        <!-- Cards injetados via JS -->
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: CLIENTE -->
+    <div id="modalCliente" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
+        <div class="bg-brand-panel border border-gray-700 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all scale-100">
+            <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
+                <i class="fa-solid fa-user-pen text-blue-500"></i> Adicionar / Editar Cliente
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Nome / Cliente</label>
+                    <input id="nomeCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="text" placeholder="Ex: João Silva">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Empresa</label>
+                    <input id="empresaCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="text" placeholder="Ex: Padaria X">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Contato</label>
+                    <input id="contatoCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="text" placeholder="WhatsApp ou Email">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Valor (R$)</label>
+                    <input id="valorCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="number" step="0.01" placeholder="0.00">
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Serviço</label>
+                    <select id="tipoServico" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="">Selecione...</option>
+                        <option value="logotipo">Logotipo</option>
+                        <option value="site">Site</option>
+                        <option value="anuncio">Anúncio</option>
+                        <option value="flyer">Flyer</option>
+                        <option value="video">Vídeo</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Prioridade</label>
+                    <select id="prioridadeCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="baixa">Baixa</option>
+                        <option value="média" selected>Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Status</label>
+                    <select id="statusCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="realizando">Realizando</option>
+                        <option value="entregue">Entregue</option>
+                        <option value="pendente">Pendente</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Data</label>
+                    <input id="dataCriacao" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="date">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Observações</label>
+                    <textarea id="obsCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" rows="3" placeholder="Detalhes do projeto..."></textarea>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
+                <button onclick="fecharModal()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button onclick="salvarCliente()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Salvar Cliente</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONSTANTES E ESTADO ---
+        const STORAGE_KEY = 'wa_growth_data_v2';
+        
+        let appData = []; 
+        let editando = false;
+        let clienteIdAtual = null;
+
+        let charts = { revenue: null, services: null };
+
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            initDate();
+        });
+
+        function initDate() {
+            const date = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = date.toLocaleDateString('pt-BR', options);
+            document.getElementById('currentDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+        }
+
+        // --- TEMA (BLUE LIGHT MODE) ---
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            } else {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+        }
+
+        // --- NAVEGAÇÃO ENTRE ABAS ---
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('btn-dashboard').className = "w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left";
+            document.getElementById('btn-clients').className = "w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left";
+
+            if(tabName === 'dashboard') {
+                document.getElementById('view-dashboard').classList.add('active');
+                document.getElementById('btn-dashboard').className = "w-full flex items-center gap-3 px-4 py-3 bg-brand-accent/10 text-brand-accent rounded-lg border-l-4 border-brand-accent transition-all text-left";
+            } else if(tabName === 'clients') {
+                document.getElementById('view-clients').classList.add('active');
+                document.getElementById('btn-clients').className = "w-full flex items-center gap-3 px-4 py-3 bg-brand-accent/10 text-brand-accent rounded-lg border-l-4 border-brand-accent transition-all text-left";
+                renderClientsCards(); 
+            }
+        }
+
+        // --- GESTÃO DE DADOS ---
+        function loadData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    appData = JSON.parse(stored);
+                } catch (e) {
+                    appData = [];
+                }
+            } else {
+                appData = [];
+            }
+            refreshDashboard();
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            refreshDashboard();
+        }
+
+        function resetData() {
+            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do sistema. Deseja continuar?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                appData = [];
+                refreshDashboard();
+                alert("Sistema resetado com sucesso.");
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(appData, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_wa_comercial_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function handleFileImport(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        if(confirm(`Arquivo lido com ${importedData.length} registros. Deseja SUBSTITUIR os dados atuais (OK) ou MESCLAR (Cancelar)?\n\nOK = Apaga atual e salva novo\nCancelar = Mantém atual e adiciona novo`)) {
+                            appData = importedData;
+                        } else {
+                            const currentIds = new Set(appData.map(i => i.id));
+                            let addedCount = 0;
+                            importedData.forEach(item => {
+                                if(!currentIds.has(item.id)) {
+                                    appData.push(item);
+                                    addedCount++;
+                                }
+                            });
+                            alert(`${addedCount} novos registros adicionados.`);
+                        }
+                        saveData();
+                        alert("Importação concluída!");
+                    } else {
+                        alert("Formato de JSON inválido.");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler o arquivo JSON.");
+                }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        // --- LÓGICA DO DASHBOARD ---
+        function refreshDashboard() {
+            updateKPIs();
+            renderTable();
+            updateCharts();
+            document.getElementById('totalRecordsBadge').textContent = `${appData.length} Registros`;
+            
+            if(document.getElementById('view-clients').classList.contains('active')) {
+                renderClientsCards();
+            }
+        }
+
+        // --- LÓGICA DA ABA CLIENTES ---
+        function renderClientsCards() {
+            const listaClientes = document.getElementById('listaClientes');
+            listaClientes.innerHTML = '';
+
+            const busca = document.getElementById('buscarCliente').value.toLowerCase().trim();
+            const fs = document.getElementById('filtroStatus').value.toLowerCase();
+            const ft = document.getElementById('filtroServico').value.toLowerCase();
+            const fp = document.getElementById('filtroPrioridade').value.toLowerCase();
+
+            let totalValor = 0;
+            let totalRealizando = 0;
+            let totalEntregue = 0;
+            let totalExibido = 0;
+
+            let filtrados = appData.filter(cliente => {
+                const s = (cliente.status || '').toLowerCase();
+                const t = (cliente.tipo || '').toLowerCase();
+                const p = (cliente.prioridade || 'média').toLowerCase();
+                const n = (cliente.nome || '').toLowerCase();
+                const e = (cliente.empresa || '').toLowerCase();
+
+                if (fs && s !== fs) return false;
+                if (ft && !t.includes(ft)) return false; 
+                if (fp && p !== fp) return false;
+                if (busca && !n.includes(busca) && !e.includes(busca)) return false;
+                
+                return true;
+            });
+
+            const prioridadeOrdem = { 'alta': 1, 'média': 2, 'baixa': 3 };
+            filtrados.sort((a, b) => {
+                const pa = prioridadeOrdem[(a.prioridade || 'média').toLowerCase()] || 2;
+                const pb = prioridadeOrdem[(b.prioridade || 'média').toLowerCase()] || 2;
+                return pa - pb;
+            });
+
+            filtrados.forEach(cliente => {
+                totalValor += (parseFloat(cliente.valor) || 0);
+                totalExibido++;
+                const st = (cliente.status || '').toLowerCase();
+                if (st === 'realizando') totalRealizando++;
+                if (st === 'entregue') totalEntregue++;
+
+                const fundoStatus = st === 'entregue' ? 'bg-entregue' :
+                                    st === 'realizando' ? 'bg-realizando' : 'bg-gray-800 text-gray-300';
+                
+                let prioridadeClasse = 'borda-baixa';
+                const pr = (cliente.prioridade || 'média').toLowerCase();
+                if (pr === 'alta') prioridadeClasse = 'borda-alta';
+                else if (pr === 'média') prioridadeClasse = 'borda-media';
+
+                const card = document.createElement('div');
+                
+                // NOVO LAYOUT DO CARD (Baseado na imagem solicitada)
+                card.className = `bg-brand-panel border border-gray-800 border-l-[6px] ${prioridadeClasse} rounded-xl p-5 card-animado relative group shadow-lg flex flex-col justify-between h-full min-h-[220px]`;
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Cabeçalho: Nome e Botão Editar -->
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-bold text-white truncate pr-2" title="${cliente.nome}">${cliente.nome || 'Sem Nome'}</h3>
+                            <button onclick="editarCliente('${cliente.id}')" class="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </div>
+
+                        <!-- Empresa -->
+                        <div class="flex items-center gap-2 text-brand-accent mt-1 text-sm font-medium">
+                            <i class="fa-regular fa-building"></i>
+                            <span class="truncate" title="${cliente.empresa}">${cliente.empresa || 'Particular'}</span>
+                        </div>
+
+                        <!-- Contato (Badge style) -->
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <div class="inline-flex items-center gap-2 bg-[#0f0f13] border border-gray-800 px-3 py-1.5 rounded-lg text-sm text-gray-400 font-mono">
+                                <i class="fa-brands fa-whatsapp text-green-500"></i>
+                                ${cliente.contato || 'Sem contato'}
+                            </div>
+                            <!-- Botão Excluir (Discreto) -->
+                            <button onclick="excluirCliente('${cliente.id}')" class="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-900/30 flex items-center justify-center text-red-500 transition-colors" title="Excluir">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Divisor -->
+                    <div class="h-px bg-gray-800 my-4"></div>
+
+                    <!-- Rodapé: Valor/Serviço e Status/Data -->
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Valor</p>
+                            <p class="text-xl font-bold text-white mb-1">${formatCurrency(cliente.valor)}</p>
+                            <div class="flex items-center gap-2 text-brand-accent text-sm">
+                                 ${getTypeIcon(cliente.tipo)} 
+                                 <span class="capitalize text-gray-400 truncate max-w-[100px]">${cliente.tipo || 'Serviço'}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col items-end gap-1">
+                             <span class="${fundoStatus} text-xs px-3 py-1 rounded-md uppercase font-bold tracking-wide border border-opacity-20 flex items-center gap-2">
+                                ${st === 'realizando' ? '<i class="fa-solid fa-spinner fa-spin-pulse"></i>' : st === 'entregue' ? '<i class="fa-solid fa-check"></i>' : ''}
+                                ${cliente.status || 'ND'}
+                             </span>
+                             <p class="text-xs text-gray-600 mt-1">${formatDate(cliente.data)}</p>
+                        </div>
+                    </div>
+                `;
+
+                listaClientes.appendChild(card);
+            });
+
+            document.getElementById('totalRealizando').innerText = totalRealizando;
+            document.getElementById('totalEntregue').innerText = totalEntregue;
+            document.getElementById('totalClientes').innerText = totalExibido;
+            document.getElementById('totalValor').innerText = formatCurrency(totalValor);
+        }
+
+        // --- MODAL E CRUD ---
+        function abrirModalNovoCliente() {
+            limparFormulario();
+            editando = false;
+            clienteIdAtual = null;
+            const modal = document.getElementById('modalCliente');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('dataCriacao').valueAsDate = new Date();
+        }
+
+        function fecharModal() {
+            const modal = document.getElementById('modalCliente');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function salvarCliente() {
+            const novoCliente = obterDadosFormulario();
+            
+            if (!novoCliente.nome && !novoCliente.empresa) {
+                alert("Por favor, preencha o Nome ou a Empresa.");
+                return;
+            }
+
+            if (editando && clienteIdAtual) {
+                const index = appData.findIndex(c => c.id === clienteIdAtual);
+                if (index !== -1) {
+                    appData[index] = { ...appData[index], ...novoCliente };
+                }
+            } else {
+                novoCliente.id = crypto.randomUUID();
+                appData.unshift(novoCliente);
+            }
+
+            saveData();
+            fecharModal();
+        }
+
+        function editarCliente(id) {
+            const cliente = appData.find(c => c.id === id);
+            if (cliente) {
+                preencherFormulario(cliente);
+                editando = true;
+                clienteIdAtual = id;
+                const modal = document.getElementById('modalCliente');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function excluirCliente(id) {
+            if (confirm("Tem certeza que deseja remover este cliente/projeto?")) {
+                appData = appData.filter(c => c.id !== id);
+                saveData();
+            }
+        }
+
+        function obterDadosFormulario() {
+            return {
+                nome: document.getElementById('nomeCliente').value,
+                empresa: document.getElementById('empresaCliente').value,
+                contato: document.getElementById('contatoCliente').value,
+                valor: parseFloat(document.getElementById('valorCliente').value) || 0,
+                tipo: document.getElementById('tipoServico').value,
+                prioridade: document.getElementById('prioridadeCliente').value,
+                status: document.getElementById('statusCliente').value,
+                data: document.getElementById('dataCriacao').value,
+                obs: document.getElementById('obsCliente').value
+            };
+        }
+
+        function preencherFormulario(cliente) {
+            document.getElementById('nomeCliente').value = cliente.nome || '';
+            document.getElementById('empresaCliente').value = cliente.empresa || '';
+            document.getElementById('contatoCliente').value = cliente.contato || '';
+            document.getElementById('valorCliente').value = cliente.valor || '';
+            document.getElementById('tipoServico').value = cliente.tipo || '';
+            document.getElementById('prioridadeCliente').value = cliente.prioridade || 'baixa';
+            document.getElementById('statusCliente').value = cliente.status || 'realizando';
+            document.getElementById('dataCriacao').value = cliente.data || '';
+            document.getElementById('obsCliente').value = cliente.obs || '';
+        }
+
+        function limparFormulario() {
+            document.querySelectorAll('#modalCliente input, #modalCliente select, #modalCliente textarea')
+                .forEach(el => el.value = '');
+            document.getElementById('prioridadeCliente').value = 'média';
+            document.getElementById('statusCliente').value = 'realizando';
+        }
+
+        // --- CALCULOS E KPI ---
+        function calculatePeriodStats(startDate, endDate) {
+            const parseLocal = (dateStr) => {
+                const [y, m, d] = dateStr.split('-').map(Number);
+                return new Date(y, m - 1, d, 0, 0, 0, 0);
+            };
+            const parseLocalEnd = (dateStr) => {
+                const [y, m, d] = dateStr.split('-').map(Number);
+                return new Date(y, m - 1, d, 23, 59, 59, 999);
+            };
+            const start = parseLocal(startDate);
+            const end = parseLocalEnd(endDate);
+            let count = 0;
+            let total = 0;
+            appData.forEach(item => {
+                if(!item.data) return;
+                const [y, m, d] = item.data.split('-').map(Number);
+                const itemDate = new Date(y, m - 1, d);
+                if (itemDate.getTime() >= start.getTime() && itemDate.getTime() <= end.getTime()) {
+                    count++;
+                    total += (parseFloat(item.valor) || 0);
+                }
+            });
+            return { count, total };
+        }
+
+        function updateKPIs() {
+            if (appData.length === 0) {
+                resetKPIs();
+                return;
+            }
+            const now = new Date();
+            const formatDateISO = (date) => {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            };
+            const todayStr = formatDateISO(now);
+            const yesterdayDate = new Date(now);
+            yesterdayDate.setDate(now.getDate() - 1);
+            const yesterdayStr = formatDateISO(yesterdayDate);
+            const currentDay = now.getDay();
+            const daysToMonday = (currentDay + 6) % 7; 
+            const thisWeekStart = new Date(now);
+            thisWeekStart.setDate(now.getDate() - daysToMonday);
+            const thisWeekEnd = new Date(thisWeekStart);
+            thisWeekEnd.setDate(thisWeekStart.getDate() + 6);
+            const lastWeekStart = new Date(thisWeekStart);
+            lastWeekStart.setDate(thisWeekStart.getDate() - 7);
+            const lastWeekEnd = new Date(lastWeekStart);
+            lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
+            const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+            const monthBeforeLastStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+            const monthBeforeLastEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0);
+            const thisYearStart = new Date(now.getFullYear(), 0, 1);
+            const thisYearEnd = new Date(now.getFullYear(), 11, 31);
+
+            const statsToday = calculatePeriodStats(todayStr, todayStr);
+            const statsYesterday = calculatePeriodStats(yesterdayStr, yesterdayStr);
+            const statsThisWeek = calculatePeriodStats(formatDateISO(thisWeekStart), formatDateISO(thisWeekEnd));
+            const statsLastWeek = calculatePeriodStats(formatDateISO(lastWeekStart), formatDateISO(lastWeekEnd));
+            const statsThisMonth = calculatePeriodStats(formatDateISO(thisMonthStart), formatDateISO(thisMonthEnd));
+            const statsLastMonth = calculatePeriodStats(formatDateISO(lastMonthStart), formatDateISO(lastMonthEnd));
+            const statsMonthBeforeLast = calculatePeriodStats(formatDateISO(monthBeforeLastStart), formatDateISO(monthBeforeLastEnd));
+            const statsThisYear = calculatePeriodStats(formatDateISO(thisYearStart), formatDateISO(thisYearEnd));
+
+            updateCard('cardToday', statsToday);
+            updateCard('cardYesterday', statsYesterday);
+            updateCard('cardWeek', statsThisWeek);
+            updateCard('cardLastWeek', statsLastWeek);
+            updateCard('cardMonth', statsThisMonth);
+            updateCard('cardLastMonth', statsLastMonth);
+            updateCard('cardMonthBeforeLast', statsMonthBeforeLast);
+            updateCard('cardYear', statsThisYear);
+
+            const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+            const avgTicket = totalRevenue / appData.length;
+            const monthlyStats = {};
+            appData.forEach(item => {
+                if(!item.data) return;
+                const dateKey = item.data.substring(0, 7); 
+                if(!monthlyStats[dateKey]) monthlyStats[dateKey] = 0;
+                monthlyStats[dateKey] += (parseFloat(item.valor) || 0);
+            });
+            let bestMonth = { key: '', val: -Infinity };
+            let worstMonth = { key: '', val: Infinity };
+            Object.entries(monthlyStats).forEach(([key, val]) => {
+                if(val > bestMonth.val) bestMonth = { key, val };
+                if(val < worstMonth.val) worstMonth = { key, val };
+            });
+            document.getElementById('kpiTotalRevenue').innerText = formatCurrency(totalRevenue);
+            document.getElementById('kpiAvgTicket').innerText = formatCurrency(avgTicket);
+            if (Object.keys(monthlyStats).length > 0) {
+                document.getElementById('kpiBestMonth').innerText = formatDateToMonthYear(bestMonth.key);
+                document.getElementById('kpiBestMonthValue').innerText = formatCurrency(bestMonth.val);
+                document.getElementById('kpiWorstMonth').innerText = formatDateToMonthYear(worstMonth.key);
+                document.getElementById('kpiWorstMonthValue').innerText = formatCurrency(worstMonth.val);
+            }
+        }
+
+        function updateCard(prefix, stats) {
+            document.getElementById(`${prefix}Count`).innerText = stats.count;
+            document.getElementById(`${prefix}Value`).innerText = formatCurrency(stats.total);
+        }
+
+        function resetKPIs() {
+            const ids = ['cardToday', 'cardYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear'];
+            ids.forEach(id => updateCard(id, {count: 0, total: 0}));
+            document.getElementById('kpiTotalRevenue').innerText = "R$ 0,00";
+            document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
+            document.getElementById('kpiBestMonth').innerText = "---";
+            document.getElementById('kpiWorstMonth').innerText = "---";
+        }
+
+        // --- TABELA DASHBOARD ---
+        function renderTable() {
+            const tbody = document.getElementById('dataTableBody');
+            const searchTerm = document.getElementById('tableSearch').value.toLowerCase();
+            tbody.innerHTML = '';
+            const filteredData = appData
+                .filter(item => {
+                    if(!searchTerm) return true;
+                    return (item.nome || '').toLowerCase().includes(searchTerm) ||
+                           (item.empresa || '').toLowerCase().includes(searchTerm) ||
+                           (item.tipo || '').toLowerCase().includes(searchTerm);
+                })
+                .sort((a, b) => new Date(b.data) - new Date(a.data));
+            const displayData = filteredData.slice(0, 50);
+            displayData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-800/50 transition-colors border-b border-[var(--border-color)] last:border-0";
+                const statusStyle = getStatusStyle(item.status);
+                const typeIcon = getTypeIcon(item.tipo);
+                const displayClient = item.empresa || item.nome || 'Sem Nome';
+                const subClient = item.empresa && item.nome && item.empresa !== item.nome ? item.nome : '';
+                tr.innerHTML = `
+                    <td class="p-4 text-gray-400 whitespace-nowrap">${formatDate(item.data)}</td>
+                    <td class="p-4">
+                        <div class="font-medium text-brand-text">${displayClient}</div>
+                        ${subClient ? `<div class="text-xs text-gray-500">${subClient}</div>` : ''}
+                    </td>
+                    <td class="p-4"><span class="flex items-center gap-2 capitalize">${typeIcon} ${item.tipo || 'Geral'}</span></td>
+                    <td class="p-4 text-xs font-mono text-gray-400">${item.contato || '-'}</td>
+                    <td class="p-4 font-mono font-bold text-gray-300">${formatCurrency(item.valor)}</td>
+                    <td class="p-4 text-center"><span class="text-xs px-2 py-1 rounded-full uppercase font-bold tracking-wide ${statusStyle}">${item.status || 'ND'}</span></td>
+                    <td class="p-4 text-right">
+                        <button onclick="deleteItem('${item.id}')" class="text-gray-600 hover:text-red-500 transition-colors p-2"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- UTILS ---
+        function deleteItem(id) {
+            if(confirm('Tem certeza que deseja remover este registro?')) {
+                appData = appData.filter(i => i.id !== id);
+                saveData();
+            }
+        }
+
+        function updateCharts() {
+            if(appData.length === 0) return;
+            const monthlyData = {};
+            appData.forEach(item => {
+                if(!item.data) return;
+                const key = item.data.substring(0, 7); 
+                if(!monthlyData[key]) monthlyData[key] = 0;
+                monthlyData[key] += parseFloat(item.valor) || 0;
+            });
+            const sortedKeys = Object.keys(monthlyData).sort();
+            const chartLabels = sortedKeys.map(k => formatDateToMonthYear(k));
+            const chartValues = sortedKeys.map(k => monthlyData[k]);
+            const ctxRev = document.getElementById('revenueChart').getContext('2d');
+            if(charts.revenue) charts.revenue.destroy();
+            const gradient = ctxRev.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
+            gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+            charts.revenue = new Chart(ctxRev, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Receita (R$)',
+                        data: chartValues,
+                        borderColor: '#ef4444',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#18181b',
+                        pointBorderColor: '#ef4444',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: '#27272a' }, ticks: { color: '#71717a', callback: (val) => 'R$ ' + val } },
+                        x: { grid: { display: false }, ticks: { color: '#71717a' } }
+                    }
+                }
+            });
+            const serviceCounts = {};
+            appData.forEach(item => {
+                const type = (item.tipo || 'Outros').toLowerCase();
+                if(!serviceCounts[type]) serviceCounts[type] = 0;
+                serviceCounts[type]++;
+            });
+            const sortedServices = Object.entries(serviceCounts).sort((a,b) => b[1] - a[1]).slice(0, 5); 
+            const labelsPie = sortedServices.map(s => s[0].charAt(0).toUpperCase() + s[0].slice(1));
+            const dataPie = sortedServices.map(s => s[1]);
+            const listContainer = document.getElementById('topServicesList');
+            listContainer.innerHTML = '';
+            sortedServices.forEach(([name, count]) => {
+                const percent = ((count / appData.length) * 100).toFixed(1);
+                listContainer.innerHTML += `<div class="flex justify-between items-center text-sm"><span class="text-gray-400 capitalize">${name}</span><span class="text-brand-text font-bold">${count} <span class="text-xs text-gray-600">(${percent}%)</span></span></div>`;
+            });
+            const ctxServ = document.getElementById('servicesChart').getContext('2d');
+            if(charts.services) charts.services.destroy();
+            charts.services = new Chart(ctxServ, {
+                type: 'doughnut',
+                data: {
+                    labels: labelsPie,
+                    datasets: [{
+                        data: dataPie,
+                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: { legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10 } } }
+                }
+            });
+        }
+
+        function formatCurrency(val) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0); }
+        function formatDate(dateStr) { if(!dateStr) return '-'; const [y, m, d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
+        function formatDateToMonthYear(yyyy_mm) { if(!yyyy_mm) return '-'; const [y, m] = yyyy_mm.split('-'); const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']; return `${months[parseInt(m)-1]} ${y}`; }
+        function getStatusStyle(status) { status = (status || '').toLowerCase(); if(status === 'entregue') return 'bg-green-900/50 text-green-400 border border-green-900'; if(status === 'realizando') return 'bg-blue-900/50 text-blue-400 border border-blue-900'; if(status === 'pendente') return 'bg-yellow-900/50 text-yellow-400 border border-yellow-900'; if(status === 'cancelado') return 'bg-red-900/50 text-red-400 border border-red-900'; return 'bg-gray-700 text-gray-300'; }
+        function getTypeIcon(type) { type = (type || '').toLowerCase(); if(type.includes('logo')) return '<i class="fa-solid fa-pen-nib text-purple-400"></i>'; if(type.includes('site') || type.includes('web')) return '<i class="fa-solid fa-globe text-blue-400"></i>'; if(type.includes('anuncio') || type.includes('traffic')) return '<i class="fa-solid fa-bullhorn text-red-400"></i>'; if(type.includes('video')) return '<i class="fa-solid fa-video text-pink-400"></i>'; return '<i class="fa-solid fa-box text-gray-400"></i>'; }
+
+    </script>
+</body>
+</html>
