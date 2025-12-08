@@ -151,7 +151,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-brand-text">Administrador</p>
-                        <p class="text-xs text-green-400">● Online</p>
+                        <p class="text-xs text-green-400">● Online (Firebase)</p>
                     </div>
                 </div>
             </div>
@@ -313,7 +313,7 @@
                         <div class="lg:col-span-2 bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-bold text-brand-text">Evolução de Vendas</h3>
-                                <select id="yearFilter" onchange="updateCharts()" class="bg-gray-800 text-xs text-white border border-gray-700 rounded p-1">
+                                <select id="yearFilter" onchange="updateCharts()" class="bg-gray-900 text-xs text-white border border-gray-700 rounded p-1">
                                     <option value="all">Todo o Período</option>
                                 </select>
                             </div>
@@ -484,20 +484,58 @@
         </div>
     </div>
 
-    <script>
-        // --- CONSTANTES E ESTADO ---
-        const STORAGE_KEY = 'wa_growth_data_v2';
-        
+    <!-- SCRIPT TIPO MODULE PARA FIREBASE -->
+    <script type="module">
+        // Importando funções do SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjluNd9vf7JpQmQ2RayqNfJk_nAWaKiSA",
+            authDomain: "wa-01-a9492.firebaseapp.com",
+            databaseURL: "https://wa-01-a9492-default-rtdb.firebaseio.com",
+            projectId: "wa-01-a9492",
+            storageBucket: "wa-01-a9492.firebasestorage.app",
+            messagingSenderId: "687321884178",
+            appId: "1:687321884178:web:5b49dda4d8041db2839acb",
+            measurementId: "G-SJQ3HKHHFF"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbRef = ref(db, 'wa_comercial_data'); // Nó principal do banco
+
+        // --- VARIÁVEIS GLOBAIS ---
         let appData = []; 
         let editando = false;
         let clienteIdAtual = null;
-
         let charts = { revenue: null, services: null };
 
-        // --- INICIALIZAÇÃO ---
+        // Tornando variáveis e funções acessíveis globalmente (para o HTML onclick funcionar)
+        window.appData = appData;
+        
+        // --- INICIALIZAÇÃO E LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
-            loadData();
             initDate();
+            // O onValue do Firebase vai carregar os dados automaticamente
+        });
+
+        // --- LISTENER FIREBASE (REALTIME) ---
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Converter objeto do Firebase {id1: {...}, id2: {...}} em array [{id: id1, ...}, {id: id2, ...}]
+                appData = Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                }));
+            } else {
+                appData = [];
+            }
+            // Atualizar UI sempre que o banco mudar
+            refreshDashboard();
         });
 
         function initDate() {
@@ -507,13 +545,11 @@
             document.getElementById('currentDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
         }
 
-        // --- TEMA (BLUE LIGHT MODE) ---
-        function toggleTheme() {
+        // --- TEMA ---
+        window.toggleTheme = function() {
             const body = document.body;
             const icon = document.getElementById('themeIcon');
-            
             body.classList.toggle('light-mode');
-            
             if (body.classList.contains('light-mode')) {
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
@@ -523,8 +559,8 @@
             }
         }
 
-        // --- NAVEGAÇÃO ENTRE ABAS ---
-        function switchTab(tabName) {
+        // --- NAVEGAÇÃO ---
+        window.switchTab = function(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById('btn-dashboard').className = "w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left";
             document.getElementById('btn-clients').className = "w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left";
@@ -539,36 +575,17 @@
             }
         }
 
-        // --- GESTÃO DE DADOS ---
-        function loadData() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                try {
-                    appData = JSON.parse(stored);
-                } catch (e) {
-                    appData = [];
-                }
-            } else {
-                appData = [];
-            }
-            refreshDashboard();
-        }
-
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-            refreshDashboard();
-        }
-
-        function resetData() {
-            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do sistema. Deseja continuar?")) {
-                localStorage.removeItem(STORAGE_KEY);
-                appData = [];
-                refreshDashboard();
-                alert("Sistema resetado com sucesso.");
+        // --- GESTÃO DE DADOS (FIREBASE) ---
+        
+        window.resetData = function() {
+            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do banco de dados Firebase. Deseja continuar?")) {
+                set(dbRef, null)
+                    .then(() => alert("Banco de dados limpo."))
+                    .catch(err => alert("Erro ao limpar: " + err.message));
             }
         }
 
-        function exportData() {
+        window.exportData = function() {
             const dataStr = JSON.stringify(appData, null, 2);
             const blob = new Blob([dataStr], { type: "application/json" });
             const url = URL.createObjectURL(blob);
@@ -580,7 +597,7 @@
             document.body.removeChild(a);
         }
 
-        function handleFileImport(input) {
+        window.handleFileImport = function(input) {
             const file = input.files[0];
             if (!file) return;
 
@@ -589,25 +606,21 @@
                 try {
                     const importedData = JSON.parse(e.target.result);
                     if (Array.isArray(importedData)) {
-                        if(confirm(`Arquivo lido com ${importedData.length} registros. Deseja SUBSTITUIR os dados atuais (OK) ou MESCLAR (Cancelar)?\n\nOK = Apaga atual e salva novo\nCancelar = Mantém atual e adiciona novo`)) {
-                            appData = importedData;
-                        } else {
-                            const currentIds = new Set(appData.map(i => i.id));
-                            let addedCount = 0;
+                        if(confirm(`Arquivo lido com ${importedData.length} registros. Isso irá adicionar os dados ao Firebase. Confirmar?`)) {
+                            // Adicionar um por um ao Firebase
                             importedData.forEach(item => {
-                                if(!currentIds.has(item.id)) {
-                                    appData.push(item);
-                                    addedCount++;
-                                }
+                                // Removemos o ID antigo para o Firebase gerar novos ou mantemos se preferir
+                                // Aqui vamos gerar novos push IDs para evitar conflito
+                                const { id, ...dataToSave } = item; 
+                                push(dbRef, dataToSave);
                             });
-                            alert(`${addedCount} novos registros adicionados.`);
+                            alert("Importação enviada para o servidor!");
                         }
-                        saveData();
-                        alert("Importação concluída!");
                     } else {
                         alert("Formato de JSON inválido.");
                     }
                 } catch (err) {
+                    console.error(err);
                     alert("Erro ao ler o arquivo JSON.");
                 }
             };
@@ -628,7 +641,7 @@
         }
 
         // --- LÓGICA DA ABA CLIENTES ---
-        function renderClientsCards() {
+        window.renderClientsCards = function() {
             const listaClientes = document.getElementById('listaClientes');
             listaClientes.innerHTML = '';
 
@@ -681,12 +694,10 @@
 
                 const card = document.createElement('div');
                 
-                // NOVO LAYOUT DO CARD (Baseado na imagem solicitada)
                 card.className = `bg-brand-panel border border-gray-800 border-l-[6px] ${prioridadeClasse} rounded-xl p-5 card-animado relative group shadow-lg flex flex-col justify-between h-full min-h-[220px]`;
 
                 card.innerHTML = `
                     <div>
-                        <!-- Cabeçalho: Nome e Botão Editar -->
                         <div class="flex justify-between items-start">
                             <h3 class="text-xl font-bold text-white truncate pr-2" title="${cliente.nome}">${cliente.nome || 'Sem Nome'}</h3>
                             <button onclick="editarCliente('${cliente.id}')" class="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
@@ -694,29 +705,24 @@
                             </button>
                         </div>
 
-                        <!-- Empresa -->
                         <div class="flex items-center gap-2 text-brand-accent mt-1 text-sm font-medium">
                             <i class="fa-regular fa-building"></i>
                             <span class="truncate" title="${cliente.empresa}">${cliente.empresa || 'Particular'}</span>
                         </div>
 
-                        <!-- Contato (Badge style) -->
                         <div class="mt-4 flex flex-wrap gap-2">
                             <div class="inline-flex items-center gap-2 bg-[#0f0f13] border border-gray-800 px-3 py-1.5 rounded-lg text-sm text-gray-400 font-mono">
                                 <i class="fa-brands fa-whatsapp text-green-500"></i>
                                 ${cliente.contato || 'Sem contato'}
                             </div>
-                            <!-- Botão Excluir (Discreto) -->
                             <button onclick="excluirCliente('${cliente.id}')" class="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-900/30 flex items-center justify-center text-red-500 transition-colors" title="Excluir">
                                 <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Divisor -->
                     <div class="h-px bg-gray-800 my-4"></div>
 
-                    <!-- Rodapé: Valor/Serviço e Status/Data -->
                     <div class="flex justify-between items-end">
                         <div>
                             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Valor</p>
@@ -746,8 +752,8 @@
             document.getElementById('totalValor').innerText = formatCurrency(totalValor);
         }
 
-        // --- MODAL E CRUD ---
-        function abrirModalNovoCliente() {
+        // --- MODAL E CRUD (FIREBASE) ---
+        window.abrirModalNovoCliente = function() {
             limparFormulario();
             editando = false;
             clienteIdAtual = null;
@@ -757,13 +763,13 @@
             document.getElementById('dataCriacao').valueAsDate = new Date();
         }
 
-        function fecharModal() {
+        window.fecharModal = function() {
             const modal = document.getElementById('modalCliente');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
 
-        function salvarCliente() {
+        window.salvarCliente = function() {
             const novoCliente = obterDadosFormulario();
             
             if (!novoCliente.nome && !novoCliente.empresa) {
@@ -772,20 +778,28 @@
             }
 
             if (editando && clienteIdAtual) {
-                const index = appData.findIndex(c => c.id === clienteIdAtual);
-                if (index !== -1) {
-                    appData[index] = { ...appData[index], ...novoCliente };
-                }
+                // Atualizar no Firebase
+                const itemRef = ref(db, 'wa_comercial_data/' + clienteIdAtual);
+                update(itemRef, novoCliente)
+                    .then(() => {
+                        fecharModal();
+                    })
+                    .catch((error) => {
+                        alert("Erro ao atualizar: " + error.message);
+                    });
             } else {
-                novoCliente.id = crypto.randomUUID();
-                appData.unshift(novoCliente);
+                // Criar novo no Firebase (push gera ID único)
+                push(dbRef, novoCliente)
+                    .then(() => {
+                        fecharModal();
+                    })
+                    .catch((error) => {
+                        alert("Erro ao salvar: " + error.message);
+                    });
             }
-
-            saveData();
-            fecharModal();
         }
 
-        function editarCliente(id) {
+        window.editarCliente = function(id) {
             const cliente = appData.find(c => c.id === id);
             if (cliente) {
                 preencherFormulario(cliente);
@@ -797,11 +811,17 @@
             }
         }
 
-        function excluirCliente(id) {
-            if (confirm("Tem certeza que deseja remover este cliente/projeto?")) {
-                appData = appData.filter(c => c.id !== id);
-                saveData();
+        window.excluirCliente = function(id) {
+            if (confirm("Tem certeza que deseja remover este cliente/projeto do banco de dados?")) {
+                const itemRef = ref(db, 'wa_comercial_data/' + id);
+                remove(itemRef)
+                    .catch((error) => alert("Erro ao excluir: " + error.message));
             }
+        }
+        
+        // Também usado na tabela
+        window.deleteItem = function(id) {
+            window.excluirCliente(id);
         }
 
         function obterDadosFormulario() {
@@ -917,7 +937,7 @@
             updateCard('cardYear', statsThisYear);
 
             const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-            const avgTicket = totalRevenue / appData.length;
+            const avgTicket = appData.length > 0 ? totalRevenue / appData.length : 0;
             const monthlyStats = {};
             appData.forEach(item => {
                 if(!item.data) return;
@@ -956,7 +976,7 @@
         }
 
         // --- TABELA DASHBOARD ---
-        function renderTable() {
+        window.renderTable = function() {
             const tbody = document.getElementById('dataTableBody');
             const searchTerm = document.getElementById('tableSearch').value.toLowerCase();
             tbody.innerHTML = '';
@@ -994,15 +1014,7 @@
             });
         }
 
-        // --- UTILS ---
-        function deleteItem(id) {
-            if(confirm('Tem certeza que deseja remover este registro?')) {
-                appData = appData.filter(i => i.id !== id);
-                saveData();
-            }
-        }
-
-        function updateCharts() {
+        window.updateCharts = function() {
             if(appData.length === 0) return;
             const monthlyData = {};
             appData.forEach(item => {
