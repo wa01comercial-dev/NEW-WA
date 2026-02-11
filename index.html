@@ -427,22 +427,22 @@
                     <!-- Filtros -->
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                         <div class="flex items-center gap-2 w-full md:w-auto flex-1">
-                            <input type="text" id="buscarCliente" placeholder="🔍 Buscar clientes..." onkeyup="window.renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                            <input type="text" id="buscarCliente" placeholder="🔍 Buscar clientes..." onkeyup="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
                         </div>
                         
                         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                            <select id="filtroStatus" onchange="window.renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                            <select id="filtroStatus" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
                                 <option value="">Situação</option>
                                 <option value="realizando">Realizando</option>
                                 <option value="entregue">Entregue</option>
                             </select>
-                            <select id="filtroServico" onchange="window.renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                            <select id="filtroServico" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
                                 <option value="">Serviço</option>
                                 <option value="logotipo">Logotipo</option>
                                 <option value="site">Site</option>
                                 <option value="anuncio">Anúncio</option>
                             </select>
-                            <select id="filtroPrioridade" onchange="window.renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                            <select id="filtroPrioridade" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
                                 <option value="">Prioridade</option>
                                 <option value="baixa">Baixa</option>
                                 <option value="média">Média</option>
@@ -452,8 +452,13 @@
                     </div>
 
                     <!-- Cards Grid -->
-                    <div id="listaClientes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+                    <div id="listaClientes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
                         <!-- Cards injetados via JS -->
+                    </div>
+
+                    <!-- Controles de Paginação -->
+                    <div id="paginationControls" class="flex justify-center items-center gap-2 pb-20 pt-4">
+                        <!-- Botões de paginação injetados via JS -->
                     </div>
                 </div>
 
@@ -557,6 +562,8 @@
         let appData = []; 
         let editando = false;
         let clienteIdAtual = null;
+        let currentPage = 1; // Página atual da paginação
+        const itemsPerPage = 15; // Itens por página
 
         let charts = { revenue: null, services: null };
         let sortableInstance = null; // Instância global do Sortable
@@ -608,7 +615,8 @@
         window.renderTable = renderTable;
         window.deleteItem = deleteItem;
         window.updateCharts = updateCharts;
-        window.toggleSidebar = toggleSidebar; // Adicionado
+        window.toggleSidebar = toggleSidebar; 
+        window.changePage = changePage; // Função de paginação
 
         function initDate() {
             const date = new Date();
@@ -733,7 +741,9 @@
         }
 
         // --- LÓGICA DA ABA CLIENTES ---
-        function renderClientsCards() {
+        function renderClientsCards(resetPage = false) {
+            if (resetPage) currentPage = 1; // Reseta para a primeira página se solicitado (filtros)
+
             const listaClientes = document.getElementById('listaClientes');
             listaClientes.innerHTML = '';
 
@@ -764,35 +774,44 @@
 
             // Ordenação do Sortable (manual) é preservada pois o appData vem na ordem do Firebase
 
+            // Lógica de Paginação
+            const totalItems = filtrados.length;
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedItems = filtrados.slice(startIndex, endIndex);
+
+            // Renderiza os cards apenas da página atual
+            paginatedItems.forEach(cliente => {
+                // Cálculos de totais são feitos sobre os FILTRADOS, não apenas paginados, para o resumo
+                // Mas aqui dentro do forEach só estamos iterando paginados.
+                // Ajuste: Totais devem ser calculados sobre "filtrados" antes de paginar.
+            });
+
+            // Recalcula totais usando a lista completa filtrada (para os KPIs do topo da aba Clientes ficarem corretos)
             filtrados.forEach(cliente => {
                 totalValor += (parseFloat(cliente.valor) || 0);
                 totalExibido++;
                 const st = (cliente.status || '').toLowerCase();
                 if (st === 'realizando') totalRealizando++;
                 if (st === 'entregue') totalEntregue++;
+            });
 
+            // Renderiza Cards PAGINADOS
+            paginatedItems.forEach(cliente => {
+                const st = (cliente.status || '').toLowerCase();
                 const fundoStatus = st === 'entregue' ? 'bg-entregue' :
                                     st === 'realizando' ? 'bg-realizando' : 'bg-gray-800 text-gray-300';
                 
-                // MUDANÇA DE COR DA BORDA BASEADA NO STATUS
                 let prioridadeClasse = 'borda-status-neutro';
                 if (st === 'realizando') prioridadeClasse = 'borda-status-realizando';
                 else if (st === 'entregue') prioridadeClasse = 'borda-status-entregue';
                 
-                // (Opcional) Se quiser manter prioridade caso status seja outro:
-                // const pr = (cliente.prioridade || 'média').toLowerCase();
-                // if (st !== 'realizando' && st !== 'entregue') {
-                //     if (pr === 'alta') prioridadeClasse = 'borda-alta';
-                // }
-
                 const card = document.createElement('div');
-                card.setAttribute('data-id', cliente.id); // ID essencial para o Sortable
+                card.setAttribute('data-id', cliente.id);
                 
-                // NOVO LAYOUT DO CARD COMPACTO (Altura reduzida pela metade)
                 card.className = `bg-brand-panel border border-gray-800 border-l-[6px] ${prioridadeClasse} rounded-lg p-3 card-animado relative group shadow-sm hover:shadow-md flex flex-col justify-between h-auto`;
 
                 card.innerHTML = `
-                    <!-- Top Row: Name + Edit + Value (Right) -->
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex-1 min-w-0 pr-2">
                             <h3 class="text-base font-bold text-white truncate" title="${cliente.nome}">${cliente.nome || 'Sem Nome'}</h3>
@@ -807,9 +826,7 @@
                         </div>
                     </div>
 
-                    <!-- Bottom Row: Contact + Status + Actions -->
                     <div class="flex justify-between items-center mt-1">
-                        <!-- Left: Contact & Date -->
                         <div class="flex items-center gap-3 text-xs text-gray-400">
                              <div class="flex items-center gap-1" title="Contato">
                                 <i class="fa-brands fa-whatsapp text-green-500"></i>
@@ -819,16 +836,13 @@
                              <span title="Data">${formatDate(cliente.data)}</span>
                         </div>
 
-                        <!-- Right: Status Badge & Actions -->
                         <div class="flex items-center gap-2">
                              <span class="${fundoStatus} text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wide border border-opacity-20 flex items-center gap-1">
-                                <!-- ANIMAÇÃO REMOVIDA AQUI -->
                                 ${st === 'realizando' ? '' : ''} 
                                 ${st === 'entregue' ? '<i class="fa-solid fa-check"></i>' : ''}
                                 ${cliente.status || 'ND'}
                              </span>
                              
-                             <!-- Actions (Simple icons) -->
                              <div class="flex gap-1 ml-1">
                                 <button onclick="editarCliente('${cliente.id}')" class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
                                     <i class="fa-solid fa-pen text-[10px]"></i>
@@ -849,12 +863,15 @@
             document.getElementById('totalClientes').innerText = totalExibido;
             document.getElementById('totalValor').innerText = formatCurrency(totalValor);
 
-            // Inicializar Sortable se ainda não existir
+            renderPagination(totalItems);
+
+            // Inicializar Sortable (apenas para a página atual)
+            // Nota: Drag and Drop com paginação move itens apenas na view atual e salva essa ordem relativa no banco.
             if (!sortableInstance) {
                 const el = document.getElementById('listaClientes');
                 sortableInstance = Sortable.create(el, {
                     animation: 150,
-                    handle: '.card-animado', // O card inteiro é o "pegador"
+                    handle: '.card-animado',
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
                     onEnd: function (evt) {
@@ -862,41 +879,105 @@
                         const newIndex = evt.newIndex;
                         const movedId = itemEl.getAttribute('data-id');
                         
-                        // Obter a nova ordem de IDs do DOM
-                        const newOrderIds = Array.from(el.children).map(child => child.getAttribute('data-id'));
+                        // Recria a lista de IDs visíveis
+                        const visibleIds = Array.from(el.children).map(child => child.getAttribute('data-id'));
                         
-                        // Lógica para atualizar o appData:
-                        // Movemos apenas o item arrastado para a nova posição relativa
-                        const movedItemIndex = appData.findIndex(i => i.id === movedId);
-                        if (movedItemIndex > -1) {
-                            const movedItem = appData[movedItemIndex];
-                            appData.splice(movedItemIndex, 1); // Remove
+                        // Encontra o item original no appData
+                        const originalIndex = appData.findIndex(i => i.id === movedId);
+                        if (originalIndex > -1) {
+                            const movedItem = appData[originalIndex];
+                            
+                            // Remove da posição antiga
+                            appData.splice(originalIndex, 1);
 
-                            // Insere na nova posição
-                            if (newOrderIds.length > 1) {
-                                if (newIndex === 0) {
-                                    const nextId = newOrderIds[1];
-                                    const nextIndexInData = appData.findIndex(i => i.id === nextId);
-                                    if (nextIndexInData !== -1) {
-                                        appData.splice(nextIndexInData, 0, movedItem);
-                                    } else {
-                                        appData.unshift(movedItem);
-                                    }
+                            // Lógica Simplificada para Inserção no Contexto Paginado:
+                            // Se movemos visualmente para a posição X na página, precisamos encontrar o ID vizinho no array global
+                            // Para simplificar: movemos para logo antes do item que agora está abaixo dele, ou depois do anterior.
+                            
+                            // Mas com paginação e filtro, o índice visual não mapeia diretamente para o índice global.
+                            // A melhor abordagem UX com paginação + filtro é desativar ordenação drag&drop ou apenas reordenar visualmente sem persistência complexa.
+                            // Vou usar uma lógica de inserção baseada no ID vizinho mais próximo que existe no array global.
+                            
+                            let targetId;
+                            let insertAfter = false;
+
+                            if (visibleIds.length > 1) {
+                                // Se moveu para o final da lista visível
+                                if (newIndex === visibleIds.length - 1) {
+                                    targetId = visibleIds[newIndex - 1]; // Item anterior
+                                    insertAfter = true;
                                 } else {
-                                    const prevId = newOrderIds[newIndex - 1];
-                                    const prevIndexInData = appData.findIndex(i => i.id === prevId);
-                                    if (prevIndexInData !== -1) {
-                                        appData.splice(prevIndexInData + 1, 0, movedItem);
-                                    } else {
-                                        appData.push(movedItem);
-                                    }
+                                    targetId = visibleIds[newIndex + 1]; // Item seguinte (agora na posição dele ou depois)
+                                    insertAfter = false; // Inserir antes
                                 }
+                                
+                                const targetGlobalIndex = appData.findIndex(i => i.id === targetId);
+                                if (targetGlobalIndex !== -1) {
+                                    const insertPos = insertAfter ? targetGlobalIndex + 1 : targetGlobalIndex;
+                                    appData.splice(insertPos, 0, movedItem);
+                                } else {
+                                    // Fallback
+                                    appData.unshift(movedItem);
+                                }
+                            } else {
+                                appData.unshift(movedItem);
                             }
-                            saveDataToFirebase(); // Salva a nova ordem no Firebase
+
+                            saveDataToFirebase(); 
                         }
                     }
                 });
             }
+        }
+
+        // Função para Renderizar Controles de Paginação
+        function renderPagination(totalItems) {
+            const paginationContainer = document.getElementById('paginationControls');
+            paginationContainer.innerHTML = '';
+
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            if (totalPages <= 1) return; // Não mostra se só tiver 1 página
+
+            // Botão Anterior
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            prevBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+            prevBtn.onclick = () => { if(currentPage > 1) changePage(currentPage - 1); };
+            paginationContainer.appendChild(prevBtn);
+
+            // Números
+            // Lógica simples: mostra todos se forem poucos, ou janela deslizante
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.innerText = i;
+                if (i === currentPage) {
+                    pageBtn.className = "w-8 h-8 rounded-lg bg-brand-accent text-white font-bold shadow-lg shadow-red-900/40";
+                } else {
+                    pageBtn.className = "w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors";
+                    pageBtn.onclick = () => changePage(i);
+                }
+                paginationContainer.appendChild(pageBtn);
+            }
+
+            // Botão Próximo
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            nextBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+            nextBtn.onclick = () => { if(currentPage < totalPages) changePage(currentPage + 1); };
+            paginationContainer.appendChild(nextBtn);
+        }
+
+        function changePage(newPage) {
+            currentPage = newPage;
+            renderClientsCards(false); // Não reseta para página 1, mantém a navegação
         }
 
         // --- MODAL E CRUD ---
