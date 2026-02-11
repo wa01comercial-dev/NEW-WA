@@ -201,10 +201,14 @@
                         <i id="themeIcon" class="fa-solid fa-sun"></i>
                     </button>
 
-                    <button onclick="abrirModalNovoCliente()" class="hidden md:flex bg-brand-accent hover:bg-brand-accentHover text-white px-4 py-2 rounded-md text-sm font-bold shadow-lg shadow-red-900/20 transition-all items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Novo Cliente
+                    <!-- Botão Novo Cliente Ajustado para Mobile -->
+                    <!-- Antes: hidden md:flex -->
+                    <!-- Agora: flex (visível sempre), texto escondido no mobile (hidden sm:inline) -->
+                    <button onclick="abrirModalNovoCliente()" class="flex bg-brand-accent hover:bg-brand-accentHover text-white px-3 py-2 rounded-md text-sm font-bold shadow-lg shadow-red-900/20 transition-all items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Novo Cliente</span>
                     </button>
-                    <div class="relative group cursor-pointer">
+
+                    <div class="relative group cursor-pointer hidden sm:block">
                         <i class="fa-solid fa-bell text-gray-400 hover:text-brand-text text-lg"></i>
                         <span class="absolute -top-1 -right-1 w-2 h-2 bg-brand-accent rounded-full animate-pulse"></span>
                     </div>
@@ -458,8 +462,9 @@
     </div>
 
     <!-- MODAL: CLIENTE -->
+    <!-- Ajustado com max-h-[90vh] e overflow-y-auto para não estourar tela mobile -->
     <div id="modalCliente" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
-        <div class="bg-brand-panel border border-gray-700 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all scale-100">
+        <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
                 <i class="fa-solid fa-user-pen text-blue-500"></i> Adicionar / Editar Cliente
             </h2>
