@@ -204,6 +204,9 @@
                             <h1 class="text-3xl font-bold text-brand-text mb-1">Painel de Controle</h1>
                             <p class="text-brand-muted">Indicadores em tempo real.</p>
                         </div>
+                        <div class="text-xs text-gray-500 font-mono">
+                            <i class="fa-solid fa-database text-brand-accent"></i> Conectado: Firebase Realtime
+                        </div>
                     </div>
 
                     <!-- Cards Temporais -->
@@ -333,7 +336,7 @@
                         <div class="lg:col-span-2 bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-bold text-brand-text">Evolução de Vendas</h3>
-                                <select id="yearFilter" onchange="updateCharts()" class="bg-gray-800 text-xs text-white border border-gray-700 rounded p-1">
+                                <select id="yearFilter" onchange="window.updateCharts()" class="bg-gray-800 text-xs text-white border border-gray-700 rounded p-1">
                                     <option value="all">Todo o Período</option>
                                 </select>
                             </div>
@@ -355,7 +358,7 @@
                         <div class="p-6 border-b border-[var(--border-color)] flex flex-col md:flex-row justify-between items-center gap-4">
                             <h3 class="text-lg font-bold text-brand-text">Histórico de Transações</h3>
                             <div class="flex gap-2 w-full md:w-auto">
-                                <input type="text" id="tableSearch" onkeyup="renderTable()" placeholder="Buscar..." class="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 w-full focus:border-brand-accent outline-none">
+                                <input type="text" id="tableSearch" onkeyup="window.renderTable()" placeholder="Buscar..." class="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 w-full focus:border-brand-accent outline-none">
                             </div>
                         </div>
                         <div class="overflow-auto flex-1">
@@ -403,22 +406,22 @@
                     <!-- Filtros -->
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                         <div class="flex items-center gap-2 w-full md:w-auto flex-1">
-                            <input type="text" id="buscarCliente" placeholder="🔍 Buscar clientes..." onkeyup="renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                            <input type="text" id="buscarCliente" placeholder="🔍 Buscar clientes..." onkeyup="window.renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
                         </div>
                         
                         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                            <select id="filtroStatus" onchange="renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                            <select id="filtroStatus" onchange="window.renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
                                 <option value="">Situação</option>
                                 <option value="realizando">Realizando</option>
                                 <option value="entregue">Entregue</option>
                             </select>
-                            <select id="filtroServico" onchange="renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                            <select id="filtroServico" onchange="window.renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
                                 <option value="">Serviço</option>
                                 <option value="logotipo">Logotipo</option>
                                 <option value="site">Site</option>
                                 <option value="anuncio">Anúncio</option>
                             </select>
-                            <select id="filtroPrioridade" onchange="renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                            <select id="filtroPrioridade" onchange="window.renderClientsCards()" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
                                 <option value="">Prioridade</option>
                                 <option value="baixa">Baixa</option>
                                 <option value="média">Média</option>
@@ -498,16 +501,37 @@
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
-                <button onclick="fecharModal()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
-                <button onclick="salvarCliente()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Salvar Cliente</button>
+                <button onclick="window.fecharModal()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button onclick="window.salvarCliente()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Salvar Cliente</button>
             </div>
         </div>
     </div>
 
-    <script>
+    <!-- SCRIPT TIPO MODULE PARA IMPORTAÇÃO DO FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+        import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // --- CONFIGURAÇÃO FIREBASE ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyBnzLylJjDRIhAOxhH52MwFYe-sL9-NUb4",
+          authDomain: "crm90-cb5e0.firebaseapp.com",
+          databaseURL: "https://crm90-cb5e0-default-rtdb.firebaseio.com",
+          projectId: "crm90-cb5e0",
+          storageBucket: "crm90-cb5e0.firebasestorage.app",
+          messagingSenderId: "142520873560",
+          appId: "1:142520873560:web:2dfd3dc34f4bdb7c51502d",
+          measurementId: "G-S6WB9X9VQ5"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const DB_PATH = 'wa_growth_data_v2'; // Caminho no Realtime DB
+
         // --- CONSTANTES E ESTADO ---
-        const STORAGE_KEY = 'wa_growth_data_v2';
-        
         let appData = []; 
         let editando = false;
         let clienteIdAtual = null;
@@ -517,9 +541,51 @@
 
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
-            loadData();
+            initFirebaseListener(); // Substitui loadData local
             initDate();
         });
+
+        // --- FIREBASE LISTENERS ---
+        function initFirebaseListener() {
+            const dataRef = ref(db, DB_PATH);
+            onValue(dataRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data && Array.isArray(data)) {
+                    appData = data;
+                } else if (data) {
+                    // Caso venha como objeto (comum se usar push, mas estamos salvando array)
+                    appData = Object.values(data); 
+                } else {
+                    appData = [];
+                }
+                refreshDashboard();
+            });
+        }
+
+        function saveDataToFirebase() {
+            // Salva o estado atual do appData no Firebase
+            set(ref(db, DB_PATH), appData)
+                .catch((error) => console.error("Erro ao salvar no Firebase:", error));
+        }
+
+        // --- FUNÇÕES GLOBAIS (ATTACH WINDOW) ---
+        // Como 'type="module"' isola o escopo, precisamos anexar ao window para o HTML acessar
+
+        window.initDate = initDate;
+        window.toggleTheme = toggleTheme;
+        window.switchTab = switchTab;
+        window.resetData = resetData;
+        window.exportData = exportData;
+        window.handleFileImport = handleFileImport;
+        window.renderClientsCards = renderClientsCards;
+        window.abrirModalNovoCliente = abrirModalNovoCliente;
+        window.fecharModal = fecharModal;
+        window.salvarCliente = salvarCliente;
+        window.editarCliente = editarCliente;
+        window.excluirCliente = excluirCliente;
+        window.renderTable = renderTable;
+        window.deleteItem = deleteItem;
+        window.updateCharts = updateCharts;
 
         function initDate() {
             const date = new Date();
@@ -561,31 +627,13 @@
         }
 
         // --- GESTÃO DE DADOS ---
-        function loadData() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                try {
-                    appData = JSON.parse(stored);
-                } catch (e) {
-                    appData = [];
-                }
-            } else {
-                appData = [];
-            }
-            refreshDashboard();
-        }
-
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-            refreshDashboard();
-        }
+        // (loadData removido em favor do initFirebaseListener)
 
         function resetData() {
-            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do sistema. Deseja continuar?")) {
-                localStorage.removeItem(STORAGE_KEY);
-                appData = [];
-                refreshDashboard();
-                alert("Sistema resetado com sucesso.");
+            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do sistema permanentemente no Firebase. Deseja continuar?")) {
+                set(ref(db, DB_PATH), [])
+                    .then(() => alert("Sistema resetado com sucesso."))
+                    .catch((err) => alert("Erro ao resetar: " + err));
             }
         }
 
@@ -610,7 +658,7 @@
                 try {
                     const importedData = JSON.parse(e.target.result);
                     if (Array.isArray(importedData)) {
-                        if(confirm(`Arquivo lido com ${importedData.length} registros. Deseja SUBSTITUIR os dados atuais (OK) ou MESCLAR (Cancelar)?\n\nOK = Apaga atual e salva novo\nCancelar = Mantém atual e adiciona novo`)) {
+                        if(confirm(`Arquivo lido com ${importedData.length} registros. Deseja SUBSTITUIR os dados atuais (OK) ou MESCLAR (Cancelar)?`)) {
                             appData = importedData;
                         } else {
                             const currentIds = new Set(appData.map(i => i.id));
@@ -623,12 +671,13 @@
                             });
                             alert(`${addedCount} novos registros adicionados.`);
                         }
-                        saveData();
-                        alert("Importação concluída!");
+                        saveDataToFirebase(); // Salva no Firebase
+                        alert("Importação concluída e sincronizada!");
                     } else {
                         alert("Formato de JSON inválido.");
                     }
                 } catch (err) {
+                    console.error(err);
                     alert("Erro ao ler o arquivo JSON.");
                 }
             };
@@ -678,10 +727,7 @@
                 return true;
             });
 
-            // *** REMOVIDA A ORDENAÇÃO AUTOMÁTICA POR PRIORIDADE ***
-            // Isso permite que a ordem manual (drag & drop) prevaleça.
-            // const prioridadeOrdem = { 'alta': 1, 'média': 2, 'baixa': 3 };
-            // filtrados.sort((a, b) => { ... });
+            // Ordenação do Sortable (manual) é preservada pois o appData vem na ordem do Firebase
 
             filtrados.forEach(cliente => {
                 totalValor += (parseFloat(cliente.valor) || 0);
@@ -804,7 +850,7 @@
                                     }
                                 }
                             }
-                            saveData(); // Salva a nova ordem no LocalStorage
+                            saveDataToFirebase(); // Salva a nova ordem no Firebase
                         }
                     }
                 });
@@ -846,7 +892,7 @@
                 appData.unshift(novoCliente); // Adiciona no topo por padrão
             }
 
-            saveData();
+            saveDataToFirebase(); // Substitui o saveData local
             fecharModal();
         }
 
@@ -865,7 +911,7 @@
         function excluirCliente(id) {
             if (confirm("Tem certeza que deseja remover este cliente/projeto?")) {
                 appData = appData.filter(c => c.id !== id);
-                saveData();
+                saveDataToFirebase();
             }
         }
 
@@ -985,7 +1031,7 @@
             updateCard('cardLastMonth', statsLastMonth);
             updateCard('cardMonthBeforeLast', statsMonthBeforeLast);
             updateCard('cardYear', statsThisYear);
-            updateCard('cardLastYear', statsLastYear); // Atualiza card ano passado
+            updateCard('cardLastYear', statsLastYear); 
 
             const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
             const avgTicket = totalRevenue / appData.length;
@@ -1069,7 +1115,7 @@
         function deleteItem(id) {
             if(confirm('Tem certeza que deseja remover este registro?')) {
                 appData = appData.filter(i => i.id !== id);
-                saveData();
+                saveDataToFirebase();
             }
         }
 
