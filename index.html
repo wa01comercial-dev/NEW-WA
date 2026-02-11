@@ -11,6 +11,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- SortableJS (Adicionado para Drag and Drop) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -83,9 +86,14 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
 
-        .card-animado { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-animado { transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: grab; } /* Cursor grab adicionado */
+        .card-animado:active { cursor: grabbing; }
         .card-animado:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); }
         
+        /* Classe adicionada pelo Sortable enquanto arrasta */
+        .sortable-ghost { opacity: 0.4; }
+        .sortable-drag { cursor: grabbing; }
+
         .borda-alta { border-left-color: #ef4444 !important; }
         .borda-media { border-left-color: #f59e0b !important; }
         .borda-baixa { border-left-color: #3b82f6 !important; }
@@ -151,7 +159,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-brand-text">Administrador</p>
-                        <p class="text-xs text-green-400">● Online (Firebase)</p>
+                        <p class="text-xs text-green-400">● Online</p>
                     </div>
                 </div>
             </div>
@@ -171,7 +179,7 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <!-- BOTÃO TOGGLE THEME (Novo) -->
+                    <!-- BOTÃO TOGGLE THEME -->
                     <button onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-yellow-400 transition-all border border-gray-700" title="Alternar Tema">
                         <i id="themeIcon" class="fa-solid fa-sun"></i>
                     </button>
@@ -270,6 +278,18 @@
                                 <div class="p-2 bg-cyan-500/10 rounded-lg text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-colors"><i class="fa-solid fa-earth-americas"></i></div>
                             </div>
                         </div>
+                        <!-- NOVO CARD: ANO PASSADO -->
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-indigo-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Ano Passado</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardLastYearCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardLastYearValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-colors"><i class="fa-solid fa-calendar-days"></i></div>
+                            </div>
+                        </div>
+                        
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-orange-400/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -313,7 +333,7 @@
                         <div class="lg:col-span-2 bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-bold text-brand-text">Evolução de Vendas</h3>
-                                <select id="yearFilter" onchange="updateCharts()" class="bg-gray-900 text-xs text-white border border-gray-700 rounded p-1">
+                                <select id="yearFilter" onchange="updateCharts()" class="bg-gray-800 text-xs text-white border border-gray-700 rounded p-1">
                                     <option value="all">Todo o Período</option>
                                 </select>
                             </div>
@@ -484,58 +504,21 @@
         </div>
     </div>
 
-    <!-- SCRIPT TIPO MODULE PARA FIREBASE -->
-    <script type="module">
-        // Importando funções do SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAjluNd9vf7JpQmQ2RayqNfJk_nAWaKiSA",
-            authDomain: "wa-01-a9492.firebaseapp.com",
-            databaseURL: "https://wa-01-a9492-default-rtdb.firebaseio.com",
-            projectId: "wa-01-a9492",
-            storageBucket: "wa-01-a9492.firebasestorage.app",
-            messagingSenderId: "687321884178",
-            appId: "1:687321884178:web:5b49dda4d8041db2839acb",
-            measurementId: "G-SJQ3HKHHFF"
-        };
-
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const dbRef = ref(db, 'wa_comercial_data'); // Nó principal do banco
-
-        // --- VARIÁVEIS GLOBAIS ---
+    <script>
+        // --- CONSTANTES E ESTADO ---
+        const STORAGE_KEY = 'wa_growth_data_v2';
+        
         let appData = []; 
         let editando = false;
         let clienteIdAtual = null;
+
         let charts = { revenue: null, services: null };
+        let sortableInstance = null; // Instância global do Sortable
 
-        // Tornando variáveis e funções acessíveis globalmente (para o HTML onclick funcionar)
-        window.appData = appData;
-        
-        // --- INICIALIZAÇÃO E LISTENERS ---
+        // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
+            loadData();
             initDate();
-            // O onValue do Firebase vai carregar os dados automaticamente
-        });
-
-        // --- LISTENER FIREBASE (REALTIME) ---
-        onValue(dbRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                // Converter objeto do Firebase {id1: {...}, id2: {...}} em array [{id: id1, ...}, {id: id2, ...}]
-                appData = Object.keys(data).map(key => ({
-                    id: key,
-                    ...data[key]
-                }));
-            } else {
-                appData = [];
-            }
-            // Atualizar UI sempre que o banco mudar
-            refreshDashboard();
         });
 
         function initDate() {
@@ -545,11 +528,13 @@
             document.getElementById('currentDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
         }
 
-        // --- TEMA ---
-        window.toggleTheme = function() {
+        // --- TEMA (BLUE LIGHT MODE) ---
+        function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('themeIcon');
+            
             body.classList.toggle('light-mode');
+            
             if (body.classList.contains('light-mode')) {
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
@@ -559,8 +544,8 @@
             }
         }
 
-        // --- NAVEGAÇÃO ---
-        window.switchTab = function(tabName) {
+        // --- NAVEGAÇÃO ENTRE ABAS ---
+        function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById('btn-dashboard').className = "w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left";
             document.getElementById('btn-clients').className = "w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left";
@@ -575,17 +560,36 @@
             }
         }
 
-        // --- GESTÃO DE DADOS (FIREBASE) ---
-        
-        window.resetData = function() {
-            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do banco de dados Firebase. Deseja continuar?")) {
-                set(dbRef, null)
-                    .then(() => alert("Banco de dados limpo."))
-                    .catch(err => alert("Erro ao limpar: " + err.message));
+        // --- GESTÃO DE DADOS ---
+        function loadData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    appData = JSON.parse(stored);
+                } catch (e) {
+                    appData = [];
+                }
+            } else {
+                appData = [];
+            }
+            refreshDashboard();
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            refreshDashboard();
+        }
+
+        function resetData() {
+            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do sistema. Deseja continuar?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                appData = [];
+                refreshDashboard();
+                alert("Sistema resetado com sucesso.");
             }
         }
 
-        window.exportData = function() {
+        function exportData() {
             const dataStr = JSON.stringify(appData, null, 2);
             const blob = new Blob([dataStr], { type: "application/json" });
             const url = URL.createObjectURL(blob);
@@ -597,7 +601,7 @@
             document.body.removeChild(a);
         }
 
-        window.handleFileImport = function(input) {
+        function handleFileImport(input) {
             const file = input.files[0];
             if (!file) return;
 
@@ -606,21 +610,25 @@
                 try {
                     const importedData = JSON.parse(e.target.result);
                     if (Array.isArray(importedData)) {
-                        if(confirm(`Arquivo lido com ${importedData.length} registros. Isso irá adicionar os dados ao Firebase. Confirmar?`)) {
-                            // Adicionar um por um ao Firebase
+                        if(confirm(`Arquivo lido com ${importedData.length} registros. Deseja SUBSTITUIR os dados atuais (OK) ou MESCLAR (Cancelar)?\n\nOK = Apaga atual e salva novo\nCancelar = Mantém atual e adiciona novo`)) {
+                            appData = importedData;
+                        } else {
+                            const currentIds = new Set(appData.map(i => i.id));
+                            let addedCount = 0;
                             importedData.forEach(item => {
-                                // Removemos o ID antigo para o Firebase gerar novos ou mantemos se preferir
-                                // Aqui vamos gerar novos push IDs para evitar conflito
-                                const { id, ...dataToSave } = item; 
-                                push(dbRef, dataToSave);
+                                if(!currentIds.has(item.id)) {
+                                    appData.push(item);
+                                    addedCount++;
+                                }
                             });
-                            alert("Importação enviada para o servidor!");
+                            alert(`${addedCount} novos registros adicionados.`);
                         }
+                        saveData();
+                        alert("Importação concluída!");
                     } else {
                         alert("Formato de JSON inválido.");
                     }
                 } catch (err) {
-                    console.error(err);
                     alert("Erro ao ler o arquivo JSON.");
                 }
             };
@@ -641,7 +649,7 @@
         }
 
         // --- LÓGICA DA ABA CLIENTES ---
-        window.renderClientsCards = function() {
+        function renderClientsCards() {
             const listaClientes = document.getElementById('listaClientes');
             listaClientes.innerHTML = '';
 
@@ -670,12 +678,10 @@
                 return true;
             });
 
-            const prioridadeOrdem = { 'alta': 1, 'média': 2, 'baixa': 3 };
-            filtrados.sort((a, b) => {
-                const pa = prioridadeOrdem[(a.prioridade || 'média').toLowerCase()] || 2;
-                const pb = prioridadeOrdem[(b.prioridade || 'média').toLowerCase()] || 2;
-                return pa - pb;
-            });
+            // *** REMOVIDA A ORDENAÇÃO AUTOMÁTICA POR PRIORIDADE ***
+            // Isso permite que a ordem manual (drag & drop) prevaleça.
+            // const prioridadeOrdem = { 'alta': 1, 'média': 2, 'baixa': 3 };
+            // filtrados.sort((a, b) => { ... });
 
             filtrados.forEach(cliente => {
                 totalValor += (parseFloat(cliente.valor) || 0);
@@ -693,52 +699,56 @@
                 else if (pr === 'média') prioridadeClasse = 'borda-media';
 
                 const card = document.createElement('div');
+                card.setAttribute('data-id', cliente.id); // ID essencial para o Sortable
                 
-                card.className = `bg-brand-panel border border-gray-800 border-l-[6px] ${prioridadeClasse} rounded-xl p-5 card-animado relative group shadow-lg flex flex-col justify-between h-full min-h-[220px]`;
+                // NOVO LAYOUT DO CARD COMPACTO (Altura reduzida pela metade)
+                card.className = `bg-brand-panel border border-gray-800 border-l-[6px] ${prioridadeClasse} rounded-lg p-3 card-animado relative group shadow-sm hover:shadow-md flex flex-col justify-between h-auto`;
 
                 card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start">
-                            <h3 class="text-xl font-bold text-white truncate pr-2" title="${cliente.nome}">${cliente.nome || 'Sem Nome'}</h3>
-                            <button onclick="editarCliente('${cliente.id}')" class="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center gap-2 text-brand-accent mt-1 text-sm font-medium">
-                            <i class="fa-regular fa-building"></i>
-                            <span class="truncate" title="${cliente.empresa}">${cliente.empresa || 'Particular'}</span>
-                        </div>
-
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <div class="inline-flex items-center gap-2 bg-[#0f0f13] border border-gray-800 px-3 py-1.5 rounded-lg text-sm text-gray-400 font-mono">
-                                <i class="fa-brands fa-whatsapp text-green-500"></i>
-                                ${cliente.contato || 'Sem contato'}
+                    <!-- Top Row: Name + Edit + Value (Right) -->
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-1 min-w-0 pr-2">
+                            <h3 class="text-base font-bold text-white truncate" title="${cliente.nome}">${cliente.nome || 'Sem Nome'}</h3>
+                            <div class="flex items-center gap-2 text-brand-accent text-xs">
+                                <i class="fa-regular fa-building"></i>
+                                <span class="truncate max-w-[150px]" title="${cliente.empresa}">${cliente.empresa || 'Particular'}</span>
                             </div>
-                            <button onclick="excluirCliente('${cliente.id}')" class="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-900/30 flex items-center justify-center text-red-500 transition-colors" title="Excluir">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
-                            </button>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-white">${formatCurrency(cliente.valor)}</p>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider">${cliente.tipo || 'Serviço'}</p>
                         </div>
                     </div>
 
-                    <div class="h-px bg-gray-800 my-4"></div>
-
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Valor</p>
-                            <p class="text-xl font-bold text-white mb-1">${formatCurrency(cliente.valor)}</p>
-                            <div class="flex items-center gap-2 text-brand-accent text-sm">
-                                 ${getTypeIcon(cliente.tipo)} 
-                                 <span class="capitalize text-gray-400 truncate max-w-[100px]">${cliente.tipo || 'Serviço'}</span>
-                            </div>
+                    <!-- Bottom Row: Contact + Status + Actions -->
+                    <div class="flex justify-between items-center mt-1">
+                        <!-- Left: Contact & Date -->
+                        <div class="flex items-center gap-3 text-xs text-gray-400">
+                             <div class="flex items-center gap-1" title="Contato">
+                                <i class="fa-brands fa-whatsapp text-green-500"></i>
+                                <span class="font-mono max-w-[80px] truncate">${cliente.contato || '-'}</span>
+                             </div>
+                             <span class="text-gray-600">|</span>
+                             <span title="Data">${formatDate(cliente.data)}</span>
                         </div>
 
-                        <div class="flex flex-col items-end gap-1">
-                             <span class="${fundoStatus} text-xs px-3 py-1 rounded-md uppercase font-bold tracking-wide border border-opacity-20 flex items-center gap-2">
-                                ${st === 'realizando' ? '<i class="fa-solid fa-spinner fa-spin-pulse"></i>' : st === 'entregue' ? '<i class="fa-solid fa-check"></i>' : ''}
+                        <!-- Right: Status Badge & Actions -->
+                        <div class="flex items-center gap-2">
+                             <span class="${fundoStatus} text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wide border border-opacity-20 flex items-center gap-1">
+                                ${st === 'realizando' ? '<i class="fa-solid fa-spinner fa-spin-pulse"></i>' : ''}
+                                ${st === 'entregue' ? '<i class="fa-solid fa-check"></i>' : ''}
                                 ${cliente.status || 'ND'}
                              </span>
-                             <p class="text-xs text-gray-600 mt-1">${formatDate(cliente.data)}</p>
+                             
+                             <!-- Actions (Simple icons) -->
+                             <div class="flex gap-1 ml-1">
+                                <button onclick="editarCliente('${cliente.id}')" class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                                    <i class="fa-solid fa-pen text-[10px]"></i>
+                                </button>
+                                <button onclick="excluirCliente('${cliente.id}')" class="w-6 h-6 rounded bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center text-red-500 transition-colors">
+                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                </button>
+                             </div>
                         </div>
                     </div>
                 `;
@@ -750,10 +760,59 @@
             document.getElementById('totalEntregue').innerText = totalEntregue;
             document.getElementById('totalClientes').innerText = totalExibido;
             document.getElementById('totalValor').innerText = formatCurrency(totalValor);
+
+            // Inicializar Sortable se ainda não existir
+            if (!sortableInstance) {
+                const el = document.getElementById('listaClientes');
+                sortableInstance = Sortable.create(el, {
+                    animation: 150,
+                    handle: '.card-animado', // O card inteiro é o "pegador"
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    onEnd: function (evt) {
+                        const itemEl = evt.item;
+                        const newIndex = evt.newIndex;
+                        const movedId = itemEl.getAttribute('data-id');
+                        
+                        // Obter a nova ordem de IDs do DOM
+                        const newOrderIds = Array.from(el.children).map(child => child.getAttribute('data-id'));
+                        
+                        // Lógica para atualizar o appData:
+                        // Movemos apenas o item arrastado para a nova posição relativa
+                        const movedItemIndex = appData.findIndex(i => i.id === movedId);
+                        if (movedItemIndex > -1) {
+                            const movedItem = appData[movedItemIndex];
+                            appData.splice(movedItemIndex, 1); // Remove
+
+                            // Insere na nova posição
+                            if (newOrderIds.length > 1) {
+                                if (newIndex === 0) {
+                                    const nextId = newOrderIds[1];
+                                    const nextIndexInData = appData.findIndex(i => i.id === nextId);
+                                    if (nextIndexInData !== -1) {
+                                        appData.splice(nextIndexInData, 0, movedItem);
+                                    } else {
+                                        appData.unshift(movedItem);
+                                    }
+                                } else {
+                                    const prevId = newOrderIds[newIndex - 1];
+                                    const prevIndexInData = appData.findIndex(i => i.id === prevId);
+                                    if (prevIndexInData !== -1) {
+                                        appData.splice(prevIndexInData + 1, 0, movedItem);
+                                    } else {
+                                        appData.push(movedItem);
+                                    }
+                                }
+                            }
+                            saveData(); // Salva a nova ordem no LocalStorage
+                        }
+                    }
+                });
+            }
         }
 
-        // --- MODAL E CRUD (FIREBASE) ---
-        window.abrirModalNovoCliente = function() {
+        // --- MODAL E CRUD ---
+        function abrirModalNovoCliente() {
             limparFormulario();
             editando = false;
             clienteIdAtual = null;
@@ -763,13 +822,13 @@
             document.getElementById('dataCriacao').valueAsDate = new Date();
         }
 
-        window.fecharModal = function() {
+        function fecharModal() {
             const modal = document.getElementById('modalCliente');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
 
-        window.salvarCliente = function() {
+        function salvarCliente() {
             const novoCliente = obterDadosFormulario();
             
             if (!novoCliente.nome && !novoCliente.empresa) {
@@ -778,28 +837,20 @@
             }
 
             if (editando && clienteIdAtual) {
-                // Atualizar no Firebase
-                const itemRef = ref(db, 'wa_comercial_data/' + clienteIdAtual);
-                update(itemRef, novoCliente)
-                    .then(() => {
-                        fecharModal();
-                    })
-                    .catch((error) => {
-                        alert("Erro ao atualizar: " + error.message);
-                    });
+                const index = appData.findIndex(c => c.id === clienteIdAtual);
+                if (index !== -1) {
+                    appData[index] = { ...appData[index], ...novoCliente };
+                }
             } else {
-                // Criar novo no Firebase (push gera ID único)
-                push(dbRef, novoCliente)
-                    .then(() => {
-                        fecharModal();
-                    })
-                    .catch((error) => {
-                        alert("Erro ao salvar: " + error.message);
-                    });
+                novoCliente.id = crypto.randomUUID();
+                appData.unshift(novoCliente); // Adiciona no topo por padrão
             }
+
+            saveData();
+            fecharModal();
         }
 
-        window.editarCliente = function(id) {
+        function editarCliente(id) {
             const cliente = appData.find(c => c.id === id);
             if (cliente) {
                 preencherFormulario(cliente);
@@ -811,17 +862,11 @@
             }
         }
 
-        window.excluirCliente = function(id) {
-            if (confirm("Tem certeza que deseja remover este cliente/projeto do banco de dados?")) {
-                const itemRef = ref(db, 'wa_comercial_data/' + id);
-                remove(itemRef)
-                    .catch((error) => alert("Erro ao excluir: " + error.message));
+        function excluirCliente(id) {
+            if (confirm("Tem certeza que deseja remover este cliente/projeto?")) {
+                appData = appData.filter(c => c.id !== id);
+                saveData();
             }
-        }
-        
-        // Também usado na tabela
-        window.deleteItem = function(id) {
-            window.excluirCliente(id);
         }
 
         function obterDadosFormulario() {
@@ -917,6 +962,10 @@
             const monthBeforeLastEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0);
             const thisYearStart = new Date(now.getFullYear(), 0, 1);
             const thisYearEnd = new Date(now.getFullYear(), 11, 31);
+            
+            // --- CÁLCULO DE ANO PASSADO ---
+            const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
+            const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31);
 
             const statsToday = calculatePeriodStats(todayStr, todayStr);
             const statsYesterday = calculatePeriodStats(yesterdayStr, yesterdayStr);
@@ -926,6 +975,7 @@
             const statsLastMonth = calculatePeriodStats(formatDateISO(lastMonthStart), formatDateISO(lastMonthEnd));
             const statsMonthBeforeLast = calculatePeriodStats(formatDateISO(monthBeforeLastStart), formatDateISO(monthBeforeLastEnd));
             const statsThisYear = calculatePeriodStats(formatDateISO(thisYearStart), formatDateISO(thisYearEnd));
+            const statsLastYear = calculatePeriodStats(formatDateISO(lastYearStart), formatDateISO(lastYearEnd));
 
             updateCard('cardToday', statsToday);
             updateCard('cardYesterday', statsYesterday);
@@ -935,9 +985,10 @@
             updateCard('cardLastMonth', statsLastMonth);
             updateCard('cardMonthBeforeLast', statsMonthBeforeLast);
             updateCard('cardYear', statsThisYear);
+            updateCard('cardLastYear', statsLastYear); // Atualiza card ano passado
 
             const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-            const avgTicket = appData.length > 0 ? totalRevenue / appData.length : 0;
+            const avgTicket = totalRevenue / appData.length;
             const monthlyStats = {};
             appData.forEach(item => {
                 if(!item.data) return;
@@ -967,7 +1018,7 @@
         }
 
         function resetKPIs() {
-            const ids = ['cardToday', 'cardYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear'];
+            const ids = ['cardToday', 'cardYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear', 'cardLastYear'];
             ids.forEach(id => updateCard(id, {count: 0, total: 0}));
             document.getElementById('kpiTotalRevenue').innerText = "R$ 0,00";
             document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
@@ -976,7 +1027,7 @@
         }
 
         // --- TABELA DASHBOARD ---
-        window.renderTable = function() {
+        function renderTable() {
             const tbody = document.getElementById('dataTableBody');
             const searchTerm = document.getElementById('tableSearch').value.toLowerCase();
             tbody.innerHTML = '';
@@ -1014,7 +1065,15 @@
             });
         }
 
-        window.updateCharts = function() {
+        // --- UTILS ---
+        function deleteItem(id) {
+            if(confirm('Tem certeza que deseja remover este registro?')) {
+                appData = appData.filter(i => i.id !== id);
+                saveData();
+            }
+        }
+
+        function updateCharts() {
             if(appData.length === 0) return;
             const monthlyData = {};
             appData.forEach(item => {
