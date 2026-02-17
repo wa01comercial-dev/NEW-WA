@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WA Comercial | Growth Command Center</title>
     
     <!-- Tailwind CSS -->
@@ -65,12 +65,12 @@
             --input-bg: #f8fafc; /* Slate 50 */
         }
 
-        /* Overrides específicos para Light Mode para compatibilidade com classes Tailwind hardcoded */
-        body.light-mode .text-white { color: #1e3a8a !important; } /* Texto branco vira azul escuro */
+        /* Overrides específicos para Light Mode */
+        body.light-mode .text-white { color: #1e3a8a !important; }
         body.light-mode .text-gray-400 { color: #64748b !important; }
         body.light-mode .text-gray-500 { color: #94a3b8 !important; }
-        body.light-mode .bg-gray-800 { background-color: #dbeafe !important; } /* Badges viram azul claro */
-        body.light-mode .bg-gray-900 { background-color: #eff6ff !important; border-color: #bfdbfe !important; color: #1e293b !important; } /* Inputs */
+        body.light-mode .bg-gray-800 { background-color: #dbeafe !important; }
+        body.light-mode .bg-gray-900 { background-color: #eff6ff !important; border-color: #bfdbfe !important; color: #1e293b !important; }
         body.light-mode .border-gray-800 { border-color: #f00 !important; }
         body.light-mode .border-gray-700 { border-color: #cbd5e1 !important; }
         
@@ -86,34 +86,54 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
 
-        .card-animado { transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: grab; } /* Cursor grab adicionado */
+        .card-animado { transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: grab; }
         .card-animado:active { cursor: grabbing; }
         .card-animado:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); }
         
-        /* Classe adicionada pelo Sortable enquanto arrasta */
         .sortable-ghost { opacity: 0.4; }
         .sortable-drag { cursor: grabbing; }
 
-        /* Cores de borda lateral baseadas no Status (Sobrescrevendo classes anteriores) */
-        .borda-status-realizando { border-left-color: #ef4444 !important; } /* Vermelho */
-        .borda-status-entregue { border-left-color: #10b981 !important; } /* Verde */
-        .borda-status-neutro { border-left-color: #3b82f6 !important; } /* Azul/Padrão */
+        .borda-status-realizando { border-left-color: #ef4444 !important; }
+        .borda-status-entregue { border-left-color: #10b981 !important; }
+        .borda-status-neutro { border-left-color: #3b82f6 !important; }
 
-        /* Cores de badge atualizadas */
         .bg-entregue { background-color: rgba(16, 185, 129, 0.1) !important; border: 1px solid rgba(16, 185, 129, 0.2); color: #10b981 !important; }
-        /* Realizando agora é vermelho */
         .bg-realizando { background-color: rgba(239, 68, 68, 0.1) !important; border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444 !important; }
         
-        /* Ajuste badges light mode */
         body.light-mode .bg-entregue { background-color: #d1fae5 !important; border-color: #34d399 !important; color: #065f46 !important; }
         body.light-mode .bg-realizando { background-color: #fee2e2 !important; border-color: #f87171 !important; color: #991b1b !important; }
 
-        /* Overlay para mobile quando sidebar aberta */
         #mobile-overlay.active { display: block; }
         
-        /* Sidebar Transitions */
         #sidebar { transition: transform 0.3s ease-in-out; }
         #sidebar.mobile-open { transform: translateX(0); }
+
+        /* --- ESTILOS DO FAB MOBILE --- */
+        #mobileFab {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            z-index: 40; /* Acima do conteúdo, abaixo do modal (60) e sidebar (50) se necessário */
+        }
+        #mobileFab.fab-hidden {
+            transform: translateY(200%); /* Esconde para baixo */
+            opacity: 0;
+            pointer-events: none;
+        }
+        #fabText {
+            transition: max-width 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        #mobileFab.fab-expanded #fabText {
+            max-width: 150px; /* Largura suficiente para o texto */
+            opacity: 1;
+            padding-right: 0.5rem;
+        }
+        #mobileFab:not(.fab-expanded) #fabText {
+            max-width: 0;
+            opacity: 0;
+            padding: 0;
+        }
+
     </style>
 </head>
 <body class="bg-brand-dark text-brand-text font-sans antialiased overflow-hidden transition-colors duration-300">
@@ -122,13 +142,12 @@
     <input type="file" id="fileInput" accept=".json" class="hidden" onchange="handleFileImport(this)">
 
     <!-- Overlay Mobile -->
-    <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-10 hidden md:hidden glass"></div>
+    <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden glass"></div>
 
     <div class="flex h-screen">
 
         <!-- Sidebar -->
-        <!-- Alterado para suportar toggle no mobile com transform -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-20 w-64 bg-brand-panel border-r border-[var(--border-color)] flex flex-col shadow-xl transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-brand-panel border-r border-[var(--border-color)] flex flex-col shadow-xl transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300">
             <div class="h-16 flex items-center px-6 border-b border-[var(--border-color)]">
                 <div class="flex items-center gap-2 text-brand-accent font-bold text-2xl tracking-tighter">
                     <i class="fa-solid fa-rocket"></i>
@@ -201,11 +220,10 @@
                         <i id="themeIcon" class="fa-solid fa-sun"></i>
                     </button>
 
-                    <!-- Botão Novo Cliente Ajustado para Mobile -->
-                    <!-- Antes: hidden md:flex -->
-                    <!-- Agora: flex (visível sempre), texto escondido no mobile (hidden sm:inline) -->
-                    <button onclick="abrirModalNovoCliente()" class="flex bg-brand-accent hover:bg-brand-accentHover text-white px-3 py-2 rounded-md text-sm font-bold shadow-lg shadow-red-900/20 transition-all items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Novo Cliente</span>
+                    <!-- Botão Novo Cliente (Apenas Desktop) -->
+                    <!-- MODIFICAÇÃO: hidden em telas pequenas, block em md -->
+                    <button onclick="abrirModalNovoCliente()" class="hidden md:flex bg-brand-accent hover:bg-brand-accentHover text-white px-3 py-2 rounded-md text-sm font-bold shadow-lg shadow-red-900/20 transition-all items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> <span>Novo Cliente</span>
                     </button>
 
                     <div class="relative group cursor-pointer hidden sm:block">
@@ -215,8 +233,9 @@
                 </div>
             </header>
 
-            <!-- CONTAINER PRINCIPAL -->
-            <div class="flex-1 overflow-y-auto p-6 relative">
+            <!-- CONTAINER PRINCIPAL COM SCROLL -->
+            <!-- ID adicionado para o script de scroll mobile -->
+            <div id="main-content-scroll" class="flex-1 overflow-y-auto p-6 relative scroll-smooth">
 
                 <!-- DASHBOARD -->
                 <div id="view-dashboard" class="tab-content active space-y-6">
@@ -302,7 +321,6 @@
                                 <div class="p-2 bg-cyan-500/10 rounded-lg text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-colors"><i class="fa-solid fa-earth-americas"></i></div>
                             </div>
                         </div>
-                        <!-- NOVO CARD: ANO PASSADO -->
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-indigo-400/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -462,12 +480,22 @@
                     </div>
                 </div>
 
-            </div>
+                <!-- Espaço extra no final para o FAB Mobile não cobrir conteúdo -->
+                <div class="h-20 md:hidden"></div>
+
+            </div> <!-- Fim do Container de Scroll -->
+
+            <!-- MOBILE FLOATING ACTION BUTTON (FAB) -->
+            <!-- Botão fixo no canto inferior direito, apenas visível em telas pequenas -->
+            <button id="mobileFab" onclick="abrirModalNovoCliente()" class="md:hidden fixed bottom-6 right-6 bg-brand-accent text-white px-4 py-4 rounded-full shadow-2xl flex items-center justify-center gap-2 group overflow-hidden fab-expanded">
+                <i class="fa-solid fa-plus text-xl"></i>
+                <span id="fabText" class="font-bold text-sm">Novo Cliente</span>
+            </button>
+
         </main>
     </div>
 
     <!-- MODAL: CLIENTE -->
-    <!-- Ajustado com max-h-[90vh] e overflow-y-auto para não estourar tela mobile -->
     <div id="modalCliente" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
         <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
@@ -570,9 +598,43 @@
 
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
-            initFirebaseListener(); // Substitui loadData local
+            initFirebaseListener();
             initDate();
+            initMobileScrollBehavior(); // Inicializa comportamento do FAB
         });
+
+        // --- COMPORTAMENTO SCROLL MOBILE (FAB) ---
+        function initMobileScrollBehavior() {
+            const scrollContainer = document.getElementById('main-content-scroll');
+            const fab = document.getElementById('mobileFab');
+            let lastScrollTop = 0;
+
+            if (scrollContainer && fab) {
+                scrollContainer.addEventListener('scroll', () => {
+                    const scrollTop = scrollContainer.scrollTop;
+                    const isScrollingDown = scrollTop > lastScrollTop;
+                    
+                    if (isScrollingDown && scrollTop > 50) {
+                        // Rolando para Baixo: Oculta o botão completamente para dar espaço
+                        fab.classList.add('fab-hidden');
+                        fab.classList.remove('fab-expanded');
+                    } else {
+                        // Rolando para Cima: Mostra o botão
+                        fab.classList.remove('fab-hidden');
+                        // Expande (mostra texto)
+                        fab.classList.add('fab-expanded');
+                    }
+
+                    // Se estiver no topo absoluto, garante que esteja expandido
+                    if (scrollTop < 10) {
+                        fab.classList.remove('fab-hidden');
+                        fab.classList.add('fab-expanded');
+                    }
+
+                    lastScrollTop = scrollTop;
+                });
+            }
+        }
 
         // --- FIREBASE LISTENERS ---
         function initFirebaseListener() {
@@ -582,7 +644,6 @@
                 if (data && Array.isArray(data)) {
                     appData = data;
                 } else if (data) {
-                    // Caso venha como objeto (comum se usar push, mas estamos salvando array)
                     appData = Object.values(data); 
                 } else {
                     appData = [];
@@ -592,14 +653,11 @@
         }
 
         function saveDataToFirebase() {
-            // Salva o estado atual do appData no Firebase
             set(ref(db, DB_PATH), appData)
                 .catch((error) => console.error("Erro ao salvar no Firebase:", error));
         }
 
         // --- FUNÇÕES GLOBAIS (ATTACH WINDOW) ---
-        // Como 'type="module"' isola o escopo, precisamos anexar ao window para o HTML acessar
-
         window.initDate = initDate;
         window.toggleTheme = toggleTheme;
         window.switchTab = switchTab;
@@ -616,7 +674,7 @@
         window.deleteItem = deleteItem;
         window.updateCharts = updateCharts;
         window.toggleSidebar = toggleSidebar; 
-        window.changePage = changePage; // Função de paginação
+        window.changePage = changePage;
 
         function initDate() {
             const date = new Date();
@@ -670,8 +728,6 @@
         }
 
         // --- GESTÃO DE DADOS ---
-        // (loadData removido em favor do initFirebaseListener)
-
         function resetData() {
             if(confirm("ATENÇÃO: Isso apagará TODOS os dados do sistema permanentemente no Firebase. Deseja continuar?")) {
                 set(ref(db, DB_PATH), [])
@@ -742,7 +798,7 @@
 
         // --- LÓGICA DA ABA CLIENTES ---
         function renderClientsCards(resetPage = false) {
-            if (resetPage) currentPage = 1; // Reseta para a primeira página se solicitado (filtros)
+            if (resetPage) currentPage = 1;
 
             const listaClientes = document.getElementById('listaClientes');
             listaClientes.innerHTML = '';
@@ -772,22 +828,13 @@
                 return true;
             });
 
-            // Ordenação do Sortable (manual) é preservada pois o appData vem na ordem do Firebase
-
             // Lógica de Paginação
             const totalItems = filtrados.length;
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const paginatedItems = filtrados.slice(startIndex, endIndex);
 
-            // Renderiza os cards apenas da página atual
-            paginatedItems.forEach(cliente => {
-                // Cálculos de totais são feitos sobre os FILTRADOS, não apenas paginados, para o resumo
-                // Mas aqui dentro do forEach só estamos iterando paginados.
-                // Ajuste: Totais devem ser calculados sobre "filtrados" antes de paginar.
-            });
-
-            // Recalcula totais usando a lista completa filtrada (para os KPIs do topo da aba Clientes ficarem corretos)
+            // Recalcula totais usando a lista completa filtrada
             filtrados.forEach(cliente => {
                 totalValor += (parseFloat(cliente.valor) || 0);
                 totalExibido++;
@@ -865,8 +912,6 @@
 
             renderPagination(totalItems);
 
-            // Inicializar Sortable (apenas para a página atual)
-            // Nota: Drag and Drop com paginação move itens apenas na view atual e salva essa ordem relativa no banco.
             if (!sortableInstance) {
                 const el = document.getElementById('listaClientes');
                 sortableInstance = Sortable.create(el, {
@@ -879,36 +924,23 @@
                         const newIndex = evt.newIndex;
                         const movedId = itemEl.getAttribute('data-id');
                         
-                        // Recria a lista de IDs visíveis
                         const visibleIds = Array.from(el.children).map(child => child.getAttribute('data-id'));
                         
-                        // Encontra o item original no appData
                         const originalIndex = appData.findIndex(i => i.id === movedId);
                         if (originalIndex > -1) {
                             const movedItem = appData[originalIndex];
-                            
-                            // Remove da posição antiga
                             appData.splice(originalIndex, 1);
 
-                            // Lógica Simplificada para Inserção no Contexto Paginado:
-                            // Se movemos visualmente para a posição X na página, precisamos encontrar o ID vizinho no array global
-                            // Para simplificar: movemos para logo antes do item que agora está abaixo dele, ou depois do anterior.
-                            
-                            // Mas com paginação e filtro, o índice visual não mapeia diretamente para o índice global.
-                            // A melhor abordagem UX com paginação + filtro é desativar ordenação drag&drop ou apenas reordenar visualmente sem persistência complexa.
-                            // Vou usar uma lógica de inserção baseada no ID vizinho mais próximo que existe no array global.
-                            
                             let targetId;
                             let insertAfter = false;
 
                             if (visibleIds.length > 1) {
-                                // Se moveu para o final da lista visível
                                 if (newIndex === visibleIds.length - 1) {
-                                    targetId = visibleIds[newIndex - 1]; // Item anterior
+                                    targetId = visibleIds[newIndex - 1]; 
                                     insertAfter = true;
                                 } else {
-                                    targetId = visibleIds[newIndex + 1]; // Item seguinte (agora na posição dele ou depois)
-                                    insertAfter = false; // Inserir antes
+                                    targetId = visibleIds[newIndex + 1]; 
+                                    insertAfter = false; 
                                 }
                                 
                                 const targetGlobalIndex = appData.findIndex(i => i.id === targetId);
@@ -916,7 +948,6 @@
                                     const insertPos = insertAfter ? targetGlobalIndex + 1 : targetGlobalIndex;
                                     appData.splice(insertPos, 0, movedItem);
                                 } else {
-                                    // Fallback
                                     appData.unshift(movedItem);
                                 }
                             } else {
@@ -937,7 +968,7 @@
 
             const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-            if (totalPages <= 1) return; // Não mostra se só tiver 1 página
+            if (totalPages <= 1) return;
 
             // Botão Anterior
             const prevBtn = document.createElement('button');
@@ -946,8 +977,6 @@
             prevBtn.onclick = () => { if(currentPage > 1) changePage(currentPage - 1); };
             paginationContainer.appendChild(prevBtn);
 
-            // Números
-            // Lógica simples: mostra todos se forem poucos, ou janela deslizante
             let startPage = Math.max(1, currentPage - 2);
             let endPage = Math.min(totalPages, startPage + 4);
             
@@ -977,7 +1006,7 @@
 
         function changePage(newPage) {
             currentPage = newPage;
-            renderClientsCards(false); // Não reseta para página 1, mantém a navegação
+            renderClientsCards(false);
         }
 
         // --- MODAL E CRUD ---
@@ -1012,10 +1041,10 @@
                 }
             } else {
                 novoCliente.id = crypto.randomUUID();
-                appData.unshift(novoCliente); // Adiciona no topo por padrão
+                appData.unshift(novoCliente); 
             }
 
-            saveDataToFirebase(); // Substitui o saveData local
+            saveDataToFirebase();
             fecharModal();
         }
 
@@ -1132,7 +1161,6 @@
             const thisYearStart = new Date(now.getFullYear(), 0, 1);
             const thisYearEnd = new Date(now.getFullYear(), 11, 31);
             
-            // --- CÁLCULO DE ANO PASSADO ---
             const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
             const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31);
 
@@ -1332,4 +1360,3 @@
     </script>
 </body>
 </html>
-
