@@ -834,8 +834,9 @@
             const endIndex = startIndex + itemsPerPage;
             const paginatedItems = filtrados.slice(startIndex, endIndex);
 
-            // Recalcula totais usando a lista completa filtrada
-            filtrados.forEach(cliente => {
+            // MODIFICAÇÃO: Recalcula totais usando a lista GLOBAL (appData) 
+            // para que os cards não zerem ou mudem quando um filtro for aplicado
+            appData.forEach(cliente => {
                 totalValor += (parseFloat(cliente.valor) || 0);
                 totalExibido++;
                 const st = (cliente.status || '').toLowerCase();
