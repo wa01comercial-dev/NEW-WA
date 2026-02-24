@@ -271,6 +271,16 @@
                                 <div class="p-2 bg-teal-500/10 rounded-lg text-teal-500 group-hover:bg-teal-500 group-hover:text-white transition-colors"><i class="fa-regular fa-calendar-minus"></i></div>
                             </div>
                         </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-pink-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Antes de Ontem</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardDayBeforeYesterdayCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardDayBeforeYesterdayValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-pink-500/10 rounded-lg text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-colors"><i class="fa-solid fa-calendar-day"></i></div>
+                            </div>
+                        </div>
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-emerald-400/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -1149,6 +1159,9 @@
             const yesterdayDate = new Date(now);
             yesterdayDate.setDate(now.getDate() - 1);
             const yesterdayStr = formatDateISO(yesterdayDate);
+            const dayBeforeYesterdayDate = new Date(now);
+            dayBeforeYesterdayDate.setDate(now.getDate() - 2);
+            const dayBeforeYesterdayStr = formatDateISO(dayBeforeYesterdayDate);
             const currentDay = now.getDay();
             const daysToMonday = (currentDay + 6) % 7; 
             const thisWeekStart = new Date(now);
@@ -1173,6 +1186,7 @@
 
             const statsToday = calculatePeriodStats(todayStr, todayStr);
             const statsYesterday = calculatePeriodStats(yesterdayStr, yesterdayStr);
+            const statsDayBeforeYesterday = calculatePeriodStats(dayBeforeYesterdayStr, dayBeforeYesterdayStr);
             const statsThisWeek = calculatePeriodStats(formatDateISO(thisWeekStart), formatDateISO(thisWeekEnd));
             const statsLastWeek = calculatePeriodStats(formatDateISO(lastWeekStart), formatDateISO(lastWeekEnd));
             const statsThisMonth = calculatePeriodStats(formatDateISO(thisMonthStart), formatDateISO(thisMonthEnd));
@@ -1183,6 +1197,7 @@
 
             updateCard('cardToday', statsToday);
             updateCard('cardYesterday', statsYesterday);
+            updateCard('cardDayBeforeYesterday', statsDayBeforeYesterday);
             updateCard('cardWeek', statsThisWeek);
             updateCard('cardLastWeek', statsLastWeek);
             updateCard('cardMonth', statsThisMonth);
@@ -1222,7 +1237,7 @@
         }
 
         function resetKPIs() {
-            const ids = ['cardToday', 'cardYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear', 'cardLastYear'];
+            const ids = ['cardToday', 'cardYesterday', 'cardDayBeforeYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear', 'cardLastYear'];
             ids.forEach(id => updateCard(id, {count: 0, total: 0}));
             document.getElementById('kpiTotalRevenue').innerText = "R$ 0,00";
             document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
