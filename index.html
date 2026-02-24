@@ -466,6 +466,9 @@
                                 <option value="média">Média</option>
                                 <option value="alta">Alta</option>
                             </select>
+                            
+                            <!-- NOVO FILTRO POR DATA AQUI -->
+                            <input type="date" id="filtroData" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition" title="Filtrar por Data">
                         </div>
                     </div>
 
@@ -807,6 +810,7 @@
             const fs = document.getElementById('filtroStatus').value.toLowerCase();
             const ft = document.getElementById('filtroServico').value.toLowerCase();
             const fp = document.getElementById('filtroPrioridade').value.toLowerCase();
+            const fd = document.getElementById('filtroData').value; // PEGA O VALOR DO NOVO FILTRO DE DATA
 
             let totalValor = 0;
             let totalRealizando = 0;
@@ -819,10 +823,12 @@
                 const p = (cliente.prioridade || 'média').toLowerCase();
                 const n = (cliente.nome || '').toLowerCase();
                 const e = (cliente.empresa || '').toLowerCase();
+                const d = cliente.data || ''; // DATA DO CLIENTE
 
                 if (fs && s !== fs) return false;
                 if (ft && !t.includes(ft)) return false; 
                 if (fp && p !== fp) return false;
+                if (fd && d !== fd) return false; // LÓGICA DO FILTRO DE DATA APLICADA AQUI
                 if (busca && !n.includes(busca) && !e.includes(busca)) return false;
                 
                 return true;
