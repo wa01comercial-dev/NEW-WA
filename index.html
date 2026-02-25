@@ -1058,7 +1058,8 @@
                 }
             } else {
                 novoCliente.id = crypto.randomUUID();
-                appData.unshift(novoCliente); 
+                // ALTERAÇÃO FEITA AQUI: Alterado de `appData.unshift(novoCliente)` para `appData.push(novoCliente)`
+                appData.push(novoCliente); 
             }
 
             saveDataToFirebase();
