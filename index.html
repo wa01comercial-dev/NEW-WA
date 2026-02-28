@@ -574,8 +574,17 @@
                             </div>
                         </div>
 
+                        <!-- Gráfico de Gastos por Categoria -->
+                        <div class="bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col lg:col-span-2">
+                            <h3 class="text-lg font-bold text-brand-text mb-4">Gastos por Categoria</h3>
+                            <div class="relative h-56 w-full mb-4">
+                                <canvas id="expensesChart"></canvas>
+                            </div>
+                            <div class="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2" id="topExpensesList"></div>
+                        </div>
+
                         <!-- Lista de Transações -->
-                        <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col lg:col-span-2 overflow-hidden h-[500px]">
+                        <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col lg:col-span-3 overflow-hidden h-[500px]">
                             <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center">
                                 <h3 class="text-lg font-bold text-brand-text">Histórico Financeiro</h3>
                             </div>
@@ -716,7 +725,7 @@
         let currentPage = 1; // Página atual da paginação
         const itemsPerPage = 15; // Itens por página
 
-        let charts = { revenue: null, services: null };
+        let charts = { revenue: null, services: null, expenses: null };
         let sortableInstance = null; // Instância global do Sortable
 
         // Função segura para gerar IDs (funciona sem HTTPS)
@@ -1188,8 +1197,82 @@
             if(saldo > 0) saldoEl.className = 'text-2xl font-bold text-green-400 mt-1';
             else if(saldo < 0) saldoEl.className = 'text-2xl font-bold text-red-400 mt-1';
             else saldoEl.className = 'text-2xl font-bold text-blue-400 mt-1';
+
+            // Atualiza o gráfico de finanças
+            updateFinancesCharts();
         }
 
+        function updateFinancesCharts() {
+            if (!financasData) return;
+
+            const expenseCounts = {};
+            let totalExpensesAmount = 0;
+
+            financasData.forEach(fin => {
+                if (fin.tipo === 'saida') {
+                    const cat = (fin.categoria || 'Outros').toLowerCase();
+                    if(!expenseCounts[cat]) expenseCounts[cat] = 0;
+                    expenseCounts[cat] += fin.valor;
+                    totalExpensesAmount += fin.valor;
+                }
+            });
+
+            const sortedExpenses = Object.entries(expenseCounts).sort((a,b) => b[1] - a[1]);
+            const labelsPie = sortedExpenses.map(s => s[0].charAt(0).toUpperCase() + s[0].slice(1));
+            const dataPie = sortedExpenses.map(s => s[1]);
+
+            const listContainer = document.getElementById('topExpensesList');
+            if (listContainer) {
+                listContainer.innerHTML = '';
+                if (sortedExpenses.length === 0) {
+                    listContainer.innerHTML = '<div class="text-gray-500 text-sm col-span-full">Nenhuma saída registrada.</div>';
+                } else {
+                    sortedExpenses.forEach(([name, total]) => {
+                        const percent = totalExpensesAmount > 0 ? ((total / totalExpensesAmount) * 100).toFixed(1) : 0;
+                        listContainer.innerHTML += `<div class="flex justify-between items-center text-sm border-b border-gray-800 pb-1"><span class="text-gray-400 capitalize">${name}</span><span class="text-brand-text font-bold">${formatCurrency(total)} <span class="text-xs text-red-500">(${percent}%)</span></span></div>`;
+                    });
+                }
+            }
+
+            const ctxExp = document.getElementById('expensesChart');
+            if (!ctxExp) return;
+
+            if(charts.expenses) charts.expenses.destroy();
+            charts.expenses = new Chart(ctxExp.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: labelsPie,
+                    datasets: [{
+                        data: dataPie,
+                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#64748b'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: { 
+                        legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         // --- LÓGICA DA ABA CLIENTES ---
         function renderClientsCards(resetPage = false) {
