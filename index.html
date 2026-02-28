@@ -551,7 +551,7 @@
                                         <input id="finHora" type="time" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
                                     </div>
                                 </div>
-                                <button onclick="salvarTransacaoFinanca()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold shadow-lg shadow-blue-900/40 transition-all mt-2">
+                                <button type="button" onclick="salvarTransacaoFinanca()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold shadow-lg shadow-blue-900/40 transition-all mt-2">
                                     <i class="fa-solid fa-plus mr-2"></i> Registrar
                                 </button>
                             </div>
@@ -588,7 +588,7 @@
             </div> <!-- Fim do Container de Scroll -->
 
             <!-- MOBILE FLOATING ACTION BUTTON (FAB) -->
-            <button id="mobileFab" onclick="abrirModalContextual()" class="md:hidden fixed bottom-6 right-6 bg-brand-accent text-white px-4 py-4 rounded-full shadow-2xl flex items-center justify-center gap-2 group overflow-hidden fab-expanded">
+            <button type="button" id="mobileFab" onclick="abrirModalContextual()" class="md:hidden fixed bottom-6 right-6 bg-brand-accent text-white px-4 py-4 rounded-full shadow-2xl flex items-center justify-center gap-2 group overflow-hidden fab-expanded">
                 <i class="fa-solid fa-plus text-xl"></i>
                 <span id="fabText" class="font-bold text-sm">Novo</span>
             </button>
@@ -657,8 +657,8 @@
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
-                <button onclick="window.fecharModal()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
-                <button onclick="window.salvarCliente()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Salvar Cliente</button>
+                <button type="button" onclick="window.fecharModal()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button type="button" onclick="window.salvarCliente()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Salvar Cliente</button>
             </div>
         </div>
     </div>
@@ -699,6 +699,11 @@
 
         let charts = { revenue: null, services: null };
         let sortableInstance = null; // Instância global do Sortable
+
+        // Função segura para gerar IDs (funciona sem HTTPS)
+        function gerarIdUnico(prefixo) {
+            return prefixo + '-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+        }
 
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -743,9 +748,9 @@
             onValue(dataRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data && Array.isArray(data)) {
-                    appData = data;
+                    appData = data.filter(Boolean); // Adicionado filtro de segurança
                 } else if (data) {
-                    appData = Object.values(data); 
+                    appData = Object.values(data).filter(Boolean); 
                 } else {
                     appData = [];
                 }
@@ -764,9 +769,9 @@
             onValue(financesRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data && Array.isArray(data)) {
-                    financesData = data;
+                    financesData = data.filter(Boolean); // Adicionado filtro de segurança
                 } else if (data) {
-                    financesData = Object.values(data);
+                    financesData = Object.values(data).filter(Boolean);
                 } else {
                     financesData = [];
                 }
@@ -853,7 +858,7 @@
             
             document.getElementById('btn-dashboard').className = btnClassDef;
             document.getElementById('btn-clients').className = btnClassDef;
-            document.getElementById('btn-finances').className = btnClassDef; // NOVO
+            document.getElementById('btn-finances').className = btnClassDef;
 
             const headerBtn = document.getElementById('btnNovoHeader');
             const textHeaderBtn = document.getElementById('textBtnNovoHeader');
@@ -924,7 +929,6 @@
                 try {
                     const importedData = JSON.parse(e.target.result);
                     
-                    // Verifica se é o backup novo (com nós clientes e financas) ou o antigo
                     let clientesImportados = [];
                     let financasImportadas = [];
 
@@ -932,7 +936,6 @@
                         clientesImportados = importedData.clientes || [];
                         financasImportadas = importedData.financas || [];
                     } else if (Array.isArray(importedData)) {
-                        // Formato antigo, onde era apenas array de clientes
                         clientesImportados = importedData;
                     } else {
                          alert("Formato de JSON não reconhecido.");
@@ -943,12 +946,10 @@
                         appData = clientesImportados;
                         financasData = financasImportadas;
                     } else {
-                        // Mesclar clientes
                         const currentIds = new Set(appData.map(i => i.id));
                         clientesImportados.forEach(item => {
                             if(!currentIds.has(item.id)) appData.push(item);
                         });
-                        // Mesclar financas
                         const currentFinIds = new Set(financasData.map(i => i.id));
                         financasImportadas.forEach(item => {
                             if(!currentFinIds.has(item.id)) financasData.push(item);
@@ -978,39 +979,59 @@
             }
         }
 
-        // --- LÓGICA DA ABA FINANÇAS (NOVA) ---
+        // --- LÓGICA DA ABA FINANÇAS (CORRIGIDA) ---
         function salvarTransacaoFinanca() {
-            const tipo = document.getElementById('finTipo').value;
-            const valorRaw = document.getElementById('finValor').value;
-            const categoria = document.getElementById('finCategoria').value.trim();
-            const data = document.getElementById('finData').value;
-            const hora = document.getElementById('finHora').value;
+            try {
+                const tipo = document.getElementById('finTipo').value;
+                const valorRaw = document.getElementById('finValor').value;
+                const categoria = document.getElementById('finCategoria').value.trim();
+                const data = document.getElementById('finData').value;
+                const hora = document.getElementById('finHora').value;
 
-            if (!valorRaw || !categoria || !data || !hora) {
-                alert("Por favor, preencha todos os campos da transação.");
-                return;
+                if (!valorRaw || !categoria || !data || !hora) {
+                    alert("Por favor, preencha todos os campos da transação.");
+                    return;
+                }
+
+                const valor = parseFloat(valorRaw);
+                
+                // Geração de timestamp robusta
+                let timestampVal;
+                try {
+                    timestampVal = new Date(`${data}T${hora}:00`).getTime();
+                    if (isNaN(timestampVal)) timestampVal = Date.now();
+                } catch(e) {
+                    timestampVal = Date.now();
+                }
+
+                const novaTransacao = {
+                    id: gerarIdUnico('fin'), // Usa nova função segura de ID
+                    tipo: tipo,
+                    valor: valor,
+                    categoria: categoria,
+                    data: data,
+                    hora: hora,
+                    timestamp: timestampVal
+                };
+
+                // Proteção contra Array corrompido
+                if (!Array.isArray(financasData)) {
+                    financasData = [];
+                }
+
+                financasData.push(novaTransacao);
+                saveFinancesToFirebase();
+                
+                // Limpa form
+                document.getElementById('finValor').value = '';
+                document.getElementById('finCategoria').value = '';
+                
+                renderFinancesCardsAndTable();
+                
+            } catch (error) {
+                console.error("Erro inesperado ao registrar transação:", error);
+                alert("Ocorreu um erro no navegador ao salvar. Verifique o console.");
             }
-
-            const valor = parseFloat(valorRaw);
-            
-            const novaTransacao = {
-                id: crypto.randomUUID(),
-                tipo: tipo,
-                valor: valor,
-                categoria: categoria,
-                data: data,
-                hora: hora,
-                timestamp: new Date(`${data}T${hora}`).getTime()
-            };
-
-            financasData.push(novaTransacao);
-            saveFinancesToFirebase();
-            
-            // Limpa form
-            document.getElementById('finValor').value = '';
-            document.getElementById('finCategoria').value = '';
-            
-            renderFinancesCardsAndTable();
         }
 
         function excluirFinanca(id) {
@@ -1314,7 +1335,7 @@
                     appData[index] = { ...appData[index], ...novoCliente };
                 }
             } else {
-                novoCliente.id = crypto.randomUUID();
+                novoCliente.id = gerarIdUnico('cli'); // Correção do ID também para Clientes
                 appData.push(novoCliente); 
             }
 
