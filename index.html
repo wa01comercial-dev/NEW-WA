@@ -543,6 +543,7 @@
                                         <label class="text-xs text-gray-500 uppercase font-bold ml-1">Categoria</label>
                                         <select id="finCategoria" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
                                             <option value="">Selecione...</option>
+                                            <option value="Venda">Venda</option>
                                             <option value="Lazer">Lazer</option>
                                             <option value="Moradia">Moradia</option>
                                             <option value="Cartão">Cartão</option>
@@ -567,7 +568,7 @@
                                         <input id="finHora" type="time" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
                                     </div>
                                 </div>
-                                <button type="button" onclick="salvarTransacaoFinanca()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold shadow-lg shadow-blue-900/40 transition-all mt-2">
+                                <button type="button" id="btnSalvarFinanca" onclick="salvarTransacaoFinanca()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold shadow-lg shadow-blue-900/40 transition-all mt-2">
                                     <i class="fa-solid fa-plus mr-2"></i> Registrar
                                 </button>
                             </div>
@@ -710,6 +711,8 @@
         let financasData = []; // CORRIGIDO PARA USAR SEMPRE O MESMO NOME
         let editando = false;
         let clienteIdAtual = null;
+        let editandoFinanca = false;
+        let financaIdAtual = null;
         let currentPage = 1; // Página atual da paginação
         const itemsPerPage = 15; // Itens por página
 
@@ -824,6 +827,7 @@
         // Novas funções finanças globais
         window.salvarTransacaoFinanca = salvarTransacaoFinanca;
         window.excluirFinanca = excluirFinanca;
+        window.editarFinanca = editarFinanca;
         window.abrirModalContextual = abrirModalContextual;
 
         function initDate() {
@@ -1029,23 +1033,50 @@
                     timestampVal = Date.now();
                 }
 
-                const novaTransacao = {
-                    id: gerarIdUnico('fin'), // Usa nova função segura de ID
-                    tipo: tipo,
-                    valor: valor,
-                    categoria: categoria,
-                    obs: obs,
-                    data: data,
-                    hora: hora,
-                    timestamp: timestampVal
-                };
+                if (editandoFinanca && financaIdAtual) {
+                    const index = financasData.findIndex(f => f.id === financaIdAtual);
+                    if (index !== -1) {
+                        financasData[index] = {
+                            ...financasData[index],
+                            tipo: tipo,
+                            valor: valor,
+                            categoria: categoria,
+                            obs: obs,
+                            data: data,
+                            hora: hora,
+                            timestamp: timestampVal
+                        };
+                    }
+                    editandoFinanca = false;
+                    financaIdAtual = null;
 
-                // Proteção contra Array corrompido
-                if (!Array.isArray(financasData)) {
-                    financasData = [];
+                    // Restaura botão
+                    const btn = document.getElementById('btnSalvarFinanca');
+                    if(btn) {
+                        btn.innerHTML = '<i class="fa-solid fa-plus mr-2"></i> Registrar';
+                        btn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
+                        btn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
+                    }
+                } else {
+                    const novaTransacao = {
+                        id: gerarIdUnico('fin'), // Usa nova função segura de ID
+                        tipo: tipo,
+                        valor: valor,
+                        categoria: categoria,
+                        obs: obs,
+                        data: data,
+                        hora: hora,
+                        timestamp: timestampVal
+                    };
+
+                    // Proteção contra Array corrompido
+                    if (!Array.isArray(financasData)) {
+                        financasData = [];
+                    }
+
+                    financasData.push(novaTransacao);
                 }
 
-                financasData.push(novaTransacao);
                 saveFinancesToFirebase();
                 
                 // Limpa form se os elementos existirem
@@ -1058,6 +1089,38 @@
             } catch (error) {
                 console.error("Erro inesperado ao registrar transação:", error);
                 alert("Ocorreu um erro interno ao salvar: " + error.message);
+            }
+        }
+
+        function editarFinanca(id) {
+            const financa = financasData.find(f => f.id === id);
+            if (financa) {
+                document.getElementById('finTipo').value = financa.tipo || 'entrada';
+                document.getElementById('finValor').value = financa.valor || '';
+                
+                const catSelect = document.getElementById('finCategoria');
+                let catExists = Array.from(catSelect.options).some(opt => opt.value === financa.categoria);
+                if (!catExists && financa.categoria) {
+                    const newOpt = new Option(financa.categoria, financa.categoria);
+                    catSelect.add(newOpt);
+                }
+                catSelect.value = financa.categoria || '';
+                
+                document.getElementById('finObs').value = financa.obs || '';
+                document.getElementById('finData').value = financa.data || '';
+                document.getElementById('finHora').value = financa.hora || '';
+
+                editandoFinanca = true;
+                financaIdAtual = id;
+
+                const btn = document.getElementById('btnSalvarFinanca');
+                if(btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-pen mr-2"></i> Atualizar Registro';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
+                    btn.classList.add('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
+                }
+                
+                document.getElementById('main-content-scroll').scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
@@ -1107,7 +1170,8 @@
                     <td class="p-4"><span class="text-[10px] px-2 py-1 rounded-full uppercase font-bold tracking-wide ${bgTag}">${fin.tipo}</span></td>
                     <td class="p-4 font-mono font-bold text-right ${colorText}">${sinal} ${formatCurrency(fin.valor)}</td>
                     <td class="p-4 text-center">
-                        <button onclick="excluirFinanca('${fin.id}')" class="text-gray-600 hover:text-red-500 transition-colors p-2"><i class="fa-solid fa-trash-can"></i></button>
+                        <button onclick="editarFinanca('${fin.id}')" class="text-gray-600 hover:text-yellow-500 transition-colors p-2" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="excluirFinanca('${fin.id}')" class="text-gray-600 hover:text-red-500 transition-colors p-2" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
