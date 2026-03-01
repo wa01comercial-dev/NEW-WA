@@ -925,7 +925,7 @@
                 document.getElementById('view-clients').classList.add('active');
                 document.getElementById('btn-clients').className = btnClassAct;
                 
-                headerBtn.style.display = 'flex';
+                headerBtn.style.display = ''; // Limpando estilo inline para as classes (hidden md:flex) do Tailwind voltarem a funcionar
                 textHeaderBtn.innerText = 'Novo Cliente';
                 headerBtn.onclick = abrirModalNovoCliente; 
                 
@@ -937,7 +937,7 @@
                 document.getElementById('view-finances').classList.add('active');
                 document.getElementById('btn-finances').className = btnClassAct;
                 
-                headerBtn.style.display = 'flex'; 
+                headerBtn.style.display = ''; // Limpando estilo inline para as classes (hidden md:flex) do Tailwind voltarem a funcionar
                 textHeaderBtn.innerText = 'Nova Transação';
                 headerBtn.onclick = abrirModalNovaFinanca; 
                 
