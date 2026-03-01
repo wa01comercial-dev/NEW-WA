@@ -352,15 +352,36 @@
                                 <div class="p-2 bg-orange-500/10 rounded-lg text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors"><i class="fa-solid fa-backward"></i></div>
                             </div>
                         </div>
+
+                        <!-- NOVO CARD: Investimento em Anúncios -->
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-red-500/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Invest. Anúncios</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardInvestimentoCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardInvestimentoValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-red-500/10 rounded-lg text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors"><i class="fa-solid fa-bullhorn"></i></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- KPIs -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in mt-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 animate-fade-in mt-8">
+                        <!-- Faturamento (Antigo Total Histórico) -->
                         <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
                             <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-sack-dollar text-6xl text-green-500"></i></div>
-                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Total Histórico</p>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Faturamento</p>
                             <h3 class="text-2xl font-bold text-brand-text mt-1" id="kpiTotalRevenue">R$ 0,00</h3>
                         </div>
+
+                        <!-- NOVO KPI: Lucro -->
+                        <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-hand-holding-dollar text-6xl text-green-400"></i></div>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Lucro</p>
+                            <h3 class="text-2xl font-bold text-brand-text mt-1" id="kpiLucro">R$ 0,00</h3>
+                        </div>
+
                         <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
                             <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-receipt text-6xl text-blue-500"></i></div>
                             <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Ticket Médio</p>
@@ -551,6 +572,7 @@
                                             <option value="Transporte">Transporte</option>
                                             <option value="Manutenção">Manutenção</option>
                                             <option value="Mercado">Mercado</option>
+                                            <option value="Anúncio">Anúncio</option> <!-- Adicionado opção Anúncio -->
                                         </select>
                                     </div>
                                     <div>
@@ -806,6 +828,9 @@
                 }
                 if(document.getElementById('view-finances').classList.contains('active')) {
                     renderFinancesCardsAndTable();
+                } else {
+                    // Update KPIs in background to keep "Investimento/Lucro" synced
+                    if(typeof updateKPIs === 'function') updateKPIs();
                 }
             });
         }
@@ -1199,8 +1224,9 @@
             else if(saldo < 0) saldoEl.className = 'text-2xl font-bold text-red-400 mt-1';
             else saldoEl.className = 'text-2xl font-bold text-blue-400 mt-1';
 
-            // Atualiza o gráfico de finanças
+            // Atualiza o gráfico de finanças e os KPIs
             updateFinancesCharts();
+            if(typeof updateKPIs === 'function') updateKPIs();
         }
 
         function updateFinancesCharts() {
@@ -1665,8 +1691,28 @@
             updateCard('cardYear', statsThisYear);
             updateCard('cardLastYear', statsLastYear); 
 
+            // ==========================================
+            // CÁLCULOS PRINCIPAIS ATUALIZADOS AQUI
+            // ==========================================
             const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
             const avgTicket = totalRevenue / appData.length;
+            
+            // CÁLCULO DE INVESTIMENTO EM ANÚNCIOS (Buscando em Finanças)
+            let totalInvestimento = 0;
+            let countInvestimento = 0;
+            if (typeof financasData !== 'undefined') {
+                financasData.forEach(fin => {
+                    // Condição: É uma saída E a categoria é "Anúncio" (ou a palavra foi colocada na OBS)
+                    if (fin.tipo === 'saida' && (fin.categoria === 'Anúncio' || (fin.obs && fin.obs.toLowerCase().includes('anúncio')))) {
+                        totalInvestimento += (parseFloat(fin.valor) || 0);
+                        countInvestimento++;
+                    }
+                });
+            }
+            
+            // CÁLCULO DO LUCRO (Faturamento - Investimento)
+            const lucro = totalRevenue - totalInvestimento;
+
             const monthlyStats = {};
             appData.forEach(item => {
                 if(!item.data) return;
@@ -1674,13 +1720,25 @@
                 if(!monthlyStats[dateKey]) monthlyStats[dateKey] = 0;
                 monthlyStats[dateKey] += (parseFloat(item.valor) || 0);
             });
+            
             let bestMonth = { key: '', val: -Infinity };
             let worstMonth = { key: '', val: Infinity };
             Object.entries(monthlyStats).forEach(([key, val]) => {
                 if(val > bestMonth.val) bestMonth = { key, val };
                 if(val < worstMonth.val) worstMonth = { key, val };
             });
-            document.getElementById('kpiTotalRevenue').innerText = formatCurrency(totalRevenue);
+
+            // ATUALIZANDO OS CARDS NO HTML
+            document.getElementById('kpiTotalRevenue').innerText = formatCurrency(totalRevenue); // Agora é o Faturamento
+            
+            const elInvestCount = document.getElementById('cardInvestimentoCount');
+            const elInvestVal = document.getElementById('cardInvestimentoValue');
+            if(elInvestCount) elInvestCount.innerText = countInvestimento;
+            if(elInvestVal) elInvestVal.innerText = formatCurrency(totalInvestimento);
+
+            const elLucro = document.getElementById('kpiLucro');
+            if(elLucro) elLucro.innerText = formatCurrency(lucro);
+
             document.getElementById('kpiAvgTicket').innerText = formatCurrency(avgTicket);
             if (Object.keys(monthlyStats).length > 0) {
                 document.getElementById('kpiBestMonth').innerText = formatDateToMonthYear(bestMonth.key);
@@ -1699,6 +1757,9 @@
             const ids = ['cardToday', 'cardYesterday', 'cardDayBeforeYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear', 'cardLastYear'];
             ids.forEach(id => updateCard(id, {count: 0, total: 0}));
             document.getElementById('kpiTotalRevenue').innerText = "R$ 0,00";
+            document.getElementById('kpiLucro').innerText = "R$ 0,00"; // Reset do Lucro
+            document.getElementById('cardInvestimentoCount').innerText = "0"; // Reset Invest. Anuncio
+            document.getElementById('cardInvestimentoValue').innerText = "R$ 0,00"; // Reset Invest. Anuncio
             document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
             document.getElementById('kpiBestMonth').innerText = "---";
             document.getElementById('kpiWorstMonth').innerText = "---";
