@@ -362,6 +362,18 @@
                                 <div class="p-2 bg-red-500/10 rounded-lg text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors"><i class="fa-solid fa-bullhorn"></i></div>
                             </div>
                         </div>
+
+                        <!-- NOVO CARD: Total Despesas -->
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-rose-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Total Despesas</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardDespesaCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardDespesaValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-rose-500/10 rounded-lg text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors"><i class="fa-solid fa-money-bill-wave"></i></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- KPIs -->
@@ -1725,12 +1737,23 @@
             // CÁLCULO DE INVESTIMENTO EM ANÚNCIOS (Buscando em Finanças)
             let totalInvestimento = 0;
             let countInvestimento = 0;
+            
+            // NOVO: CÁLCULO TOTAL DE DESPESAS (Todas as Saídas)
+            let totalDespesa = 0;
+            let countDespesa = 0;
+
             if (typeof financasData !== 'undefined') {
                 financasData.forEach(fin => {
-                    // Condição: É uma saída E a categoria é "Anúncio" (ou a palavra foi colocada na OBS)
-                    if (fin.tipo === 'saida' && (fin.categoria === 'Anúncio' || (fin.obs && fin.obs.toLowerCase().includes('anúncio')))) {
-                        totalInvestimento += (parseFloat(fin.valor) || 0);
-                        countInvestimento++;
+                    if (fin.tipo === 'saida') {
+                        // Soma TODAS as despesas
+                        totalDespesa += (parseFloat(fin.valor) || 0);
+                        countDespesa++;
+
+                        // Condição original: É uma saída E a categoria é "Anúncio" (ou a palavra foi colocada na OBS)
+                        if (fin.categoria === 'Anúncio' || (fin.obs && fin.obs.toLowerCase().includes('anúncio'))) {
+                            totalInvestimento += (parseFloat(fin.valor) || 0);
+                            countInvestimento++;
+                        }
                     }
                 });
             }
@@ -1761,6 +1784,12 @@
             if(elInvestCount) elInvestCount.innerText = countInvestimento;
             if(elInvestVal) elInvestVal.innerText = formatCurrency(totalInvestimento);
 
+            // Atualizando o Novo Card: Total Despesas
+            const elDespesaCount = document.getElementById('cardDespesaCount');
+            const elDespesaVal = document.getElementById('cardDespesaValue');
+            if(elDespesaCount) elDespesaCount.innerText = countDespesa;
+            if(elDespesaVal) elDespesaVal.innerText = formatCurrency(totalDespesa);
+
             const elLucro = document.getElementById('kpiLucro');
             if(elLucro) elLucro.innerText = formatCurrency(lucro);
 
@@ -1785,6 +1814,8 @@
             document.getElementById('kpiLucro').innerText = "R$ 0,00"; 
             document.getElementById('cardInvestimentoCount').innerText = "0"; 
             document.getElementById('cardInvestimentoValue').innerText = "R$ 0,00"; 
+            document.getElementById('cardDespesaCount').innerText = "0"; 
+            document.getElementById('cardDespesaValue').innerText = "R$ 0,00"; 
             document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
             document.getElementById('kpiBestMonth').innerText = "---";
             document.getElementById('kpiWorstMonth').innerText = "---";
