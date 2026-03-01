@@ -1418,7 +1418,7 @@
                     <div class="flex justify-between items-center mt-1">
                         <div class="flex items-center gap-3 text-xs text-gray-400">
                              <div class="flex items-center gap-1" title="Contato">
-                                <span class="text-sm grayscale-0">${getFlagByPhone(cliente.contato)}</span>
+                                <i class="fa-brands fa-whatsapp text-green-500"></i>
                                 <span class="font-mono max-w-[80px] truncate">${cliente.contato || '-'}</span>
                              </div>
                              <span class="text-gray-600">|</span>
@@ -1946,36 +1946,6 @@
                     plugins: { legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10 } } }
                 }
             });
-        }
-
-        // --- FUNÇÃO PARA BANDEIRAS PELO CONTATO ---
-        function getFlagByPhone(phone) {
-            if (!phone) return '<i class="fa-solid fa-phone text-gray-500"></i>';
-            if (phone.includes('@')) return '<i class="fa-regular fa-envelope text-blue-400"></i>';
-            
-            const raw = phone.trim();
-            const num = raw.replace(/\D/g, ''); 
-            
-            if (raw.startsWith('+55')) return '🇧🇷';
-            if (raw.startsWith('+1')) return '🇺🇸';
-            if (raw.startsWith('+351')) return '🇵🇹';
-            if (raw.startsWith('+54')) return '🇦🇷';
-            if (raw.startsWith('+56')) return '🇨🇱';
-            if (raw.startsWith('+57')) return '🇨🇴';
-            if (raw.startsWith('+52')) return '🇲🇽';
-            if (raw.startsWith('+34')) return '🇪🇸';
-            if (raw.startsWith('+44')) return '🇬🇧';
-            if (raw.startsWith('+49')) return '🇩🇪';
-            if (raw.startsWith('+33')) return '🇫🇷';
-            if (raw.startsWith('+39')) return '🇮🇹';
-            if (raw.startsWith('+81')) return '🇯🇵';
-            if (raw.startsWith('+86')) return '🇨🇳';
-            if (raw.startsWith('+91')) return '🇮🇳';
-
-            // BR default rule: 10 or 11 digits sem o código internacional
-            if (!raw.startsWith('+') && (num.length === 10 || num.length === 11)) return '🇧🇷';
-            
-            return '🌍'; // Globo padrão caso não reconheça um país específico
         }
 
         function formatCurrency(val) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0); }
