@@ -168,7 +168,6 @@
                     <span class="font-medium">Gerenciar Clientes</span>
                 </button>
 
-                <!-- NOVO BOTÃO FINANÇAS -->
                 <button onclick="switchTab('finances'); toggleSidebar()" id="btn-finances" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
                     <i class="fa-solid fa-wallet w-5"></i>
                     <span class="font-medium">Finanças</span>
@@ -224,7 +223,7 @@
                         <i id="themeIcon" class="fa-solid fa-sun"></i>
                     </button>
 
-                    <button id="btnNovoHeader" onclick="abrirModalNovoCliente()" class="hidden md:flex bg-brand-accent hover:bg-brand-accentHover text-white px-3 py-2 rounded-md text-sm font-bold shadow-lg shadow-red-900/20 transition-all items-center gap-2">
+                    <button id="btnNovoHeader" onclick="abrirModalContextual()" class="hidden md:flex bg-brand-accent hover:bg-brand-accentHover text-white px-3 py-2 rounded-md text-sm font-bold shadow-lg shadow-red-900/20 transition-all items-center gap-2">
                         <i class="fa-solid fa-plus"></i> <span id="textBtnNovoHeader">Novo Cliente</span>
                     </button>
 
@@ -353,7 +352,6 @@
                             </div>
                         </div>
 
-                        <!-- NOVO CARD: Investimento em Anúncios -->
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-red-500/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -368,14 +366,12 @@
 
                     <!-- KPIs -->
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 animate-fade-in mt-8">
-                        <!-- Faturamento (Antigo Total Histórico) -->
                         <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
                             <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-sack-dollar text-6xl text-green-500"></i></div>
                             <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Faturamento</p>
                             <h3 class="text-2xl font-bold text-brand-text mt-1" id="kpiTotalRevenue">R$ 0,00</h3>
                         </div>
 
-                        <!-- NOVO KPI: Lucro -->
                         <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
                             <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-hand-holding-dollar text-6xl text-green-400"></i></div>
                             <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Lucro</p>
@@ -542,72 +538,18 @@
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
-                        <!-- Formulário de Registro -->
-                        <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg p-6 lg:col-span-1">
-                            <h3 class="text-lg font-bold text-brand-text mb-4 border-b border-gray-800 pb-2">Registrar Transação</h3>
-                            
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Tipo</label>
-                                    <select id="finTipo" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
-                                        <option value="entrada">Entrada (Receita)</option>
-                                        <option value="saida">Saída (Despesa)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Valor (R$)</label>
-                                    <input id="finValor" type="number" step="0.01" placeholder="0.00" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
-                                </div>
-                                
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Categoria</label>
-                                        <select id="finCategoria" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
-                                            <option value="">Selecione...</option>
-                                            <option value="Venda">Venda</option>
-                                            <option value="Lazer">Lazer</option>
-                                            <option value="Moradia">Moradia</option>
-                                            <option value="Remédio">Remédio</option>
-                                            <option value="Cartão">Cartão</option>
-                                            <option value="Transporte">Transporte</option>
-                                            <option value="Manutenção">Manutenção</option>
-                                            <option value="Mercado">Mercado</option>
-                                            <option value="Anúncio">Anúncio</option> <!-- Adicionado opção Anúncio -->
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">OBS:</label>
-                                        <input id="finObs" type="text" placeholder="Mais detalhes..." class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Data</label>
-                                        <input id="finData" type="date" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Hora</label>
-                                        <input id="finHora" type="time" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
-                                    </div>
-                                </div>
-                                <button type="button" id="btnSalvarFinanca" onclick="salvarTransacaoFinanca()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold shadow-lg shadow-blue-900/40 transition-all mt-2">
-                                    <i class="fa-solid fa-plus mr-2"></i> Registrar
-                                </button>
-                            </div>
-                        </div>
-
+                        
                         <!-- Gráfico de Gastos por Categoria -->
-                        <div class="bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col lg:col-span-2">
+                        <div class="bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col lg:col-span-1">
                             <h3 class="text-lg font-bold text-brand-text mb-4">Gastos por Categoria</h3>
                             <div class="relative h-56 w-full mb-4">
                                 <canvas id="expensesChart"></canvas>
                             </div>
-                            <div class="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2" id="topExpensesList"></div>
+                            <div class="mt-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-x-6 gap-y-2" id="topExpensesList"></div>
                         </div>
 
                         <!-- Lista de Transações -->
-                        <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col lg:col-span-3 overflow-hidden h-[500px]">
+                        <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col lg:col-span-2 overflow-hidden h-[500px]">
                             <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center">
                                 <h3 class="text-lg font-bold text-brand-text">Histórico Financeiro</h3>
                             </div>
@@ -712,6 +654,67 @@
         </div>
     </div>
 
+    <!-- MODAL: FINANÇA -->
+    <div id="modalFinanca" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
+        <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
+                <i class="fa-solid fa-money-bill-transfer text-blue-500"></i> <span id="tituloModalFinanca">Nova Transação</span>
+            </h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Tipo</label>
+                    <select id="finTipo" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="entrada">Entrada (Receita)</option>
+                        <option value="saida">Saída (Despesa)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Valor (R$)</label>
+                    <input id="finValor" type="number" step="0.01" placeholder="0.00" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Categoria</label>
+                        <select id="finCategoria" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="">Selecione...</option>
+                            <option value="Venda">Venda</option>
+                            <option value="Lazer">Lazer</option>
+                            <option value="Moradia">Moradia</option>
+                            <option value="Remédio">Remédio</option>
+                            <option value="Cartão">Cartão</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Mercado">Mercado</option>
+                            <option value="Anúncio">Anúncio</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">OBS:</label>
+                        <input id="finObs" type="text" placeholder="Mais detalhes..." class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Data</label>
+                        <input id="finData" type="date" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 uppercase font-bold ml-1">Hora</label>
+                        <input id="finHora" type="time" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
+                <button type="button" onclick="window.fecharModalFinanca()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button type="button" id="btnSalvarFinanca" onclick="salvarTransacaoFinanca()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Registrar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPT TIPO MODULE PARA IMPORTAÇÃO DO FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -735,23 +738,22 @@
         const analytics = getAnalytics(app);
         const db = getDatabase(app);
         
-        const DB_PATH = 'wa_growth_data_v2'; // Caminho no Realtime DB (Clientes)
-        const DB_PATH_FINANCES = 'wa_finances_data'; // NOVO CAMINHO PARA FINANÇAS
+        const DB_PATH = 'wa_growth_data_v2'; 
+        const DB_PATH_FINANCES = 'wa_finances_data'; 
 
         // --- CONSTANTES E ESTADO ---
         let appData = []; 
-        let financasData = []; // CORRIGIDO PARA USAR SEMPRE O MESMO NOME
+        let financasData = []; 
         let editando = false;
         let clienteIdAtual = null;
         let editandoFinanca = false;
         let financaIdAtual = null;
-        let currentPage = 1; // Página atual da paginação
-        const itemsPerPage = 15; // Itens por página
+        let currentPage = 1; 
+        const itemsPerPage = 15; 
 
         let charts = { revenue: null, services: null, expenses: null };
-        let sortableInstance = null; // Instância global do Sortable
+        let sortableInstance = null; 
 
-        // Função segura para gerar IDs (funciona sem HTTPS)
         function gerarIdUnico(prefixo) {
             return prefixo + '-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
         }
@@ -759,9 +761,9 @@
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
             initFirebaseListener();
-            initFirebaseFinancesListener(); // Inicia listener de finanças
+            initFirebaseFinancesListener(); 
             initDate();
-            initMobileScrollBehavior(); // Inicializa comportamento do FAB
+            initMobileScrollBehavior(); 
         });
 
         // --- COMPORTAMENTO SCROLL MOBILE (FAB) ---
@@ -799,7 +801,7 @@
             onValue(dataRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data && Array.isArray(data)) {
-                    appData = data.filter(Boolean); // Adicionado filtro de segurança
+                    appData = data.filter(Boolean); 
                 } else if (data) {
                     appData = Object.values(data).filter(Boolean); 
                 } else {
@@ -814,13 +816,12 @@
                 .catch((error) => console.error("Erro ao salvar no Firebase:", error));
         }
 
-        // --- NOVO LISTENER E SAVE PARA FINANÇAS ---
         function initFirebaseFinancesListener() {
             const financesRef = ref(db, DB_PATH_FINANCES);
             onValue(financesRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data && Array.isArray(data)) {
-                    financasData = data.filter(Boolean); // Adicionado filtro de segurança
+                    financasData = data.filter(Boolean); 
                 } else if (data) {
                     financasData = Object.values(data).filter(Boolean);
                 } else {
@@ -829,7 +830,6 @@
                 if(document.getElementById('view-finances').classList.contains('active')) {
                     renderFinancesCardsAndTable();
                 } else {
-                    // Update KPIs in background to keep "Investimento/Lucro" synced
                     if(typeof updateKPIs === 'function') updateKPIs();
                 }
             });
@@ -848,18 +848,22 @@
         window.exportData = exportData;
         window.handleFileImport = handleFileImport;
         window.renderClientsCards = renderClientsCards;
+        
         window.abrirModalNovoCliente = abrirModalNovoCliente;
         window.fecharModal = fecharModal;
         window.salvarCliente = salvarCliente;
         window.editarCliente = editarCliente;
         window.excluirCliente = excluirCliente;
+        
         window.renderTable = renderTable;
         window.deleteItem = deleteItem;
         window.updateCharts = updateCharts;
         window.toggleSidebar = toggleSidebar; 
         window.changePage = changePage;
         
-        // Novas funções finanças globais
+        // Novas funções finanças globais (Modal de Finanças)
+        window.abrirModalNovaFinanca = abrirModalNovaFinanca;
+        window.fecharModalFinanca = fecharModalFinanca;
         window.salvarTransacaoFinanca = salvarTransacaoFinanca;
         window.excluirFinanca = excluirFinanca;
         window.editarFinanca = editarFinanca;
@@ -870,13 +874,6 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const dateStr = date.toLocaleDateString('pt-BR', options);
             document.getElementById('currentDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-            
-            // Setar data/hora atual nos inputs de finanças por padrão
-            const now = new Date();
-            document.getElementById('finData').valueAsDate = now;
-            const hours = String(now.getHours()).padStart(2, '0');
-            const mins = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('finHora').value = `${hours}:${mins}`;
         }
 
         function toggleTheme() {
@@ -922,29 +919,40 @@
             if(tabName === 'dashboard') {
                 document.getElementById('view-dashboard').classList.add('active');
                 document.getElementById('btn-dashboard').className = btnClassAct;
-                headerBtn.style.display = 'none'; // Esconde botão novo no dashboard
+                headerBtn.style.display = 'none'; 
                 document.getElementById('mobileFab').style.display = 'none';
             } else if(tabName === 'clients') {
                 document.getElementById('view-clients').classList.add('active');
                 document.getElementById('btn-clients').className = btnClassAct;
+                
                 headerBtn.style.display = 'flex';
                 textHeaderBtn.innerText = 'Novo Cliente';
+                headerBtn.onclick = abrirModalNovoCliente; 
+                
                 document.getElementById('mobileFab').style.display = 'flex';
                 fabText.innerText = 'Novo Cliente';
+                
                 renderClientsCards(); 
             } else if (tabName === 'finances') {
                 document.getElementById('view-finances').classList.add('active');
                 document.getElementById('btn-finances').className = btnClassAct;
-                headerBtn.style.display = 'none'; // Formulário já está na tela
-                document.getElementById('mobileFab').style.display = 'none';
-                renderFinancesCardsAndTable(); // Chama renderização
+                
+                headerBtn.style.display = 'flex'; 
+                textHeaderBtn.innerText = 'Nova Transação';
+                headerBtn.onclick = abrirModalNovaFinanca; 
+                
+                document.getElementById('mobileFab').style.display = 'flex'; 
+                fabText.innerText = 'Nova Transação';
+                
+                renderFinancesCardsAndTable(); 
             }
         }
 
-        // Função para botão Flutuante saber qual modal abrir dependendo da aba
         function abrirModalContextual() {
             if(document.getElementById('view-clients').classList.contains('active')) {
                 abrirModalNovoCliente();
+            } else if(document.getElementById('view-finances').classList.contains('active')) {
+                abrirModalNovaFinanca();
             }
         }
 
@@ -1034,14 +1042,50 @@
             }
         }
 
-        // --- LÓGICA DA ABA FINANÇAS (CORRIGIDA E REFORÇADA) ---
+        // --- MODAL E LÓGICA DA ABA FINANÇAS ---
+        function abrirModalNovaFinanca() {
+            limparFormularioFinanca();
+            editandoFinanca = false;
+            financaIdAtual = null;
+            document.getElementById('tituloModalFinanca').innerText = 'Nova Transação';
+            
+            const btn = document.getElementById('btnSalvarFinanca');
+            if(btn) {
+                btn.innerHTML = 'Registrar';
+                btn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
+                btn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
+            }
+
+            const modal = document.getElementById('modalFinanca');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const now = new Date();
+            document.getElementById('finData').valueAsDate = now;
+            const hours = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('finHora').value = `${hours}:${mins}`;
+        }
+
+        function fecharModalFinanca() {
+            const modal = document.getElementById('modalFinanca');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function limparFormularioFinanca() {
+            document.getElementById('finTipo').value = 'entrada';
+            document.getElementById('finValor').value = '';
+            document.getElementById('finCategoria').value = '';
+            document.getElementById('finObs').value = '';
+        }
+
         function salvarTransacaoFinanca() {
             try {
-                // Seleção segura de todos os campos
                 const tipoEl = document.getElementById('finTipo');
                 const valorEl = document.getElementById('finValor');
                 const categoriaEl = document.getElementById('finCategoria');
-                const obsEl = document.getElementById('finObs'); // Novo campo OBS
+                const obsEl = document.getElementById('finObs'); 
                 const dataEl = document.getElementById('finData');
                 const horaEl = document.getElementById('finHora');
 
@@ -1059,7 +1103,6 @@
 
                 const valor = parseFloat(valorRaw);
                 
-                // Geração de timestamp robusta
                 let timestampVal;
                 try {
                     timestampVal = new Date(`${data}T${hora}:00`).getTime();
@@ -1082,19 +1125,9 @@
                             timestamp: timestampVal
                         };
                     }
-                    editandoFinanca = false;
-                    financaIdAtual = null;
-
-                    // Restaura botão
-                    const btn = document.getElementById('btnSalvarFinanca');
-                    if(btn) {
-                        btn.innerHTML = '<i class="fa-solid fa-plus mr-2"></i> Registrar';
-                        btn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
-                        btn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
-                    }
                 } else {
                     const novaTransacao = {
-                        id: gerarIdUnico('fin'), // Usa nova função segura de ID
+                        id: gerarIdUnico('fin'), 
                         tipo: tipo,
                         valor: valor,
                         categoria: categoria,
@@ -1104,22 +1137,15 @@
                         timestamp: timestampVal
                     };
 
-                    // Proteção contra Array corrompido
                     if (!Array.isArray(financasData)) {
                         financasData = [];
                     }
-
                     financasData.push(novaTransacao);
                 }
 
                 saveFinancesToFirebase();
-                
-                // Limpa form se os elementos existirem
-                if (valorEl) valorEl.value = '';
-                if (categoriaEl) categoriaEl.value = '';
-                if (obsEl) obsEl.value = '';
-                
                 renderFinancesCardsAndTable();
+                fecharModalFinanca();
                 
             } catch (error) {
                 console.error("Erro inesperado ao registrar transação:", error);
@@ -1147,15 +1173,18 @@
 
                 editandoFinanca = true;
                 financaIdAtual = id;
+                document.getElementById('tituloModalFinanca').innerText = 'Editar Transação';
 
                 const btn = document.getElementById('btnSalvarFinanca');
                 if(btn) {
-                    btn.innerHTML = '<i class="fa-solid fa-pen mr-2"></i> Atualizar Registro';
+                    btn.innerHTML = 'Atualizar Registro';
                     btn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
                     btn.classList.add('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
                 }
                 
-                document.getElementById('main-content-scroll').scrollTo({ top: 0, behavior: 'smooth' });
+                const modal = document.getElementById('modalFinanca');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
             }
         }
 
@@ -1171,7 +1200,6 @@
             let totalEntradas = 0;
             let totalSaidas = 0;
 
-            // Ordenar por timestamp mais recente primeiro
             const financasOrdenadas = [...financasData].sort((a, b) => b.timestamp - a.timestamp);
 
             const tbody = document.getElementById('listaFinancasBody');
@@ -1190,7 +1218,6 @@
                 const bgTag = isEntrada ? 'bg-green-900/50 text-green-400 border border-green-900' : 'bg-red-900/50 text-red-400 border border-red-900';
                 const sinal = isEntrada ? '+' : '-';
                 
-                // Monta a div de observação, caso exista
                 const obsText = fin.obs ? `<div class="text-xs text-gray-500 normal-case mt-0.5"><i class="fa-solid fa-comment-dots"></i> ${fin.obs}</div>` : '';
 
                 tr.innerHTML = `
@@ -1218,13 +1245,11 @@
             document.getElementById('totalSaidasDisplay').innerText = formatCurrency(totalSaidas);
             document.getElementById('saldoTotalDisplay').innerText = formatCurrency(saldo);
             
-            // Ajusta cor do saldo
             const saldoEl = document.getElementById('saldoTotalDisplay');
             if(saldo > 0) saldoEl.className = 'text-2xl font-bold text-green-400 mt-1';
             else if(saldo < 0) saldoEl.className = 'text-2xl font-bold text-red-400 mt-1';
             else saldoEl.className = 'text-2xl font-bold text-blue-400 mt-1';
 
-            // Atualiza o gráfico de finanças e os KPIs
             updateFinancesCharts();
             if(typeof updateKPIs === 'function') updateKPIs();
         }
@@ -1542,7 +1567,7 @@
                     appData[index] = { ...appData[index], ...novoCliente };
                 }
             } else {
-                novoCliente.id = gerarIdUnico('cli'); // Correção do ID também para Clientes
+                novoCliente.id = gerarIdUnico('cli'); 
                 appData.push(novoCliente); 
             }
 
@@ -1729,7 +1754,7 @@
             });
 
             // ATUALIZANDO OS CARDS NO HTML
-            document.getElementById('kpiTotalRevenue').innerText = formatCurrency(totalRevenue); // Agora é o Faturamento
+            document.getElementById('kpiTotalRevenue').innerText = formatCurrency(totalRevenue); 
             
             const elInvestCount = document.getElementById('cardInvestimentoCount');
             const elInvestVal = document.getElementById('cardInvestimentoValue');
@@ -1757,9 +1782,9 @@
             const ids = ['cardToday', 'cardYesterday', 'cardDayBeforeYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear', 'cardLastYear'];
             ids.forEach(id => updateCard(id, {count: 0, total: 0}));
             document.getElementById('kpiTotalRevenue').innerText = "R$ 0,00";
-            document.getElementById('kpiLucro').innerText = "R$ 0,00"; // Reset do Lucro
-            document.getElementById('cardInvestimentoCount').innerText = "0"; // Reset Invest. Anuncio
-            document.getElementById('cardInvestimentoValue').innerText = "R$ 0,00"; // Reset Invest. Anuncio
+            document.getElementById('kpiLucro').innerText = "R$ 0,00"; 
+            document.getElementById('cardInvestimentoCount').innerText = "0"; 
+            document.getElementById('cardInvestimentoValue').innerText = "R$ 0,00"; 
             document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
             document.getElementById('kpiBestMonth').innerText = "---";
             document.getElementById('kpiWorstMonth').innerText = "---";
