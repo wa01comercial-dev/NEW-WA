@@ -172,6 +172,12 @@
                     <i class="fa-solid fa-wallet w-5"></i>
                     <span class="font-medium">Finanças</span>
                 </button>
+
+                <!-- NOVO BOTÃO: PUBLICAÇÕES -->
+                <button onclick="switchTab('publicacoes'); toggleSidebar()" id="btn-publicacoes" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
+                    <i class="fa-brands fa-instagram w-5"></i>
+                    <span class="font-medium">Publicações</span>
+                </button>
                 
                 <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-2">Dados</p>
                 <button onclick="document.getElementById('fileInput').click(); toggleSidebar()" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg transition-all text-left">
@@ -521,7 +527,7 @@
                     </div>
                 </div>
 
-                <!-- NOVA ABA: FINANÇAS -->
+                <!-- FINANÇAS -->
                 <div id="view-finances" class="tab-content space-y-6">
                     <div class="flex justify-between items-end animate-fade-in mb-4">
                         <div>
@@ -580,6 +586,29 @@
                                         <!-- Injetado via JS -->
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOVA ABA: PUBLICAÇÕES -->
+                <div id="view-publicacoes" class="tab-content space-y-6">
+                    <div class="flex justify-between items-end animate-fade-in mb-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-brand-text mb-1">Publicações Instagram</h1>
+                            <p class="text-brand-muted">Últimos projetos entregues aguardando postagem.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg overflow-hidden flex flex-col">
+                        <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center bg-gradient-to-r from-pink-500/10 to-transparent">
+                            <h3 class="text-lg font-bold text-brand-text flex items-center gap-2">
+                                <i class="fa-brands fa-instagram text-pink-500"></i> Projetos Realizados (Mais Recentes)
+                            </h3>
+                        </div>
+                        <div class="overflow-auto flex-1 p-6 min-h-[400px]">
+                            <div id="listaPublicacoes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <!-- Cards injetados via JS -->
                             </div>
                         </div>
                     </div>
@@ -860,6 +889,7 @@
         window.exportData = exportData;
         window.handleFileImport = handleFileImport;
         window.renderClientsCards = renderClientsCards;
+        window.renderPublicacoes = renderPublicacoes; // Nova função
         
         window.abrirModalNovoCliente = abrirModalNovoCliente;
         window.fecharModal = fecharModal;
@@ -873,13 +903,34 @@
         window.toggleSidebar = toggleSidebar; 
         window.changePage = changePage;
         
-        // Novas funções finanças globais (Modal de Finanças)
         window.abrirModalNovaFinanca = abrirModalNovaFinanca;
         window.fecharModalFinanca = fecharModalFinanca;
         window.salvarTransacaoFinanca = salvarTransacaoFinanca;
         window.excluirFinanca = excluirFinanca;
         window.editarFinanca = editarFinanca;
         window.abrirModalContextual = abrirModalContextual;
+
+        // Função rápida para copiar dados pro instagram
+        window.copiarInfoInstagram = function(nome, tipo) {
+            const texto = `Projeto: ${nome}\nServiço: ${tipo || 'Serviço Geral'}`;
+            // Usar API de clipboard moderna ou execCommand dependendo do ambiente
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(texto).catch(err => console.log('Erro ao copiar', err));
+            } else {
+                let textArea = document.createElement("textarea");
+                textArea.value = texto;
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+                document.body.removeChild(textArea);
+            }
+        };
 
         function initDate() {
             const date = new Date();
@@ -923,6 +974,7 @@
             document.getElementById('btn-dashboard').className = btnClassDef;
             document.getElementById('btn-clients').className = btnClassDef;
             document.getElementById('btn-finances').className = btnClassDef;
+            document.getElementById('btn-publicacoes').className = btnClassDef; // NOVO
 
             const headerBtn = document.getElementById('btnNovoHeader');
             const textHeaderBtn = document.getElementById('textBtnNovoHeader');
@@ -933,11 +985,12 @@
                 document.getElementById('btn-dashboard').className = btnClassAct;
                 headerBtn.style.display = 'none'; 
                 document.getElementById('mobileFab').style.display = 'none';
+                
             } else if(tabName === 'clients') {
                 document.getElementById('view-clients').classList.add('active');
                 document.getElementById('btn-clients').className = btnClassAct;
                 
-                headerBtn.style.display = ''; // Limpando estilo inline para as classes (hidden md:flex) do Tailwind voltarem a funcionar
+                headerBtn.style.display = ''; 
                 textHeaderBtn.innerText = 'Novo Cliente';
                 headerBtn.onclick = abrirModalNovoCliente; 
                 
@@ -945,11 +998,12 @@
                 fabText.innerText = 'Novo Cliente';
                 
                 renderClientsCards(); 
+                
             } else if (tabName === 'finances') {
                 document.getElementById('view-finances').classList.add('active');
                 document.getElementById('btn-finances').className = btnClassAct;
                 
-                headerBtn.style.display = ''; // Limpando estilo inline para as classes (hidden md:flex) do Tailwind voltarem a funcionar
+                headerBtn.style.display = ''; 
                 textHeaderBtn.innerText = 'Nova Transação';
                 headerBtn.onclick = abrirModalNovaFinanca; 
                 
@@ -957,6 +1011,15 @@
                 fabText.innerText = 'Nova Transação';
                 
                 renderFinancesCardsAndTable(); 
+                
+            } else if (tabName === 'publicacoes') { // NOVA ABA
+                document.getElementById('view-publicacoes').classList.add('active');
+                document.getElementById('btn-publicacoes').className = btnClassAct;
+                
+                headerBtn.style.display = 'none'; 
+                document.getElementById('mobileFab').style.display = 'none';
+                
+                renderPublicacoes();
             }
         }
 
@@ -1051,7 +1114,65 @@
             
             if(document.getElementById('view-clients').classList.contains('active')) {
                 renderClientsCards();
+            } else if (document.getElementById('view-publicacoes').classList.contains('active')) {
+                renderPublicacoes();
             }
+        }
+
+        // --- LÓGICA DA ABA PUBLICAÇÕES ---
+        function renderPublicacoes() {
+            const container = document.getElementById('listaPublicacoes');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Filtrar apenas 'entregue' e ordenar por data decrescente (mais recente primeiro)
+            const entregues = appData
+                .filter(c => (c.status || '').toLowerCase() === 'entregue')
+                .sort((a, b) => {
+                    const dateA = new Date(a.data || 0);
+                    const dateB = new Date(b.data || 0);
+                    return dateB - dateA; // Mais recente no topo
+                });
+
+            if (entregues.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center text-gray-500 py-12">
+                        <i class="fa-solid fa-box-open text-4xl mb-3 opacity-50"></i>
+                        <p>Nenhum projeto entregue encontrado.</p>
+                    </div>`;
+                return;
+            }
+
+            entregues.forEach(cliente => {
+                const card = document.createElement('div');
+                card.className = "bg-brand-panel border border-[var(--border-color)] rounded-xl p-5 relative flex flex-col justify-between hover:border-pink-500/50 transition-colors shadow-lg group";
+                
+                const typeIcon = getTypeIcon(cliente.tipo);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex-1 pr-2 overflow-hidden">
+                                <h3 class="text-base font-bold text-white truncate" title="${cliente.nome}">${cliente.nome || 'Sem Nome'}</h3>
+                                <p class="text-xs text-brand-accent font-medium truncate" title="${cliente.empresa}">${cliente.empresa || 'Particular'}</p>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-pink-500/10 flex items-center justify-center text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-colors shrink-0">
+                                <i class="fa-brands fa-instagram text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-400 mt-4">
+                            <span class="capitalize flex items-center gap-1">${typeIcon} ${cliente.tipo || 'Serviço'}</span>
+                        </div>
+                    </div>
+                    <div class="mt-5 pt-4 border-t border-[var(--border-color)] flex justify-between items-center text-xs text-gray-500">
+                        <span>Realizado: <strong class="text-gray-300">${formatDate(cliente.data)}</strong></span>
+                        <button onclick="copiarInfoInstagram('${cliente.nome}', '${cliente.tipo}')" class="bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-400 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2" title="Copiar p/ Legenda">
+                            <i class="fa-regular fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
         // --- MODAL E LÓGICA DA ABA FINANÇAS ---
@@ -1398,7 +1519,7 @@
                 const card = document.createElement('div');
                 card.setAttribute('data-id', cliente.id);
                 
-                card.className = `bg-brand-panel border border-gray-800 border-l-[6px] ${prioridadeClasse} rounded-lg p-3 card-animado relative group shadow-sm hover:shadow-md flex flex-col justify-between h-auto`;
+                card.className = `bg-brand-panel border border-[var(--border-color)] border-l-[6px] ${prioridadeClasse} rounded-lg p-3 card-animado relative group shadow-sm hover:shadow-md flex flex-col justify-between h-auto`;
 
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-2">
@@ -1729,16 +1850,14 @@
             updateCard('cardLastYear', statsLastYear); 
 
             // ==========================================
-            // CÁLCULOS PRINCIPAIS ATUALIZADOS AQUI
+            // CÁLCULOS PRINCIPAIS
             // ==========================================
             const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
             const avgTicket = totalRevenue / appData.length;
             
-            // CÁLCULO DE INVESTIMENTO EM ANÚNCIOS (Buscando em Finanças)
+            // CÁLCULO DE INVESTIMENTO EM ANÚNCIOS E DESPESAS GERAIS
             let totalInvestimento = 0;
             let countInvestimento = 0;
-            
-            // NOVO: CÁLCULO TOTAL DE DESPESAS (Todas as Saídas)
             let totalDespesa = 0;
             let countDespesa = 0;
 
@@ -1749,7 +1868,7 @@
                         totalDespesa += (parseFloat(fin.valor) || 0);
                         countDespesa++;
 
-                        // Condição original: É uma saída E a categoria é "Anúncio" (ou a palavra foi colocada na OBS)
+                        // Verifica anúncios
                         if (fin.categoria === 'Anúncio' || (fin.obs && fin.obs.toLowerCase().includes('anúncio'))) {
                             totalInvestimento += (parseFloat(fin.valor) || 0);
                             countInvestimento++;
