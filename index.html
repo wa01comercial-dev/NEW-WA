@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -11,14 +11,14 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- SortableJS (Adicionado para Drag and Drop) -->
+    <!-- SortableJS (Drag and Drop) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- Configuração de Cores e Tema -->
+    <!-- Configuração de Cores e Tema Tailwind -->
     <script>
         tailwind.config = {
             theme: {
@@ -57,12 +57,12 @@
 
         /* --- Blue Light Mode --- */
         body.light-mode {
-            --bg-dark: #f0f9ff; /* Alice Blue / Light Sky */
+            --bg-dark: #f0f9ff;
             --bg-panel: #ffffff;
-            --text-main: #1e293b; /* Slate 800 */
-            --text-muted: #64748b; /* Slate 500 */
-            --border-color: #bfdbfe; /* Blue 200 */
-            --input-bg: #f8fafc; /* Slate 50 */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #bfdbfe;
+            --input-bg: #f8fafc;
         }
 
         /* Overrides específicos para Light Mode */
@@ -134,6 +134,8 @@
             padding: 0;
         }
 
+        /* Tarefas concluídas */
+        .tarefa-concluida { text-decoration: line-through; opacity: 0.5; }
     </style>
 </head>
 <body class="bg-brand-dark text-brand-text font-sans antialiased overflow-hidden transition-colors duration-300">
@@ -173,10 +175,26 @@
                     <span class="font-medium">Finanças</span>
                 </button>
 
-                <!-- BOTÃO: PUBLICAÇÕES -->
                 <button onclick="switchTab('publicacoes'); toggleSidebar()" id="btn-publicacoes" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
                     <i class="fa-brands fa-instagram w-5"></i>
                     <span class="font-medium">Publicações</span>
+                </button>
+
+                <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-2">Operacional</p>
+
+                <button onclick="switchTab('tarefas'); toggleSidebar()" id="btn-tarefas" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
+                    <i class="fa-solid fa-list-check w-5 text-indigo-400"></i>
+                    <span class="font-medium">Tarefas Diárias</span>
+                </button>
+
+                <button onclick="switchTab('briefings'); toggleSidebar()" id="btn-briefings" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
+                    <i class="fa-solid fa-folder-open w-5 text-yellow-500"></i>
+                    <span class="font-medium">Briefings & Links</span>
+                </button>
+
+                <button onclick="switchTab('metas'); toggleSidebar()" id="btn-metas" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
+                    <i class="fa-solid fa-bullseye w-5 text-emerald-500"></i>
+                    <span class="font-medium">Metas & Comissões</span>
                 </button>
                 
                 <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-2">Dados</p>
@@ -221,7 +239,7 @@
                 <div class="hidden md:flex items-center text-sm text-gray-400 gap-4">
                     <span id="currentDate"></span>
                     <span class="text-gray-600">|</span>
-                    <span id="totalRecordsBadge" class="bg-gray-800 px-2 py-1 rounded text-xs text-white">0 Registros</span>
+                    <span id="totalRecordsBadge" class="bg-gray-800 px-2 py-1 rounded text-xs text-white">0 Registos</span>
                 </div>
 
                 <div class="flex items-center gap-4">
@@ -246,7 +264,7 @@
                 <div id="view-dashboard" class="tab-content active space-y-6">
                     <div class="flex justify-between items-end animate-fade-in">
                         <div>
-                            <h1 class="text-3xl font-bold text-brand-text mb-1">Painel de Controle</h1>
+                            <h1 class="text-3xl font-bold text-brand-text mb-1">Painel de Controlo</h1>
                             <p class="text-brand-muted">Indicadores em tempo real.</p>
                         </div>
                         <div class="text-xs text-gray-500 font-mono">
@@ -279,7 +297,7 @@
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-pink-400/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-gray-400 text-xs font-semibold mb-1">Antes de Ontem</p>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Anteontem</p>
                                     <h3 class="text-2xl font-bold text-brand-text" id="cardDayBeforeYesterdayCount">0</h3>
                                     <p class="text-xs text-gray-500 mt-1" id="cardDayBeforeYesterdayValue">R$ 0,00</p>
                                 </div>
@@ -289,7 +307,7 @@
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-emerald-400/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-gray-400 text-xs font-semibold mb-1">Essa Semana</p>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Esta Semana</p>
                                     <h3 class="text-2xl font-bold text-brand-text" id="cardWeekCount">0</h3>
                                     <p class="text-xs text-gray-500 mt-1" id="cardWeekValue">R$ 0,00</p>
                                 </div>
@@ -346,18 +364,16 @@
                                 <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-colors"><i class="fa-solid fa-calendar-days"></i></div>
                             </div>
                         </div>
-                        
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-orange-400/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-gray-400 text-xs font-semibold mb-1">Mês Antepassado</p>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Mês Anterior</p>
                                     <h3 class="text-2xl font-bold text-brand-text" id="cardMonthBeforeLastCount">0</h3>
                                     <p class="text-xs text-gray-500 mt-1" id="cardMonthBeforeLastValue">R$ 0,00</p>
                                 </div>
                                 <div class="p-2 bg-orange-500/10 rounded-lg text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors"><i class="fa-solid fa-backward"></i></div>
                             </div>
                         </div>
-
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-red-500/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -368,8 +384,6 @@
                                 <div class="p-2 bg-red-500/10 rounded-lg text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors"><i class="fa-solid fa-bullhorn"></i></div>
                             </div>
                         </div>
-
-                        <!-- NOVO CARD: Total Despesas -->
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-rose-400/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -386,7 +400,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 animate-fade-in mt-8">
                         <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
                             <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-sack-dollar text-6xl text-green-500"></i></div>
-                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Faturamento</p>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Faturação</p>
                             <h3 class="text-2xl font-bold text-brand-text mt-1" id="kpiTotalRevenue">R$ 0,00</h3>
                         </div>
 
@@ -442,7 +456,7 @@
                         <div class="p-6 border-b border-[var(--border-color)] flex flex-col md:flex-row justify-between items-center gap-4">
                             <h3 class="text-lg font-bold text-brand-text">Histórico de Transações</h3>
                             <div class="flex gap-2 w-full md:w-auto">
-                                <input type="text" id="tableSearch" onkeyup="window.renderTable()" placeholder="Buscar..." class="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 w-full focus:border-brand-accent outline-none">
+                                <input type="text" id="tableSearch" onkeyup="window.renderTable()" placeholder="Procurar..." class="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 w-full focus:border-brand-accent outline-none">
                             </div>
                         </div>
                         <div class="overflow-auto flex-1">
@@ -452,9 +466,9 @@
                                         <th class="p-4 font-semibold border-b border-gray-800">Data</th>
                                         <th class="p-4 font-semibold border-b border-gray-800">Cliente / Empresa</th>
                                         <th class="p-4 font-semibold border-b border-gray-800">Serviço</th>
-                                        <th class="p-4 font-semibold border-b border-gray-800">Contato</th>
+                                        <th class="p-4 font-semibold border-b border-gray-800">Contacto</th>
                                         <th class="p-4 font-semibold border-b border-gray-800">Valor</th>
-                                        <th class="p-4 font-semibold border-b border-gray-800 text-center">Status</th>
+                                        <th class="p-4 font-semibold border-b border-gray-800 text-center">Estado</th>
                                         <th class="p-4 font-semibold border-b border-gray-800 text-right">Ações</th>
                                     </tr>
                                 </thead>
@@ -466,11 +480,9 @@
 
                 <!-- CLIENTES -->
                 <div id="view-clients" class="tab-content space-y-6">
-                    
-                    <!-- Dashboard Resumo CRM -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <div class="bg-brand-panel border-l-4 border-blue-500 p-4 rounded-lg shadow-lg">
-                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total Realizando</h3>
+                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total em Realização</h3>
                             <p id="totalRealizando" class="text-2xl font-bold text-blue-400">0</p>
                         </div>
                         <div class="bg-brand-panel border-l-4 border-green-500 p-4 rounded-lg shadow-lg">
@@ -490,18 +502,18 @@
                     <!-- Filtros -->
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                         <div class="flex items-center gap-2 w-full md:w-auto flex-1">
-                            <input type="text" id="buscarCliente" placeholder="🔍 Buscar clientes..." onkeyup="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                            <input type="text" id="buscarCliente" placeholder="🔍 Procurar clientes..." onkeyup="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
                         </div>
                         
                         <div class="flex flex-wrap gap-2 w-full md:w-auto">
                             <select id="filtroStatus" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
-                                <option value="">Situação</option>
-                                <option value="realizando">Realizando</option>
+                                <option value="">Estado</option>
+                                <option value="realizando">Em Realização</option>
                                 <option value="entregue">Entregue</option>
                             </select>
                             <select id="filtroServico" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
                                 <option value="">Serviço</option>
-                                <option value="logotipo">Logotipo</option>
+                                <option value="logotipo">Logótipo</option>
                                 <option value="site">Site</option>
                                 <option value="anuncio">Anúncio</option>
                             </select>
@@ -516,15 +528,8 @@
                         </div>
                     </div>
 
-                    <!-- Cards Grid -->
-                    <div id="listaClientes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
-                        <!-- Cards injetados via JS -->
-                    </div>
-
-                    <!-- Controles de Paginação -->
-                    <div id="paginationControls" class="flex justify-center items-center gap-2 pb-20 pt-4">
-                        <!-- Botões de paginação injetados via JS -->
-                    </div>
+                    <div id="listaClientes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"></div>
+                    <div id="paginationControls" class="flex justify-center items-center gap-2 pb-20 pt-4"></div>
                 </div>
 
                 <!-- FINANÇAS -->
@@ -536,7 +541,6 @@
                         </div>
                     </div>
 
-                    <!-- Cards Resumo Financeiro -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 animate-fade-in">
                         <div class="bg-brand-panel border-l-4 border-green-500 p-5 rounded-xl shadow-lg relative overflow-hidden group">
                             <div class="absolute right-0 top-0 p-4 opacity-10"><i class="fa-solid fa-arrow-trend-up text-6xl text-green-500"></i></div>
@@ -556,17 +560,14 @@
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
-                        
-                        <!-- Gráfico de Gastos por Categoria -->
                         <div class="bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col lg:col-span-1">
-                            <h3 class="text-lg font-bold text-brand-text mb-4">Gastos por Categoria</h3>
+                            <h3 class="text-lg font-bold text-brand-text mb-4">Despesas por Categoria</h3>
                             <div class="relative h-56 w-full mb-4">
                                 <canvas id="expensesChart"></canvas>
                             </div>
                             <div class="mt-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-x-6 gap-y-2" id="topExpensesList"></div>
                         </div>
 
-                        <!-- Lista de Transações -->
                         <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg flex flex-col lg:col-span-2 overflow-hidden h-[500px]">
                             <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center">
                                 <h3 class="text-lg font-bold text-brand-text">Histórico Financeiro</h3>
@@ -582,21 +583,19 @@
                                             <th class="p-4 font-semibold border-b border-gray-800 text-center">Ações</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="listaFinancasBody" class="text-sm text-gray-300 divide-y divide-gray-800">
-                                        <!-- Injetado via JS -->
-                                    </tbody>
+                                    <tbody id="listaFinancasBody" class="text-sm text-gray-300 divide-y divide-gray-800"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- NOVA ABA: PUBLICAÇÕES -->
+                <!-- PUBLICAÇÕES -->
                 <div id="view-publicacoes" class="tab-content space-y-6">
                     <div class="flex justify-between items-end animate-fade-in mb-4">
                         <div>
                             <h1 class="text-3xl font-bold text-brand-text mb-1">Publicações Instagram</h1>
-                            <p class="text-brand-muted">Últimos projetos entregues aguardando postagem.</p>
+                            <p class="text-brand-muted">Últimos projetos entregues a aguardar publicação.</p>
                         </div>
                     </div>
 
@@ -607,23 +606,120 @@
                             </h3>
                         </div>
                         <div class="overflow-auto flex-1 p-6 min-h-[400px]">
-                            <div id="listaPublicacoes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <!-- Cards injetados via JS -->
+                            <div id="listaPublicacoes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                            <div id="paginationControlsPub" class="flex justify-center items-center gap-2 pb-10 pt-6 mt-4 border-t border-[var(--border-color)]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAREFAS DIÁRIAS -->
+                <div id="view-tarefas" class="tab-content space-y-6">
+                    <div class="flex justify-between items-end animate-fade-in mb-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-brand-text mb-1">Tarefas Diárias</h1>
+                            <p class="text-brand-muted">Organize a sua rotina e próximos passos.</p>
+                        </div>
+                    </div>
+
+                    <div class="max-w-3xl mx-auto">
+                        <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg p-4 mb-6 flex gap-3">
+                            <input type="text" id="novaTarefaInput" placeholder="O que precisa de ser feito hoje?" class="flex-1 bg-gray-900 border border-gray-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" onkeypress="if(event.key === 'Enter') adicionarTarefa()">
+                            <button onclick="adicionarTarefa()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 rounded-lg font-bold transition-colors shadow-lg shadow-indigo-900/40">
+                                <i class="fa-solid fa-plus mr-1"></i> Adicionar
+                            </button>
+                        </div>
+
+                        <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg overflow-hidden">
+                            <ul id="listaTarefas" class="divide-y divide-gray-800/50"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BRIEFINGS E LINKS -->
+                <div id="view-briefings" class="tab-content space-y-6">
+                    <div class="flex justify-between items-end animate-fade-in mb-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-brand-text mb-1">Briefings & Links</h1>
+                            <p class="text-brand-muted">Central de acessos, Google Drive e materiais de clientes.</p>
+                        </div>
+                        <button onclick="abrirModalBriefing()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md text-sm font-bold shadow-lg shadow-yellow-900/20 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-folder-plus"></i> Novo Acesso
+                        </button>
+                    </div>
+
+                    <div id="gridBriefings" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"></div>
+                </div>
+
+                <!-- METAS E COMISSÕES -->
+                <div id="view-metas" class="tab-content space-y-6">
+                    <div class="flex justify-between items-end animate-fade-in mb-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-brand-text mb-1">Metas & Comissões</h1>
+                            <p class="text-brand-muted">Acompanhe o seu progresso e projeção de ganhos no mês.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg p-6 lg:col-span-1 h-fit">
+                            <h3 class="text-lg font-bold text-brand-text flex items-center gap-2 mb-6">
+                                <i class="fa-solid fa-gear text-gray-400"></i> Configurar Mês
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Meta de Faturação (R$)</label>
+                                    <input id="inputMetaValor" type="number" step="100" class="bg-gray-900 border border-gray-700 text-emerald-400 font-bold p-3 rounded-lg w-full focus:ring-2 focus:ring-emerald-500 outline-none text-lg">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Sua Comissão (%)</label>
+                                    <input id="inputMetaComissao" type="number" step="0.5" placeholder="Ex: 10" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    <p class="text-[10px] text-gray-500 mt-1">Deixe 0 se fica com o valor integral.</p>
+                                </div>
+                                <button onclick="salvarMetasConfig()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-lg font-bold transition-colors shadow-lg shadow-emerald-900/40 mt-4">
+                                    Atualizar Meta
+                                </button>
                             </div>
-                            <!-- Controles de Paginação (Publicações) -->
-                            <div id="paginationControlsPub" class="flex justify-center items-center gap-2 pb-10 pt-6 mt-4 border-t border-[var(--border-color)]">
-                                <!-- Botões de paginação injetados via JS -->
+                        </div>
+
+                        <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg p-6 lg:col-span-2 flex flex-col justify-center relative overflow-hidden">
+                            <div class="absolute right-0 top-0 p-8 opacity-5"><i class="fa-solid fa-bullseye text-9xl text-emerald-500"></i></div>
+                            
+                            <h3 class="text-gray-400 uppercase tracking-wider text-sm font-bold mb-2">Progresso do Mês Atual</h3>
+                            
+                            <div class="flex items-end justify-between mb-2">
+                                <div>
+                                    <span class="text-4xl font-bold text-white" id="displayFaturamentoMes">R$ 0,00</span>
+                                    <span class="text-gray-500 ml-2 font-medium">/ <span id="displayMetaMes">R$ 0,00</span></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-2xl font-bold text-emerald-400" id="displayPorcentagemMeta">0%</span>
+                                </div>
+                            </div>
+
+                            <div class="w-full bg-gray-900 rounded-full h-6 mb-8 border border-gray-800 overflow-hidden relative">
+                                <div id="barraProgressoMeta" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-6 rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-2" style="width: 0%">
+                                    <i class="fa-solid fa-rocket text-white text-xs opacity-50"></i>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 border-t border-[var(--border-color)] pt-6 mt-auto">
+                                <div>
+                                    <p class="text-gray-500 text-xs font-bold uppercase">Falta para bater a meta</p>
+                                    <p class="text-xl font-bold text-yellow-500 mt-1" id="displayFaltaMeta">R$ 0,00</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-xs font-bold uppercase">Comissão / Lucro Estimado</p>
+                                    <p class="text-xl font-bold text-emerald-400 mt-1" id="displayComissaoMes">R$ 0,00</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Espaço extra no final para o FAB Mobile não cobrir conteúdo -->
                 <div class="h-20 md:hidden"></div>
 
-            </div> <!-- Fim do Container de Scroll -->
+            </div>
 
-            <!-- MOBILE FLOATING ACTION BUTTON (FAB) -->
             <button type="button" id="mobileFab" onclick="abrirModalContextual()" class="md:hidden fixed bottom-6 right-6 bg-brand-accent text-white px-4 py-4 rounded-full shadow-2xl flex items-center justify-center gap-2 group overflow-hidden fab-expanded">
                 <i class="fa-solid fa-plus text-xl"></i>
                 <span id="fabText" class="font-bold text-sm">Novo</span>
@@ -648,7 +744,7 @@
                     <input id="empresaCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="text" placeholder="Ex: Padaria X">
                 </div>
                 <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Contato</label>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Contacto</label>
                     <input id="contatoCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="text" placeholder="WhatsApp ou Email">
                 </div>
                 <div>
@@ -660,7 +756,7 @@
                     <label class="text-xs text-gray-500 uppercase font-bold ml-1">Serviço</label>
                     <select id="tipoServico" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="">Selecione...</option>
-                        <option value="logotipo">Logotipo</option>
+                        <option value="logotipo">Logótipo</option>
                         <option value="site">Site</option>
                         <option value="anuncio">Anúncio</option>
                         <option value="flyer">Flyer</option>
@@ -676,9 +772,9 @@
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Status</label>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Estado</label>
                     <select id="statusCliente" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="realizando">Realizando</option>
+                        <option value="realizando">Em Realização</option>
                         <option value="entregue">Entregue</option>
                         <option value="pendente">Pendente</option>
                     </select>
@@ -694,7 +790,7 @@
             </div>
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
                 <button type="button" onclick="window.fecharModal()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
-                <button type="button" onclick="window.salvarCliente()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Salvar Cliente</button>
+                <button type="button" onclick="window.salvarCliente()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Guardar Cliente</button>
             </div>
         </div>
     </div>
@@ -755,16 +851,53 @@
 
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
                 <button type="button" onclick="window.fecharModalFinanca()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
-                <button type="button" id="btnSalvarFinanca" onclick="salvarTransacaoFinanca()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Registrar</button>
+                <button type="button" id="btnSalvarFinanca" onclick="salvarTransacaoFinanca()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Registar</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT TIPO MODULE PARA IMPORTAÇÃO DO FIREBASE -->
+    <!-- MODAL: BRIEFINGS & LINKS -->
+    <div id="modalBriefing" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
+        <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
+                <i class="fa-solid fa-folder-plus text-yellow-500"></i> <span id="tituloModalBriefing">Novo Acesso / Link</span>
+            </h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Nome do Cliente ou Projeto</label>
+                    <input id="briefNome" type="text" placeholder="Ex: Padaria do João" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1 flex items-center gap-1"><i class="fa-brands fa-google-drive text-blue-400"></i> Link do Google Drive</label>
+                    <input id="briefDrive" type="url" placeholder="https://drive.google.com/..." class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none text-sm font-mono">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1 flex items-center gap-1"><i class="fa-solid fa-pen-nib text-purple-400"></i> Link Canva / Figma</label>
+                    <input id="briefDesign" type="url" placeholder="https://canva.com/..." class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none text-sm font-mono">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1 flex items-center gap-1"><i class="fa-solid fa-globe text-gray-400"></i> Outro Link (WordPress, Ads, etc)</label>
+                    <input id="briefOutro" type="url" placeholder="https://..." class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none text-sm font-mono">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Anotações (Acessos, Senhas)</label>
+                    <textarea id="briefObs" rows="3" placeholder="Login: admin / Password: 123" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-yellow-500 outline-none"></textarea>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
+                <button type="button" onclick="window.fecharModalBriefing()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button type="button" id="btnSalvarBriefing" onclick="salvarBriefing()" class="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition font-bold shadow-lg shadow-yellow-900/40">Guardar Acesso</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT FIREBASE E LOGICA GERAL -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-        import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         // --- CONFIGURAÇÃO FIREBASE ---
         const firebaseConfig = {
@@ -778,23 +911,33 @@
           measurementId: "G-S6WB9X9VQ5"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getDatabase(app);
         
+        // --- CONSTANTES DE CAMINHO ---
         const DB_PATH = 'wa_growth_data_v2'; 
         const DB_PATH_FINANCES = 'wa_finances_data'; 
+        const DB_PATH_TAREFAS = 'wa_tarefas_data';
+        const DB_PATH_BRIEFINGS = 'wa_briefings_data';
+        const DB_PATH_METAS = 'wa_metas_data';
 
-        // --- CONSTANTES E ESTADO ---
+        // --- ESTADO DA APLICAÇÃO ---
         let appData = []; 
         let financasData = []; 
+        let tarefasData = [];
+        let briefingsData = [];
+        let metasData = { valor: 10000, comissao: 0 };
+
         let editando = false;
         let clienteIdAtual = null;
         let editandoFinanca = false;
         let financaIdAtual = null;
+        let editandoBriefing = false;
+        let briefingIdAtual = null;
+
         let currentPage = 1; 
-        let currentPagePub = 1; // Paginação específica para publicações
+        let currentPagePub = 1; 
         const itemsPerPage = 15; 
 
         let charts = { revenue: null, services: null, expenses: null };
@@ -806,23 +949,19 @@
 
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
-            initFirebaseListener();
-            initFirebaseFinancesListener(); 
+            initFirebaseListeners();
             initDate();
             initMobileScrollBehavior(); 
         });
 
-        // --- COMPORTAMENTO SCROLL MOBILE (FAB) ---
         function initMobileScrollBehavior() {
             const scrollContainer = document.getElementById('main-content-scroll');
             const fab = document.getElementById('mobileFab');
             let lastScrollTop = 0;
-
             if (scrollContainer && fab) {
                 scrollContainer.addEventListener('scroll', () => {
                     const scrollTop = scrollContainer.scrollTop;
                     const isScrollingDown = scrollTop > lastScrollTop;
-                    
                     if (isScrollingDown && scrollTop > 50) {
                         fab.classList.add('fab-hidden');
                         fab.classList.remove('fab-expanded');
@@ -830,63 +969,56 @@
                         fab.classList.remove('fab-hidden');
                         fab.classList.add('fab-expanded');
                     }
-
                     if (scrollTop < 10) {
                         fab.classList.remove('fab-hidden');
                         fab.classList.add('fab-expanded');
                     }
-
                     lastScrollTop = scrollTop;
                 });
             }
         }
 
-        // --- FIREBASE LISTENERS ---
-        function initFirebaseListener() {
-            const dataRef = ref(db, DB_PATH);
-            onValue(dataRef, (snapshot) => {
+        function initFirebaseListeners() {
+            onValue(ref(db, DB_PATH), (snapshot) => {
                 const data = snapshot.val();
-                if (data && Array.isArray(data)) {
-                    appData = data.filter(Boolean); 
-                } else if (data) {
-                    appData = Object.values(data).filter(Boolean); 
-                } else {
-                    appData = [];
-                }
+                appData = data ? (Array.isArray(data) ? data : Object.values(data)).filter(Boolean) : [];
                 refreshDashboard();
             });
-        }
 
-        function saveDataToFirebase() {
-            set(ref(db, DB_PATH), appData)
-                .catch((error) => console.error("Erro ao salvar no Firebase:", error));
-        }
-
-        function initFirebaseFinancesListener() {
-            const financesRef = ref(db, DB_PATH_FINANCES);
-            onValue(financesRef, (snapshot) => {
+            onValue(ref(db, DB_PATH_FINANCES), (snapshot) => {
                 const data = snapshot.val();
-                if (data && Array.isArray(data)) {
-                    financasData = data.filter(Boolean); 
-                } else if (data) {
-                    financasData = Object.values(data).filter(Boolean);
-                } else {
-                    financasData = [];
-                }
-                if(document.getElementById('view-finances').classList.contains('active')) {
-                    renderFinancesCardsAndTable();
-                } else {
-                    if(typeof updateKPIs === 'function') updateKPIs();
-                }
+                financasData = data ? (Array.isArray(data) ? data : Object.values(data)).filter(Boolean) : [];
+                if(document.getElementById('view-finances').classList.contains('active')) renderFinancesCardsAndTable();
+                else if(typeof updateKPIs === 'function') updateKPIs();
+                if(document.getElementById('view-metas').classList.contains('active')) renderMetas(); 
+            });
+
+            onValue(ref(db, DB_PATH_TAREFAS), (snapshot) => {
+                const data = snapshot.val();
+                tarefasData = data ? (Array.isArray(data) ? data : Object.values(data)).filter(Boolean) : [];
+                if(document.getElementById('view-tarefas').classList.contains('active')) renderTarefas();
+            });
+
+            onValue(ref(db, DB_PATH_BRIEFINGS), (snapshot) => {
+                const data = snapshot.val();
+                briefingsData = data ? (Array.isArray(data) ? data : Object.values(data)).filter(Boolean) : [];
+                if(document.getElementById('view-briefings').classList.contains('active')) renderBriefings();
+            });
+
+            onValue(ref(db, DB_PATH_METAS), (snapshot) => {
+                const data = snapshot.val();
+                if(data) metasData = data;
+                if(document.getElementById('view-metas').classList.contains('active')) renderMetas();
             });
         }
 
-        function saveFinancesToFirebase() {
-            set(ref(db, DB_PATH_FINANCES), financasData)
-                .catch((error) => console.error("Erro ao salvar finanças no Firebase:", error));
-        }
+        function saveDataToFirebase() { set(ref(db, DB_PATH), appData).catch(e => console.error(e)); }
+        function saveFinancesToFirebase() { set(ref(db, DB_PATH_FINANCES), financasData).catch(e => console.error(e)); }
+        function saveTarefasToFirebase() { set(ref(db, DB_PATH_TAREFAS), tarefasData).catch(e => console.error(e)); }
+        function saveBriefingsToFirebase() { set(ref(db, DB_PATH_BRIEFINGS), briefingsData).catch(e => console.error(e)); }
+        function saveMetasToFirebase() { set(ref(db, DB_PATH_METAS), metasData).catch(e => console.error(e)); }
 
-        // --- FUNÇÕES GLOBAIS (ATTACH WINDOW) ---
+        // --- ATRIBUIÇÃO AO WINDOW PARA FUNÇÕES GLOBAIS ---
         window.initDate = initDate;
         window.toggleTheme = toggleTheme;
         window.switchTab = switchTab;
@@ -901,27 +1033,166 @@
         window.salvarCliente = salvarCliente;
         window.editarCliente = editarCliente;
         window.excluirCliente = excluirCliente;
-        
-        window.renderTable = renderTable;
-        window.deleteItem = deleteItem;
-        window.updateCharts = updateCharts;
-        window.toggleSidebar = toggleSidebar; 
         window.changePage = changePage;
-        window.changePagePub = changePagePub; // Paginação de publicações
+        window.changePagePub = changePagePub;
         
         window.abrirModalNovaFinanca = abrirModalNovaFinanca;
         window.fecharModalFinanca = fecharModalFinanca;
         window.salvarTransacaoFinanca = salvarTransacaoFinanca;
         window.excluirFinanca = excluirFinanca;
         window.editarFinanca = editarFinanca;
+        
         window.abrirModalContextual = abrirModalContextual;
+        window.toggleSidebar = toggleSidebar; 
+        
+        // Restauro e Implementação das Funções Restantes do Dashboard
+        window.renderTable = function() {
+            const tbody = document.getElementById('dataTableBody');
+            const searchInput = document.getElementById('tableSearch');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            const filteredData = appData
+                .filter(item => {
+                    if(!searchTerm) return true;
+                    return (item.nome || '').toLowerCase().includes(searchTerm) ||
+                           (item.empresa || '').toLowerCase().includes(searchTerm) ||
+                           (item.tipo || '').toLowerCase().includes(searchTerm);
+                })
+                .sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+                
+            const displayData = filteredData.slice(0, 50);
+            
+            displayData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-800/50 transition-colors border-b border-[var(--border-color)] last:border-0";
+                const statusStyle = getStatusStyle(item.status);
+                const typeIcon = getTypeIcon(item.tipo);
+                const displayClient = item.empresa || item.nome || 'Sem Nome';
+                const subClient = item.empresa && item.nome && item.empresa !== item.nome ? item.nome : '';
+                tr.innerHTML = `
+                    <td class="p-4 text-gray-400 whitespace-nowrap">${formatDate(item.data)}</td>
+                    <td class="p-4">
+                        <div class="font-medium text-brand-text">${displayClient}</div>
+                        ${subClient ? `<div class="text-xs text-gray-500">${subClient}</div>` : ''}
+                    </td>
+                    <td class="p-4"><span class="flex items-center gap-2 capitalize">${typeIcon} ${item.tipo || 'Geral'}</span></td>
+                    <td class="p-4 text-xs font-mono text-gray-400">${item.contato || '-'}</td>
+                    <td class="p-4 font-mono font-bold text-gray-300">${formatCurrency(item.valor)}</td>
+                    <td class="p-4 text-center"><span class="text-xs px-2 py-1 rounded-full uppercase font-bold tracking-wide ${statusStyle}">${item.status || 'ND'}</span></td>
+                    <td class="p-4 text-right">
+                        <button onclick="deleteItem('${item.id}')" class="text-gray-600 hover:text-red-500 transition-colors p-2"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
 
-        // Função rápida para copiar dados pro instagram
+        window.deleteItem = function(id) {
+            if(confirm('Tem a certeza que deseja remover este registo?')) {
+                appData = appData.filter(i => i.id !== id);
+                saveDataToFirebase();
+            }
+        };
+
+        window.updateCharts = function() {
+            if(appData.length === 0) return;
+            const monthlyData = {};
+            appData.forEach(item => {
+                if(!item.data) return;
+                const key = item.data.substring(0, 7); 
+                if(!monthlyData[key]) monthlyData[key] = 0;
+                monthlyData[key] += parseFloat(item.valor) || 0;
+            });
+            const sortedKeys = Object.keys(monthlyData).sort();
+            const chartLabels = sortedKeys.map(k => formatDateToMonthYear(k));
+            const chartValues = sortedKeys.map(k => monthlyData[k]);
+            
+            const canvasRev = document.getElementById('revenueChart');
+            if(canvasRev) {
+                const ctxRev = canvasRev.getContext('2d');
+                if(charts.revenue) charts.revenue.destroy();
+                const gradient = ctxRev.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
+                gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                charts.revenue = new Chart(ctxRev, {
+                    type: 'line',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Receita (R$)',
+                            data: chartValues,
+                            borderColor: '#ef4444',
+                            backgroundColor: gradient,
+                            borderWidth: 2,
+                            pointBackgroundColor: '#18181b',
+                            pointBorderColor: '#ef4444',
+                            pointRadius: 4,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: '#27272a' }, ticks: { color: '#71717a', callback: (val) => 'R$ ' + val } },
+                            x: { grid: { display: false }, ticks: { color: '#71717a' } }
+                        }
+                    }
+                });
+            }
+            
+            const serviceCounts = {};
+            appData.forEach(item => {
+                const type = (item.tipo || 'Outros').toLowerCase();
+                if(!serviceCounts[type]) serviceCounts[type] = 0;
+                serviceCounts[type]++;
+            });
+            const sortedServices = Object.entries(serviceCounts).sort((a,b) => b[1] - a[1]).slice(0, 5); 
+            const labelsPie = sortedServices.map(s => s[0].charAt(0).toUpperCase() + s[0].slice(1));
+            const dataPie = sortedServices.map(s => s[1]);
+            const listContainer = document.getElementById('topServicesList');
+            
+            if(listContainer) {
+                listContainer.innerHTML = '';
+                sortedServices.forEach(([name, count]) => {
+                    const percent = ((count / appData.length) * 100).toFixed(1);
+                    listContainer.innerHTML += `<div class="flex justify-between items-center text-sm"><span class="text-gray-400 capitalize">${name}</span><span class="text-brand-text font-bold">${count} <span class="text-xs text-gray-600">(${percent}%)</span></span></div>`;
+                });
+            }
+            
+            const canvasServ = document.getElementById('servicesChart');
+            if(canvasServ) {
+                const ctxServ = canvasServ.getContext('2d');
+                if(charts.services) charts.services.destroy();
+                charts.services = new Chart(ctxServ, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labelsPie,
+                        datasets: [{
+                            data: dataPie,
+                            backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: { legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10 } } }
+                    }
+                });
+            }
+        };
+
         window.copiarInfoInstagram = function(nome, tipo) {
             const texto = `Projeto: ${nome}\nServiço: ${tipo || 'Serviço Geral'}`;
-            // Usar API de clipboard moderna ou execCommand dependendo do ambiente
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(texto).catch(err => console.log('Erro ao copiar', err));
+                navigator.clipboard.writeText(texto).then(() => alert('Copiado para a área de transferência!')).catch(err => console.log('Erro ao copiar', err));
             } else {
                 let textArea = document.createElement("textarea");
                 textArea.value = texto;
@@ -931,6 +1202,7 @@
                 textArea.select();
                 try {
                     document.execCommand('copy');
+                    alert('Copiado para a área de transferência!');
                 } catch (err) {
                     console.error('Fallback: Oops, unable to copy', err);
                 }
@@ -938,37 +1210,129 @@
             }
         };
 
+        // --- NOVAS FUNÇÕES: TAREFAS, BRIEFINGS E METAS ---
+        window.adicionarTarefa = function() {
+            const input = document.getElementById('novaTarefaInput');
+            const texto = input.value.trim();
+            if(!texto) return;
+            tarefasData.push({ id: gerarIdUnico('tar'), texto: texto, concluida: false, data: Date.now() });
+            saveTarefasToFirebase();
+            input.value = '';
+            renderTarefas();
+        };
+        window.toggleTarefa = function(id) {
+            const index = tarefasData.findIndex(t => t.id === id);
+            if(index !== -1) {
+                tarefasData[index].concluida = !tarefasData[index].concluida;
+                saveTarefasToFirebase();
+                renderTarefas();
+            }
+        };
+        window.excluirTarefa = function(id) {
+            tarefasData = tarefasData.filter(t => t.id !== id);
+            saveTarefasToFirebase();
+            renderTarefas();
+        };
+
+        window.abrirModalBriefing = function() {
+            document.getElementById('briefNome').value = '';
+            document.getElementById('briefDrive').value = '';
+            document.getElementById('briefDesign').value = '';
+            document.getElementById('briefOutro').value = '';
+            document.getElementById('briefObs').value = '';
+            editandoBriefing = false;
+            briefingIdAtual = null;
+            document.getElementById('tituloModalBriefing').innerText = 'Novo Acesso / Link';
+            
+            const modal = document.getElementById('modalBriefing');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+        window.fecharModalBriefing = function() {
+            const modal = document.getElementById('modalBriefing');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+        window.salvarBriefing = function() {
+            const nome = document.getElementById('briefNome').value.trim();
+            if(!nome) { alert('Informe o nome do cliente ou projeto.'); return; }
+            
+            const novoBrief = {
+                nome: nome,
+                drive: document.getElementById('briefDrive').value.trim(),
+                design: document.getElementById('briefDesign').value.trim(),
+                outro: document.getElementById('briefOutro').value.trim(),
+                obs: document.getElementById('briefObs').value.trim(),
+                timestamp: Date.now()
+            };
+
+            if(editandoBriefing && briefingIdAtual) {
+                const index = briefingsData.findIndex(b => b.id === briefingIdAtual);
+                if(index !== -1) briefingsData[index] = { ...briefingsData[index], ...novoBrief };
+            } else {
+                novoBrief.id = gerarIdUnico('bri');
+                briefingsData.push(novoBrief);
+            }
+            saveBriefingsToFirebase();
+            window.fecharModalBriefing();
+            renderBriefings();
+        };
+        window.editarBriefing = function(id) {
+            const b = briefingsData.find(x => x.id === id);
+            if(b) {
+                document.getElementById('briefNome').value = b.nome || '';
+                document.getElementById('briefDrive').value = b.drive || '';
+                document.getElementById('briefDesign').value = b.design || '';
+                document.getElementById('briefOutro').value = b.outro || '';
+                document.getElementById('briefObs').value = b.obs || '';
+                editandoBriefing = true;
+                briefingIdAtual = id;
+                document.getElementById('tituloModalBriefing').innerText = 'Editar Acessos';
+                document.getElementById('modalBriefing').classList.remove('hidden');
+                document.getElementById('modalBriefing').classList.add('flex');
+            }
+        };
+        window.excluirBriefing = function(id) {
+            if(confirm('Tem a certeza que deseja excluir esta pasta de acessos?')) {
+                briefingsData = briefingsData.filter(x => x.id !== id);
+                saveBriefingsToFirebase();
+                renderBriefings();
+            }
+        };
+
+        window.salvarMetasConfig = function() {
+            const val = parseFloat(document.getElementById('inputMetaValor').value) || 0;
+            const com = parseFloat(document.getElementById('inputMetaComissao').value) || 0;
+            if(val <= 0) { alert('A meta precisa ser maior que zero!'); return; }
+            
+            metasData = { valor: val, comissao: com };
+            saveMetasToFirebase();
+            alert('Meta atualizada com sucesso!');
+            renderMetas();
+        };
+
+        // --- SISTEMA DE NAVEGAÇÃO E TABS ---
         function initDate() {
             const date = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = date.toLocaleDateString('pt-BR', options);
+            const dateStr = date.toLocaleDateString('pt-PT', options);
             document.getElementById('currentDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
         }
 
         function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('themeIcon');
-            
             body.classList.toggle('light-mode');
-            
-            if (body.classList.contains('light-mode')) {
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-            } else {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            }
+            if (body.classList.contains('light-mode')) { icon.classList.replace('fa-sun', 'fa-moon'); } 
+            else { icon.classList.replace('fa-moon', 'fa-sun'); }
         }
         
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
             sidebar.classList.toggle('mobile-open');
-            if (sidebar.classList.contains('mobile-open')) {
-                overlay.classList.add('active');
-            } else {
-                overlay.classList.remove('active');
-            }
+            if (sidebar.classList.contains('mobile-open')) overlay.classList.add('active');
+            else overlay.classList.remove('active');
         }
 
         function switchTab(tabName) {
@@ -977,551 +1341,464 @@
             const btnClassDef = "w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left";
             const btnClassAct = "w-full flex items-center gap-3 px-4 py-3 bg-brand-accent/10 text-brand-accent rounded-lg border-l-4 border-brand-accent transition-all text-left";
             
-            document.getElementById('btn-dashboard').className = btnClassDef;
-            document.getElementById('btn-clients').className = btnClassDef;
-            document.getElementById('btn-finances').className = btnClassDef;
-            document.getElementById('btn-publicacoes').className = btnClassDef; 
+            ['dashboard', 'clients', 'finances', 'publicacoes', 'tarefas', 'briefings', 'metas'].forEach(id => {
+                const btn = document.getElementById(`btn-${id}`);
+                if(btn) btn.className = btnClassDef;
+            });
 
             const headerBtn = document.getElementById('btnNovoHeader');
             const textHeaderBtn = document.getElementById('textBtnNovoHeader');
+            const fab = document.getElementById('mobileFab');
             const fabText = document.getElementById('fabText');
 
-            if(tabName === 'dashboard') {
-                document.getElementById('view-dashboard').classList.add('active');
-                document.getElementById('btn-dashboard').className = btnClassAct;
-                headerBtn.style.display = 'none'; 
-                document.getElementById('mobileFab').style.display = 'none';
-                
-            } else if(tabName === 'clients') {
-                document.getElementById('view-clients').classList.add('active');
-                document.getElementById('btn-clients').className = btnClassAct;
-                
-                headerBtn.style.display = ''; 
-                textHeaderBtn.innerText = 'Novo Cliente';
-                headerBtn.onclick = abrirModalNovoCliente; 
-                
-                document.getElementById('mobileFab').style.display = 'flex';
-                fabText.innerText = 'Novo Cliente';
-                
+            document.getElementById(`view-${tabName}`).classList.add('active');
+            
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            if(activeBtn) {
+                if(tabName === 'tarefas') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 rounded-lg border-l-4 border-indigo-500 transition-all text-left";
+                else if(tabName === 'briefings') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-yellow-500/10 text-yellow-500 rounded-lg border-l-4 border-yellow-500 transition-all text-left";
+                else if(tabName === 'metas') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-500 rounded-lg border-l-4 border-emerald-500 transition-all text-left";
+                else if(tabName === 'publicacoes') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-pink-500/10 text-pink-500 rounded-lg border-l-4 border-pink-500 transition-all text-left";
+                else activeBtn.className = btnClassAct;
+            }
+
+            headerBtn.style.display = 'none'; 
+            fab.style.display = 'none';
+
+            if(tabName === 'clients') {
+                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Novo Cliente'; headerBtn.onclick = abrirModalNovoCliente; 
+                fab.style.display = 'flex'; fabText.innerText = 'Novo Cliente';
                 renderClientsCards(); 
-                
             } else if (tabName === 'finances') {
-                document.getElementById('view-finances').classList.add('active');
-                document.getElementById('btn-finances').className = btnClassAct;
-                
-                headerBtn.style.display = ''; 
-                textHeaderBtn.innerText = 'Nova Transação';
-                headerBtn.onclick = abrirModalNovaFinanca; 
-                
-                document.getElementById('mobileFab').style.display = 'flex'; 
-                fabText.innerText = 'Nova Transação';
-                
+                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Nova Transação'; headerBtn.onclick = abrirModalNovaFinanca; 
+                fab.style.display = 'flex'; fabText.innerText = 'Nova Transação';
                 renderFinancesCardsAndTable(); 
-                
             } else if (tabName === 'publicacoes') {
-                document.getElementById('view-publicacoes').classList.add('active');
-                document.getElementById('btn-publicacoes').className = btnClassAct;
-                
-                headerBtn.style.display = 'none'; 
-                document.getElementById('mobileFab').style.display = 'none';
-                
-                // Sempre que entrar na aba, recarrega voltando para a página 1 (opcional, pode deixar false para lembrar onde estava)
                 renderPublicacoes(true);
+            } else if (tabName === 'tarefas') {
+                renderTarefas();
+            } else if (tabName === 'briefings') {
+                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Novo Acesso'; headerBtn.onclick = abrirModalBriefing; 
+                fab.style.display = 'flex'; fabText.innerText = 'Novo Acesso';
+                renderBriefings();
+            } else if (tabName === 'metas') {
+                renderMetas();
             }
         }
 
         function abrirModalContextual() {
-            if(document.getElementById('view-clients').classList.contains('active')) {
-                abrirModalNovoCliente();
-            } else if(document.getElementById('view-finances').classList.contains('active')) {
-                abrirModalNovaFinanca();
-            }
+            if(document.getElementById('view-clients').classList.contains('active')) abrirModalNovoCliente();
+            else if(document.getElementById('view-finances').classList.contains('active')) abrirModalNovaFinanca();
+            else if(document.getElementById('view-briefings').classList.contains('active')) abrirModalBriefing();
         }
 
-        // --- GESTÃO DE DADOS ---
         function resetData() {
-            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do sistema (Clientes e Finanças) permanentemente no Firebase. Deseja continuar?")) {
+            if(confirm("Isto apagará TODOS os dados (Clientes, Finanças, Tarefas, etc). Deseja continuar?")) {
                 Promise.all([
-                    set(ref(db, DB_PATH), []),
-                    set(ref(db, DB_PATH_FINANCES), [])
-                ]).then(() => alert("Sistema resetado com sucesso."))
-                  .catch((err) => alert("Erro ao resetar: " + err));
+                    set(ref(db, DB_PATH), []), set(ref(db, DB_PATH_FINANCES), []),
+                    set(ref(db, DB_PATH_TAREFAS), []), set(ref(db, DB_PATH_BRIEFINGS), [])
+                ]).then(() => alert("Sistema resetado.")).catch(e => alert("Erro: " + e));
             }
         }
 
         function exportData() {
-            const dataToExport = {
-                clientes: appData,
-                financas: financasData
-            };
-            const dataStr = JSON.stringify(dataToExport, null, 2);
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
+            const dataToExport = { clientes: appData, financas: financasData, tarefas: tarefasData, briefings: briefingsData, metas: metasData };
+            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: "application/json" });
             const a = document.createElement('a');
-            a.href = url;
+            a.href = URL.createObjectURL(blob);
             a.download = `backup_wa_completo_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
         function handleFileImport(input) {
             const file = input.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    let clientesImportados = [];
-                    let financasImportadas = [];
-
-                    if (importedData.clientes || importedData.financas) {
-                        clientesImportados = importedData.clientes || [];
-                        financasImportadas = importedData.financas || [];
-                    } else if (Array.isArray(importedData)) {
-                        clientesImportados = importedData;
-                    } else {
-                         alert("Formato de JSON não reconhecido.");
-                         return;
+                    const parsed = JSON.parse(e.target.result);
+                    if(confirm("Deseja importar e substituir todos os dados atuais?")) {
+                        if(parsed.clientes) appData = parsed.clientes;
+                        if(parsed.financas) financasData = parsed.financas;
+                        if(parsed.tarefas) tarefasData = parsed.tarefas;
+                        if(parsed.briefings) briefingsData = parsed.briefings;
+                        if(parsed.metas) metasData = parsed.metas;
+                        
+                        saveDataToFirebase(); saveFinancesToFirebase(); saveTarefasToFirebase(); saveBriefingsToFirebase(); saveMetasToFirebase();
+                        alert("Importação realizada com sucesso!");
                     }
-
-                    if(confirm(`Arquivo lido. Deseja SUBSTITUIR os dados atuais (OK) ou MESCLAR (Cancelar)?`)) {
-                        appData = clientesImportados;
-                        financasData = financasImportadas;
-                    } else {
-                        const currentIds = new Set(appData.map(i => i.id));
-                        clientesImportados.forEach(item => {
-                            if(!currentIds.has(item.id)) appData.push(item);
-                        });
-                        const currentFinIds = new Set(financasData.map(i => i.id));
-                        financasImportadas.forEach(item => {
-                            if(!currentFinIds.has(item.id)) financasData.push(item);
-                        });
-                    }
-                    saveDataToFirebase();
-                    saveFinancesToFirebase();
-                    alert("Importação concluída e sincronizada!");
-                } catch (err) {
-                    console.error(err);
-                    alert("Erro ao ler o arquivo JSON.");
-                }
+                } catch(err) { alert("Erro ao ler JSON."); }
             };
-            reader.readAsText(file);
-            input.value = '';
+            reader.readAsText(file); input.value = '';
         }
 
-        // --- LÓGICA DO DASHBOARD ---
+        // --- RENDERIZAÇÃO DAS NOVAS ABAS ---
+        function renderTarefas() {
+            const ul = document.getElementById('listaTarefas');
+            ul.innerHTML = '';
+            
+            if(tarefasData.length === 0) {
+                ul.innerHTML = `<li class="p-6 text-center text-gray-500"><i class="fa-solid fa-mug-hot mb-2 text-2xl"></i><br>Tudo limpo por aqui! Nenhuma tarefa pendente.</li>`;
+                return;
+            }
+
+            const ordenadas = [...tarefasData].sort((a, b) => {
+                if(a.concluida === b.concluida) return b.data - a.data;
+                return a.concluida ? 1 : -1;
+            });
+
+            ordenadas.forEach(tar => {
+                const li = document.createElement('li');
+                li.className = `p-4 flex items-center justify-between group hover:bg-gray-800/30 transition-colors ${tar.concluida ? 'tarefa-concluida' : ''}`;
+                li.innerHTML = `
+                    <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="toggleTarefa('${tar.id}')">
+                        <div class="w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${tar.concluida ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-gray-600 text-transparent'}">
+                            <i class="fa-solid fa-check text-sm"></i>
+                        </div>
+                        <span class="text-gray-200 select-none flex-1 font-medium">${tar.texto}</span>
+                    </div>
+                    <button onclick="excluirTarefa('${tar.id}')" class="text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-2">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                ul.appendChild(li);
+            });
+        }
+
+        function renderBriefings() {
+            const grid = document.getElementById('gridBriefings');
+            grid.innerHTML = '';
+            
+            if(briefingsData.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-10 text-center text-gray-500 border border-dashed border-gray-700 rounded-xl"><i class="fa-solid fa-folder-open mb-3 text-4xl opacity-50"></i><p>Nenhum briefing ou acesso guardado ainda.</p></div>`;
+                return;
+            }
+
+            const ordenados = [...briefingsData].sort((a,b) => b.timestamp - a.timestamp);
+
+            ordenados.forEach(b => {
+                const card = document.createElement('div');
+                card.className = "bg-brand-panel border border-[var(--border-color)] rounded-xl p-5 shadow-lg group hover:border-yellow-500/50 transition-colors flex flex-col";
+                
+                let linksHTML = '';
+                if(b.drive) linksHTML += `<a href="${b.drive}" target="_blank" class="bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2"><i class="fa-brands fa-google-drive"></i> Drive</a>`;
+                if(b.design) linksHTML += `<a href="${b.design}" target="_blank" class="bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2"><i class="fa-solid fa-pen-nib"></i> Design</a>`;
+                if(b.outro) linksHTML += `<a href="${b.outro}" target="_blank" class="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2"><i class="fa-solid fa-link"></i> Link</a>`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                                <i class="fa-solid fa-folder"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-lg truncate max-w-[180px]" title="${b.nome}">${b.nome}</h3>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="editarBriefing('${b.id}')" class="text-gray-500 hover:text-white p-1 transition-colors"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="excluirBriefing('${b.id}')" class="text-gray-500 hover:text-red-500 p-1 transition-colors"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${linksHTML || '<span class="text-xs text-gray-600 italic">Nenhum link guardado</span>'}
+                    </div>
+
+                    <div class="mt-auto bg-gray-900/50 p-3 rounded-lg border border-gray-800">
+                        <p class="text-xs text-gray-400 font-mono whitespace-pre-wrap">${b.obs ? b.obs : 'Nenhuma anotação.'}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderMetas() {
+            document.getElementById('inputMetaValor').value = metasData.valor || 10000;
+            document.getElementById('inputMetaComissao').value = metasData.comissao || 0;
+
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            let faturamentoMesAtual = 0;
+
+            financasData.forEach(fin => {
+                if(fin.tipo === 'entrada' && fin.data) {
+                    const [y, m, d] = fin.data.split('-').map(Number);
+                    if(m - 1 === currentMonth && y === currentYear) {
+                        faturamentoMesAtual += parseFloat(fin.valor) || 0;
+                    }
+                }
+            });
+
+            const metaValor = parseFloat(metasData.valor) || 1; 
+            let progresso = (faturamentoMesAtual / metaValor) * 100;
+            if(progresso > 100) progresso = 100;
+
+            let falta = metaValor - faturamentoMesAtual;
+            if(falta < 0) falta = 0;
+
+            const comissaoPercent = parseFloat(metasData.comissao) || 0;
+            const comissaoReais = (faturamentoMesAtual * comissaoPercent) / 100;
+
+            document.getElementById('displayFaturamentoMes').innerText = formatCurrency(faturamentoMesAtual);
+            document.getElementById('displayMetaMes').innerText = formatCurrency(metaValor);
+            document.getElementById('displayPorcentagemMeta').innerText = progresso.toFixed(1).replace('.0','') + '%';
+            
+            setTimeout(() => {
+                const barra = document.getElementById('barraProgressoMeta');
+                if(barra) barra.style.width = `${progresso}%`;
+            }, 100);
+
+            document.getElementById('displayFaltaMeta').innerText = formatCurrency(falta);
+            document.getElementById('displayComissaoMes').innerText = formatCurrency(comissaoReais);
+            
+            if(progresso >= 100) {
+                document.getElementById('displayPorcentagemMeta').classList.replace('text-emerald-400', 'text-yellow-400');
+                document.getElementById('displayPorcentagemMeta').innerHTML = `<i class="fa-solid fa-crown text-yellow-500 mr-1"></i> 100%`;
+                document.getElementById('displayFaltaMeta').innerText = "Meta Batida! 🚀";
+                document.getElementById('displayFaltaMeta').classList.replace('text-yellow-500', 'text-emerald-500');
+            } else {
+                document.getElementById('displayPorcentagemMeta').classList.replace('text-yellow-400', 'text-emerald-400');
+                document.getElementById('displayFaltaMeta').classList.replace('text-emerald-500', 'text-yellow-500');
+            }
+        }
+
+        // --- DASHBOARD PRINCIPAL, CLIENTES, FINANÇAS E PUBLICAÇÕES ---
         function refreshDashboard() {
             updateKPIs();
             renderTable();
             updateCharts();
             document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Transações`;
             
-            if(document.getElementById('view-clients').classList.contains('active')) {
-                renderClientsCards();
-            } else if (document.getElementById('view-publicacoes').classList.contains('active')) {
-                renderPublicacoes();
-            }
+            if(document.getElementById('view-clients').classList.contains('active')) renderClientsCards();
+            else if (document.getElementById('view-publicacoes').classList.contains('active')) renderPublicacoes();
+            else if (document.getElementById('view-metas').classList.contains('active')) renderMetas();
         }
 
-        // --- LÓGICA DA ABA PUBLICAÇÕES E PAGINAÇÃO ---
-        function renderPublicacoes(resetPage = false) {
-            if (resetPage) currentPagePub = 1;
+        function calculatePeriodStats(startDate, endDate) {
+            const parseLocal = (dateStr) => {
+                const [y, m, d] = dateStr.split('-').map(Number);
+                return new Date(y, m - 1, d, 0, 0, 0, 0);
+            };
+            const parseLocalEnd = (dateStr) => {
+                const [y, m, d] = dateStr.split('-').map(Number);
+                return new Date(y, m - 1, d, 23, 59, 59, 999);
+            };
+            const start = parseLocal(startDate);
+            const end = parseLocalEnd(endDate);
+            let count = 0;
+            let total = 0;
+            appData.forEach(item => {
+                if(!item.data) return;
+                const [y, m, d] = item.data.split('-').map(Number);
+                const itemDate = new Date(y, m - 1, d);
+                if (itemDate.getTime() >= start.getTime() && itemDate.getTime() <= end.getTime()) {
+                    count++;
+                    total += (parseFloat(item.valor) || 0);
+                }
+            });
+            return { count, total };
+        }
 
-            const container = document.getElementById('listaPublicacoes');
-            if (!container) return;
-            container.innerHTML = '';
-
-            // Filtrar apenas 'entregue' e ordenar por data decrescente (mais recente primeiro)
-            const entregues = appData
-                .filter(c => (c.status || '').toLowerCase() === 'entregue')
-                .sort((a, b) => {
-                    const dateA = new Date(a.data || 0);
-                    const dateB = new Date(b.data || 0);
-                    return dateB - dateA; // Mais recente no topo
-                });
-
-            if (entregues.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center text-gray-500 py-12">
-                        <i class="fa-solid fa-box-open text-4xl mb-3 opacity-50"></i>
-                        <p>Nenhum projeto entregue encontrado.</p>
-                    </div>`;
-                document.getElementById('paginationControlsPub').innerHTML = '';
+        function updateKPIs() {
+            if (appData.length === 0) {
+                resetKPIs();
                 return;
             }
+            const now = new Date();
+            const formatDateISO = (date) => {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            };
+            const todayStr = formatDateISO(now);
+            const yesterdayDate = new Date(now); yesterdayDate.setDate(now.getDate() - 1);
+            const yesterdayStr = formatDateISO(yesterdayDate);
+            const dayBeforeYesterdayDate = new Date(now); dayBeforeYesterdayDate.setDate(now.getDate() - 2);
+            const dayBeforeYesterdayStr = formatDateISO(dayBeforeYesterdayDate);
+            
+            const currentDay = now.getDay(); const daysToMonday = (currentDay + 6) % 7; 
+            const thisWeekStart = new Date(now); thisWeekStart.setDate(now.getDate() - daysToMonday);
+            const thisWeekEnd = new Date(thisWeekStart); thisWeekEnd.setDate(thisWeekStart.getDate() + 6);
+            
+            const lastWeekStart = new Date(thisWeekStart); lastWeekStart.setDate(thisWeekStart.getDate() - 7);
+            const lastWeekEnd = new Date(lastWeekStart); lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
+            
+            const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+            const monthBeforeLastStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+            const monthBeforeLastEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0);
+            const thisYearStart = new Date(now.getFullYear(), 0, 1);
+            const thisYearEnd = new Date(now.getFullYear(), 11, 31);
+            const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
+            const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31);
 
-            const totalItems = entregues.length;
-            const startIndex = (currentPagePub - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const paginatedItems = entregues.slice(startIndex, endIndex);
+            updateCard('cardToday', calculatePeriodStats(todayStr, todayStr));
+            updateCard('cardYesterday', calculatePeriodStats(yesterdayStr, yesterdayStr));
+            updateCard('cardDayBeforeYesterday', calculatePeriodStats(dayBeforeYesterdayStr, dayBeforeYesterdayStr));
+            updateCard('cardWeek', calculatePeriodStats(formatDateISO(thisWeekStart), formatDateISO(thisWeekEnd)));
+            updateCard('cardLastWeek', calculatePeriodStats(formatDateISO(lastWeekStart), formatDateISO(lastWeekEnd)));
+            updateCard('cardMonth', calculatePeriodStats(formatDateISO(thisMonthStart), formatDateISO(thisMonthEnd)));
+            updateCard('cardLastMonth', calculatePeriodStats(formatDateISO(lastMonthStart), formatDateISO(lastMonthEnd)));
+            updateCard('cardMonthBeforeLast', calculatePeriodStats(formatDateISO(monthBeforeLastStart), formatDateISO(monthBeforeLastEnd)));
+            updateCard('cardYear', calculatePeriodStats(formatDateISO(thisYearStart), formatDateISO(thisYearEnd)));
+            updateCard('cardLastYear', calculatePeriodStats(formatDateISO(lastYearStart), formatDateISO(lastYearEnd))); 
 
-            paginatedItems.forEach(cliente => {
-                const card = document.createElement('div');
-                card.className = "bg-brand-panel border border-[var(--border-color)] rounded-xl p-5 relative flex flex-col justify-between hover:border-pink-500/50 transition-colors shadow-lg group";
-                
-                const typeIcon = getTypeIcon(cliente.tipo);
+            const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+            const avgTicket = totalRevenue / appData.length;
+            
+            let totalInvestimento = 0; let countInvestimento = 0;
+            let totalDespesa = 0; let countDespesa = 0;
 
-                card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex-1 pr-2 overflow-hidden">
-                                <h3 class="text-base font-bold text-white truncate" title="${cliente.nome}">${cliente.nome || 'Sem Nome'}</h3>
-                                <p class="text-xs text-brand-accent font-medium truncate" title="${cliente.empresa}">${cliente.empresa || 'Particular'}</p>
-                            </div>
-                            <div class="w-8 h-8 rounded-full bg-pink-500/10 flex items-center justify-center text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-colors shrink-0">
-                                <i class="fa-brands fa-instagram text-lg"></i>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 text-sm text-gray-400 mt-4">
-                            <span class="capitalize flex items-center gap-1">${typeIcon} ${cliente.tipo || 'Serviço'}</span>
-                        </div>
-                    </div>
-                    <div class="mt-5 pt-4 border-t border-[var(--border-color)] flex justify-between items-center text-xs text-gray-500">
-                        <span>Realizado: <strong class="text-gray-300">${formatDate(cliente.data)}</strong></span>
-                        <button onclick="copiarInfoInstagram('${cliente.nome}', '${cliente.tipo}')" class="bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-400 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2" title="Copiar p/ Legenda">
-                            <i class="fa-regular fa-copy"></i> Copiar
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
+            if (typeof financasData !== 'undefined') {
+                financasData.forEach(fin => {
+                    if (fin.tipo === 'saida') {
+                        totalDespesa += (parseFloat(fin.valor) || 0); countDespesa++;
+                        if (fin.categoria === 'Anúncio' || (fin.obs && fin.obs.toLowerCase().includes('anúncio'))) {
+                            totalInvestimento += (parseFloat(fin.valor) || 0); countInvestimento++;
+                        }
+                    }
+                });
+            }
+            
+            const lucro = totalRevenue - totalInvestimento;
+            const monthlyStats = {};
+            appData.forEach(item => {
+                if(!item.data) return;
+                const dateKey = item.data.substring(0, 7); 
+                if(!monthlyStats[dateKey]) monthlyStats[dateKey] = 0;
+                monthlyStats[dateKey] += (parseFloat(item.valor) || 0);
+            });
+            
+            let bestMonth = { key: '', val: -Infinity }; let worstMonth = { key: '', val: Infinity };
+            Object.entries(monthlyStats).forEach(([key, val]) => {
+                if(val > bestMonth.val) bestMonth = { key, val };
+                if(val < worstMonth.val) worstMonth = { key, val };
             });
 
-            renderPaginationPub(totalItems);
-        }
-
-        function renderPaginationPub(totalItems) {
-            const paginationContainer = document.getElementById('paginationControlsPub');
-            paginationContainer.innerHTML = '';
-
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-            if (totalPages <= 1) return;
-
-            const prevBtn = document.createElement('button');
-            prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
-            prevBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPagePub === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
-            prevBtn.onclick = () => { if(currentPagePub > 1) changePagePub(currentPagePub - 1); };
-            paginationContainer.appendChild(prevBtn);
-
-            let startPage = Math.max(1, currentPagePub - 2);
-            let endPage = Math.min(totalPages, startPage + 4);
+            document.getElementById('kpiTotalRevenue').innerText = formatCurrency(totalRevenue); 
             
-            if (endPage - startPage < 4) {
-                startPage = Math.max(1, endPage - 4);
-            }
+            if(document.getElementById('cardInvestimentoCount')) document.getElementById('cardInvestimentoCount').innerText = countInvestimento;
+            if(document.getElementById('cardInvestimentoValue')) document.getElementById('cardInvestimentoValue').innerText = formatCurrency(totalInvestimento);
+            if(document.getElementById('cardDespesaCount')) document.getElementById('cardDespesaCount').innerText = countDespesa;
+            if(document.getElementById('cardDespesaValue')) document.getElementById('cardDespesaValue').innerText = formatCurrency(totalDespesa);
 
-            for (let i = startPage; i <= endPage; i++) {
-                const pageBtn = document.createElement('button');
-                pageBtn.innerText = i;
-                if (i === currentPagePub) {
-                    pageBtn.className = "w-8 h-8 rounded-lg bg-pink-500 text-white font-bold shadow-lg shadow-pink-900/40"; // Tema Rosa pro Instagram
-                } else {
-                    pageBtn.className = "w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors";
-                    pageBtn.onclick = () => changePagePub(i);
-                }
-                paginationContainer.appendChild(pageBtn);
+            if(document.getElementById('kpiLucro')) document.getElementById('kpiLucro').innerText = formatCurrency(lucro);
+            document.getElementById('kpiAvgTicket').innerText = formatCurrency(avgTicket);
+            if (Object.keys(monthlyStats).length > 0) {
+                document.getElementById('kpiBestMonth').innerText = formatDateToMonthYear(bestMonth.key);
+                document.getElementById('kpiBestMonthValue').innerText = formatCurrency(bestMonth.val);
+                document.getElementById('kpiWorstMonth').innerText = formatDateToMonthYear(worstMonth.key);
+                document.getElementById('kpiWorstMonthValue').innerText = formatCurrency(worstMonth.val);
             }
-
-            const nextBtn = document.createElement('button');
-            nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
-            nextBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPagePub === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
-            nextBtn.onclick = () => { if(currentPagePub < totalPages) changePagePub(currentPagePub + 1); };
-            paginationContainer.appendChild(nextBtn);
         }
 
-        function changePagePub(newPage) {
-            currentPagePub = newPage;
-            renderPublicacoes(false);
+        function updateCard(prefix, stats) {
+            document.getElementById(`${prefix}Count`).innerText = stats.count;
+            document.getElementById(`${prefix}Value`).innerText = formatCurrency(stats.total);
         }
 
-        // --- MODAL E LÓGICA DA ABA FINANÇAS ---
-        function abrirModalNovaFinanca() {
-            limparFormularioFinanca();
-            editandoFinanca = false;
-            financaIdAtual = null;
-            document.getElementById('tituloModalFinanca').innerText = 'Nova Transação';
-            
-            const btn = document.getElementById('btnSalvarFinanca');
-            if(btn) {
-                btn.innerHTML = 'Registrar';
-                btn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
-                btn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
-            }
+        function resetKPIs() {
+            const ids = ['cardToday', 'cardYesterday', 'cardDayBeforeYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear', 'cardLastYear'];
+            ids.forEach(id => updateCard(id, {count: 0, total: 0}));
+            document.getElementById('kpiTotalRevenue').innerText = "R$ 0,00";
+            document.getElementById('kpiLucro').innerText = "R$ 0,00"; 
+            document.getElementById('cardInvestimentoCount').innerText = "0"; 
+            document.getElementById('cardInvestimentoValue').innerText = "R$ 0,00"; 
+            document.getElementById('cardDespesaCount').innerText = "0"; 
+            document.getElementById('cardDespesaValue').innerText = "R$ 0,00"; 
+            document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
+            document.getElementById('kpiBestMonth').innerText = "---";
+            document.getElementById('kpiWorstMonth').innerText = "---";
+        }
 
-            const modal = document.getElementById('modalFinanca');
+        // --- MANIPULAÇÃO DE DADOS DE CLIENTES E FINANÇAS ---
+        function abrirModalNovoCliente() {
+            limparFormulario();
+            editando = false;
+            clienteIdAtual = null;
+            const modal = document.getElementById('modalCliente');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-
-            const now = new Date();
-            document.getElementById('finData').valueAsDate = now;
-            const hours = String(now.getHours()).padStart(2, '0');
-            const mins = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('finHora').value = `${hours}:${mins}`;
+            document.getElementById('dataCriacao').valueAsDate = new Date();
         }
 
-        function fecharModalFinanca() {
-            const modal = document.getElementById('modalFinanca');
+        function fecharModal() {
+            const modal = document.getElementById('modalCliente');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
 
-        function limparFormularioFinanca() {
-            document.getElementById('finTipo').value = 'entrada';
-            document.getElementById('finValor').value = '';
-            document.getElementById('finCategoria').value = '';
-            document.getElementById('finObs').value = '';
-        }
-
-        function salvarTransacaoFinanca() {
-            try {
-                const tipoEl = document.getElementById('finTipo');
-                const valorEl = document.getElementById('finValor');
-                const categoriaEl = document.getElementById('finCategoria');
-                const obsEl = document.getElementById('finObs'); 
-                const dataEl = document.getElementById('finData');
-                const horaEl = document.getElementById('finHora');
-
-                const tipo = tipoEl ? tipoEl.value : 'entrada';
-                const valorRaw = valorEl ? valorEl.value : '';
-                const categoria = categoriaEl ? categoriaEl.value.trim() : '';
-                const obs = obsEl ? obsEl.value.trim() : '';
-                const data = dataEl ? dataEl.value : '';
-                const hora = horaEl ? horaEl.value : '';
-
-                if (!valorRaw || !categoria || !data || !hora) {
-                    alert("Por favor, preencha os campos obrigatórios (Valor, Categoria, Data e Hora).");
-                    return;
-                }
-
-                const valor = parseFloat(valorRaw);
-                
-                let timestampVal;
-                try {
-                    timestampVal = new Date(`${data}T${hora}:00`).getTime();
-                    if (isNaN(timestampVal)) timestampVal = Date.now();
-                } catch(e) {
-                    timestampVal = Date.now();
-                }
-
-                if (editandoFinanca && financaIdAtual) {
-                    const index = financasData.findIndex(f => f.id === financaIdAtual);
-                    if (index !== -1) {
-                        financasData[index] = {
-                            ...financasData[index],
-                            tipo: tipo,
-                            valor: valor,
-                            categoria: categoria,
-                            obs: obs,
-                            data: data,
-                            hora: hora,
-                            timestamp: timestampVal
-                        };
-                    }
-                } else {
-                    const novaTransacao = {
-                        id: gerarIdUnico('fin'), 
-                        tipo: tipo,
-                        valor: valor,
-                        categoria: categoria,
-                        obs: obs,
-                        data: data,
-                        hora: hora,
-                        timestamp: timestampVal
-                    };
-
-                    if (!Array.isArray(financasData)) {
-                        financasData = [];
-                    }
-                    financasData.push(novaTransacao);
-                }
-
-                saveFinancesToFirebase();
-                renderFinancesCardsAndTable();
-                fecharModalFinanca();
-                
-            } catch (error) {
-                console.error("Erro inesperado ao registrar transação:", error);
-                alert("Ocorreu um erro interno ao salvar: " + error.message);
+        function salvarCliente() {
+            const novoCliente = {
+                nome: document.getElementById('nomeCliente').value,
+                empresa: document.getElementById('empresaCliente').value,
+                contato: document.getElementById('contatoCliente').value,
+                valor: parseFloat(document.getElementById('valorCliente').value) || 0,
+                tipo: document.getElementById('tipoServico').value,
+                prioridade: document.getElementById('prioridadeCliente').value,
+                status: document.getElementById('statusCliente').value,
+                data: document.getElementById('dataCriacao').value,
+                obs: document.getElementById('obsCliente').value
+            };
+            
+            if (!novoCliente.nome && !novoCliente.empresa) {
+                alert("Por favor, preencha o Nome ou a Empresa.");
+                return;
             }
+
+            if (editando && clienteIdAtual) {
+                const index = appData.findIndex(c => c.id === clienteIdAtual);
+                if (index !== -1) {
+                    appData[index] = { ...appData[index], ...novoCliente };
+                }
+            } else {
+                novoCliente.id = gerarIdUnico('cli'); 
+                appData.push(novoCliente); 
+            }
+
+            saveDataToFirebase();
+            fecharModal();
         }
 
-        function editarFinanca(id) {
-            const financa = financasData.find(f => f.id === id);
-            if (financa) {
-                document.getElementById('finTipo').value = financa.tipo || 'entrada';
-                document.getElementById('finValor').value = financa.valor || '';
-                
-                const catSelect = document.getElementById('finCategoria');
-                let catExists = Array.from(catSelect.options).some(opt => opt.value === financa.categoria);
-                if (!catExists && financa.categoria) {
-                    const newOpt = new Option(financa.categoria, financa.categoria);
-                    catSelect.add(newOpt);
-                }
-                catSelect.value = financa.categoria || '';
-                
-                document.getElementById('finObs').value = financa.obs || '';
-                document.getElementById('finData').value = financa.data || '';
-                document.getElementById('finHora').value = financa.hora || '';
+        function editarCliente(id) {
+            const cliente = appData.find(c => c.id === id);
+            if (cliente) {
+                document.getElementById('nomeCliente').value = cliente.nome || '';
+                document.getElementById('empresaCliente').value = cliente.empresa || '';
+                document.getElementById('contatoCliente').value = cliente.contato || '';
+                document.getElementById('valorCliente').value = cliente.valor || '';
+                document.getElementById('tipoServico').value = cliente.tipo || '';
+                document.getElementById('prioridadeCliente').value = cliente.prioridade || 'baixa';
+                document.getElementById('statusCliente').value = cliente.status || 'realizando';
+                document.getElementById('dataCriacao').value = cliente.data || '';
+                document.getElementById('obsCliente').value = cliente.obs || '';
 
-                editandoFinanca = true;
-                financaIdAtual = id;
-                document.getElementById('tituloModalFinanca').innerText = 'Editar Transação';
-
-                const btn = document.getElementById('btnSalvarFinanca');
-                if(btn) {
-                    btn.innerHTML = 'Atualizar Registro';
-                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
-                    btn.classList.add('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
-                }
-                
-                const modal = document.getElementById('modalFinanca');
+                editando = true;
+                clienteIdAtual = id;
+                const modal = document.getElementById('modalCliente');
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
             }
         }
 
-        function excluirFinanca(id) {
-            if(confirm("Deseja realmente excluir esta transação?")) {
-                financasData = financasData.filter(f => f.id !== id);
-                saveFinancesToFirebase();
-                renderFinancesCardsAndTable();
+        function excluirCliente(id) {
+            if (confirm("Tem a certeza que deseja remover este cliente/projeto?")) {
+                appData = appData.filter(c => c.id !== id);
+                saveDataToFirebase();
             }
         }
 
-        function renderFinancesCardsAndTable() {
-            let totalEntradas = 0;
-            let totalSaidas = 0;
-
-            const financasOrdenadas = [...financasData].sort((a, b) => b.timestamp - a.timestamp);
-
-            const tbody = document.getElementById('listaFinancasBody');
-            tbody.innerHTML = '';
-
-            financasOrdenadas.forEach(fin => {
-                if(fin.tipo === 'entrada') totalEntradas += fin.valor;
-                if(fin.tipo === 'saida') totalSaidas += fin.valor;
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-800/50 transition-colors border-b border-[var(--border-color)] last:border-0";
-                
-                const dataFormatada = formatDate(fin.data);
-                const isEntrada = fin.tipo === 'entrada';
-                const colorText = isEntrada ? 'text-green-400' : 'text-red-400';
-                const bgTag = isEntrada ? 'bg-green-900/50 text-green-400 border border-green-900' : 'bg-red-900/50 text-red-400 border border-red-900';
-                const sinal = isEntrada ? '+' : '-';
-                
-                const obsText = fin.obs ? `<div class="text-xs text-gray-500 normal-case mt-0.5"><i class="fa-solid fa-comment-dots"></i> ${fin.obs}</div>` : '';
-
-                tr.innerHTML = `
-                    <td class="p-4 text-gray-400 whitespace-nowrap text-xs">
-                        <i class="fa-regular fa-calendar mr-1"></i> ${dataFormatada} <br>
-                        <i class="fa-regular fa-clock mr-1"></i> ${fin.hora}
-                    </td>
-                    <td class="p-4 font-medium text-brand-text capitalize">
-                        ${fin.categoria}
-                        ${obsText}
-                    </td>
-                    <td class="p-4"><span class="text-[10px] px-2 py-1 rounded-full uppercase font-bold tracking-wide ${bgTag}">${fin.tipo}</span></td>
-                    <td class="p-4 font-mono font-bold text-right ${colorText}">${sinal} ${formatCurrency(fin.valor)}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="editarFinanca('${fin.id}')" class="text-gray-600 hover:text-yellow-500 transition-colors p-2" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="excluirFinanca('${fin.id}')" class="text-gray-600 hover:text-red-500 transition-colors p-2" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            const saldo = totalEntradas - totalSaidas;
-
-            document.getElementById('totalEntradasDisplay').innerText = formatCurrency(totalEntradas);
-            document.getElementById('totalSaidasDisplay').innerText = formatCurrency(totalSaidas);
-            document.getElementById('saldoTotalDisplay').innerText = formatCurrency(saldo);
-            
-            const saldoEl = document.getElementById('saldoTotalDisplay');
-            if(saldo > 0) saldoEl.className = 'text-2xl font-bold text-green-400 mt-1';
-            else if(saldo < 0) saldoEl.className = 'text-2xl font-bold text-red-400 mt-1';
-            else saldoEl.className = 'text-2xl font-bold text-blue-400 mt-1';
-
-            updateFinancesCharts();
-            if(typeof updateKPIs === 'function') updateKPIs();
+        function limparFormulario() {
+            document.querySelectorAll('#modalCliente input, #modalCliente select, #modalCliente textarea')
+                .forEach(el => el.value = '');
+            document.getElementById('prioridadeCliente').value = 'média';
+            document.getElementById('statusCliente').value = 'realizando';
         }
 
-        function updateFinancesCharts() {
-            if (!financasData) return;
-
-            const expenseCounts = {};
-            let totalExpensesAmount = 0;
-
-            financasData.forEach(fin => {
-                if (fin.tipo === 'saida') {
-                    const cat = (fin.categoria || 'Outros').toLowerCase();
-                    if(!expenseCounts[cat]) expenseCounts[cat] = 0;
-                    expenseCounts[cat] += fin.valor;
-                    totalExpensesAmount += fin.valor;
-                }
-            });
-
-            const sortedExpenses = Object.entries(expenseCounts).sort((a,b) => b[1] - a[1]);
-            const labelsPie = sortedExpenses.map(s => s[0].charAt(0).toUpperCase() + s[0].slice(1));
-            const dataPie = sortedExpenses.map(s => s[1]);
-
-            const listContainer = document.getElementById('topExpensesList');
-            if (listContainer) {
-                listContainer.innerHTML = '';
-                if (sortedExpenses.length === 0) {
-                    listContainer.innerHTML = '<div class="text-gray-500 text-sm col-span-full">Nenhuma saída registrada.</div>';
-                } else {
-                    sortedExpenses.forEach(([name, total]) => {
-                        const percent = totalExpensesAmount > 0 ? ((total / totalExpensesAmount) * 100).toFixed(1) : 0;
-                        listContainer.innerHTML += `<div class="flex justify-between items-center text-sm border-b border-gray-800 pb-1"><span class="text-gray-400 capitalize">${name}</span><span class="text-brand-text font-bold">${formatCurrency(total)} <span class="text-xs text-red-500">(${percent}%)</span></span></div>`;
-                    });
-                }
-            }
-
-            const ctxExp = document.getElementById('expensesChart');
-            if (!ctxExp) return;
-
-            if(charts.expenses) charts.expenses.destroy();
-            charts.expenses = new Chart(ctxExp.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: labelsPie,
-                    datasets: [{
-                        data: dataPie,
-                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#64748b'],
-                        borderWidth: 0,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: { 
-                        legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10 } },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed !== null) {
-                                        label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed);
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // --- LÓGICA DA ABA CLIENTES ---
         function renderClientsCards(resetPage = false) {
             if (resetPage) currentPage = 1;
 
@@ -1534,10 +1811,7 @@
             const fp = document.getElementById('filtroPrioridade').value.toLowerCase();
             const fd = document.getElementById('filtroData').value; 
 
-            let totalValor = 0;
-            let totalRealizando = 0;
-            let totalEntregue = 0;
-            let totalExibido = 0;
+            let totalValor = 0, totalRealizando = 0, totalEntregue = 0, totalExibido = 0;
 
             let filtrados = appData.filter(cliente => {
                 const s = (cliente.status || '').toLowerCase();
@@ -1580,7 +1854,6 @@
                 
                 const card = document.createElement('div');
                 card.setAttribute('data-id', cliente.id);
-                
                 card.className = `bg-brand-panel border border-[var(--border-color)] border-l-[6px] ${prioridadeClasse} rounded-lg p-3 card-animado relative group shadow-sm hover:shadow-md flex flex-col justify-between h-auto`;
 
                 card.innerHTML = `
@@ -1600,7 +1873,7 @@
 
                     <div class="flex justify-between items-center mt-1">
                         <div class="flex items-center gap-3 text-xs text-gray-400">
-                             <div class="flex items-center gap-1" title="Contato">
+                             <div class="flex items-center gap-1" title="Contacto">
                                 <i class="fa-brands fa-whatsapp text-green-500"></i>
                                 <span class="font-mono max-w-[80px] truncate">${cliente.contato || '-'}</span>
                              </div>
@@ -1610,7 +1883,6 @@
 
                         <div class="flex items-center gap-2">
                              <span class="${fundoStatus} text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wide border border-opacity-20 flex items-center gap-1">
-                                ${st === 'realizando' ? '' : ''} 
                                 ${st === 'entregue' ? '<i class="fa-solid fa-check"></i>' : ''}
                                 ${cliente.status || 'ND'}
                              </span>
@@ -1626,7 +1898,6 @@
                         </div>
                     </div>
                 `;
-
                 listaClientes.appendChild(card);
             });
 
@@ -1635,7 +1906,39 @@
             document.getElementById('totalClientes').innerText = totalExibido;
             document.getElementById('totalValor').innerText = formatCurrency(totalValor);
 
-            renderPagination(totalItems);
+            const paginationContainer = document.getElementById('paginationControls');
+            paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            if (totalPages > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+                prevBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+                prevBtn.onclick = () => { if(currentPage > 1) changePage(currentPage - 1); };
+                paginationContainer.appendChild(prevBtn);
+
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, startPage + 4);
+                if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.innerText = i;
+                    if (i === currentPage) {
+                        pageBtn.className = "w-8 h-8 rounded-lg bg-brand-accent text-white font-bold shadow-lg shadow-red-900/40";
+                    } else {
+                        pageBtn.className = "w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors";
+                        pageBtn.onclick = () => changePage(i);
+                    }
+                    paginationContainer.appendChild(pageBtn);
+                }
+
+                const nextBtn = document.createElement('button');
+                nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+                nextBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+                nextBtn.onclick = () => { if(currentPage < totalPages) changePage(currentPage + 1); };
+                paginationContainer.appendChild(nextBtn);
+            }
 
             if (!sortableInstance) {
                 const el = document.getElementById('listaClientes');
@@ -1648,25 +1951,17 @@
                         const itemEl = evt.item;
                         const newIndex = evt.newIndex;
                         const movedId = itemEl.getAttribute('data-id');
-                        
                         const visibleIds = Array.from(el.children).map(child => child.getAttribute('data-id'));
                         
                         const originalIndex = appData.findIndex(i => i.id === movedId);
                         if (originalIndex > -1) {
                             const movedItem = appData[originalIndex];
                             appData.splice(originalIndex, 1);
-
-                            let targetId;
-                            let insertAfter = false;
+                            let targetId, insertAfter = false;
 
                             if (visibleIds.length > 1) {
-                                if (newIndex === visibleIds.length - 1) {
-                                    targetId = visibleIds[newIndex - 1]; 
-                                    insertAfter = true;
-                                } else {
-                                    targetId = visibleIds[newIndex + 1]; 
-                                    insertAfter = false; 
-                                }
+                                if (newIndex === visibleIds.length - 1) { targetId = visibleIds[newIndex - 1]; insertAfter = true; } 
+                                else { targetId = visibleIds[newIndex + 1]; insertAfter = false; }
                                 
                                 const targetGlobalIndex = appData.findIndex(i => i.id === targetId);
                                 if (targetGlobalIndex !== -1) {
@@ -1678,7 +1973,6 @@
                             } else {
                                 appData.unshift(movedItem);
                             }
-
                             saveDataToFirebase(); 
                         }
                     }
@@ -1686,436 +1980,302 @@
             }
         }
 
-        function renderPagination(totalItems) {
-            const paginationContainer = document.getElementById('paginationControls');
-            paginationContainer.innerHTML = '';
+        function changePage(newPage) { currentPage = newPage; renderClientsCards(false); }
+        function changePagePub(newPage) { currentPagePub = newPage; renderPublicacoes(false); }
 
+        function renderPublicacoes(resetPage = false) {
+            if (resetPage) currentPagePub = 1;
+            const container = document.getElementById('listaPublicacoes');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const entregues = appData
+                .filter(c => (c.status || '').toLowerCase() === 'entregue')
+                .sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+
+            if (entregues.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center text-gray-500 py-12">
+                        <i class="fa-solid fa-box-open text-4xl mb-3 opacity-50"></i>
+                        <p>Nenhum projeto entregue encontrado.</p>
+                    </div>`;
+                document.getElementById('paginationControlsPub').innerHTML = '';
+                return;
+            }
+
+            const totalItems = entregues.length;
+            const startIndex = (currentPagePub - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedItems = entregues.slice(startIndex, endIndex);
+
+            paginatedItems.forEach(cliente => {
+                const card = document.createElement('div');
+                card.className = "bg-brand-panel border border-[var(--border-color)] rounded-xl p-5 relative flex flex-col justify-between hover:border-pink-500/50 transition-colors shadow-lg group";
+                const typeIcon = getTypeIcon(cliente.tipo);
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex-1 pr-2 overflow-hidden">
+                                <h3 class="text-base font-bold text-white truncate" title="${cliente.nome}">${cliente.nome || 'Sem Nome'}</h3>
+                                <p class="text-xs text-brand-accent font-medium truncate" title="${cliente.empresa}">${cliente.empresa || 'Particular'}</p>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-pink-500/10 flex items-center justify-center text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-colors shrink-0">
+                                <i class="fa-brands fa-instagram text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-400 mt-4">
+                            <span class="capitalize flex items-center gap-1">${typeIcon} ${cliente.tipo || 'Serviço'}</span>
+                        </div>
+                    </div>
+                    <div class="mt-5 pt-4 border-t border-[var(--border-color)] flex justify-between items-center text-xs text-gray-500">
+                        <span>Realizado: <strong class="text-gray-300">${formatDate(cliente.data)}</strong></span>
+                        <button onclick="copiarInfoInstagram('${cliente.nome}', '${cliente.tipo}')" class="bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-400 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2" title="Copiar p/ Legenda">
+                            <i class="fa-regular fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            const paginationContainer = document.getElementById('paginationControlsPub');
+            paginationContainer.innerHTML = '';
             const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-            if (totalPages <= 1) return;
+            if (totalPages > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+                prevBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPagePub === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+                prevBtn.onclick = () => { if(currentPagePub > 1) changePagePub(currentPagePub - 1); };
+                paginationContainer.appendChild(prevBtn);
 
-            const prevBtn = document.createElement('button');
-            prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
-            prevBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
-            prevBtn.onclick = () => { if(currentPage > 1) changePage(currentPage - 1); };
-            paginationContainer.appendChild(prevBtn);
+                let startPage = Math.max(1, currentPagePub - 2);
+                let endPage = Math.min(totalPages, startPage + 4);
+                if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
 
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, startPage + 4);
-            
-            if (endPage - startPage < 4) {
-                startPage = Math.max(1, endPage - 4);
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                const pageBtn = document.createElement('button');
-                pageBtn.innerText = i;
-                if (i === currentPage) {
-                    pageBtn.className = "w-8 h-8 rounded-lg bg-brand-accent text-white font-bold shadow-lg shadow-red-900/40";
-                } else {
-                    pageBtn.className = "w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors";
-                    pageBtn.onclick = () => changePage(i);
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.innerText = i;
+                    if (i === currentPagePub) {
+                        pageBtn.className = "w-8 h-8 rounded-lg bg-pink-500 text-white font-bold shadow-lg shadow-pink-900/40";
+                    } else {
+                        pageBtn.className = "w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors";
+                        pageBtn.onclick = () => changePagePub(i);
+                    }
+                    paginationContainer.appendChild(pageBtn);
                 }
-                paginationContainer.appendChild(pageBtn);
+
+                const nextBtn = document.createElement('button');
+                nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+                nextBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPagePub === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+                nextBtn.onclick = () => { if(currentPagePub < totalPages) changePagePub(currentPagePub + 1); };
+                paginationContainer.appendChild(nextBtn);
+            }
+        }
+
+        function abrirModalNovaFinanca() {
+            document.getElementById('finTipo').value = 'entrada';
+            document.getElementById('finValor').value = '';
+            document.getElementById('finCategoria').value = '';
+            document.getElementById('finObs').value = '';
+            editandoFinanca = false;
+            financaIdAtual = null;
+            document.getElementById('tituloModalFinanca').innerText = 'Nova Transação';
+            
+            const btn = document.getElementById('btnSalvarFinanca');
+            if(btn) {
+                btn.innerHTML = 'Registar';
+                btn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
+                btn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
             }
 
-            const nextBtn = document.createElement('button');
-            nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
-            nextBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
-            nextBtn.onclick = () => { if(currentPage < totalPages) changePage(currentPage + 1); };
-            paginationContainer.appendChild(nextBtn);
-        }
-
-        function changePage(newPage) {
-            currentPage = newPage;
-            renderClientsCards(false);
-        }
-
-        // --- MODAL E CRUD CLIENTES ---
-        function abrirModalNovoCliente() {
-            limparFormulario();
-            editando = false;
-            clienteIdAtual = null;
-            const modal = document.getElementById('modalCliente');
+            const modal = document.getElementById('modalFinanca');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            document.getElementById('dataCriacao').valueAsDate = new Date();
-        }
 
-        function fecharModal() {
-            const modal = document.getElementById('modalCliente');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function salvarCliente() {
-            const novoCliente = obterDadosFormulario();
-            
-            if (!novoCliente.nome && !novoCliente.empresa) {
-                alert("Por favor, preencha o Nome ou a Empresa.");
-                return;
-            }
-
-            if (editando && clienteIdAtual) {
-                const index = appData.findIndex(c => c.id === clienteIdAtual);
-                if (index !== -1) {
-                    appData[index] = { ...appData[index], ...novoCliente };
-                }
-            } else {
-                novoCliente.id = gerarIdUnico('cli'); 
-                appData.push(novoCliente); 
-            }
-
-            saveDataToFirebase();
-            fecharModal();
-        }
-
-        function editarCliente(id) {
-            const cliente = appData.find(c => c.id === id);
-            if (cliente) {
-                preencherFormulario(cliente);
-                editando = true;
-                clienteIdAtual = id;
-                const modal = document.getElementById('modalCliente');
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
-        }
-
-        function excluirCliente(id) {
-            if (confirm("Tem certeza que deseja remover este cliente/projeto?")) {
-                appData = appData.filter(c => c.id !== id);
-                saveDataToFirebase();
-            }
-        }
-
-        function obterDadosFormulario() {
-            return {
-                nome: document.getElementById('nomeCliente').value,
-                empresa: document.getElementById('empresaCliente').value,
-                contato: document.getElementById('contatoCliente').value,
-                valor: parseFloat(document.getElementById('valorCliente').value) || 0,
-                tipo: document.getElementById('tipoServico').value,
-                prioridade: document.getElementById('prioridadeCliente').value,
-                status: document.getElementById('statusCliente').value,
-                data: document.getElementById('dataCriacao').value,
-                obs: document.getElementById('obsCliente').value
-            };
-        }
-
-        function preencherFormulario(cliente) {
-            document.getElementById('nomeCliente').value = cliente.nome || '';
-            document.getElementById('empresaCliente').value = cliente.empresa || '';
-            document.getElementById('contatoCliente').value = cliente.contato || '';
-            document.getElementById('valorCliente').value = cliente.valor || '';
-            document.getElementById('tipoServico').value = cliente.tipo || '';
-            document.getElementById('prioridadeCliente').value = cliente.prioridade || 'baixa';
-            document.getElementById('statusCliente').value = cliente.status || 'realizando';
-            document.getElementById('dataCriacao').value = cliente.data || '';
-            document.getElementById('obsCliente').value = cliente.obs || '';
-        }
-
-        function limparFormulario() {
-            document.querySelectorAll('#modalCliente input, #modalCliente select, #modalCliente textarea')
-                .forEach(el => el.value = '');
-            document.getElementById('prioridadeCliente').value = 'média';
-            document.getElementById('statusCliente').value = 'realizando';
-        }
-
-        // --- CALCULOS E KPI DASHBOARD ---
-        function calculatePeriodStats(startDate, endDate) {
-            const parseLocal = (dateStr) => {
-                const [y, m, d] = dateStr.split('-').map(Number);
-                return new Date(y, m - 1, d, 0, 0, 0, 0);
-            };
-            const parseLocalEnd = (dateStr) => {
-                const [y, m, d] = dateStr.split('-').map(Number);
-                return new Date(y, m - 1, d, 23, 59, 59, 999);
-            };
-            const start = parseLocal(startDate);
-            const end = parseLocalEnd(endDate);
-            let count = 0;
-            let total = 0;
-            appData.forEach(item => {
-                if(!item.data) return;
-                const [y, m, d] = item.data.split('-').map(Number);
-                const itemDate = new Date(y, m - 1, d);
-                if (itemDate.getTime() >= start.getTime() && itemDate.getTime() <= end.getTime()) {
-                    count++;
-                    total += (parseFloat(item.valor) || 0);
-                }
-            });
-            return { count, total };
-        }
-
-        function updateKPIs() {
-            if (appData.length === 0) {
-                resetKPIs();
-                return;
-            }
             const now = new Date();
-            const formatDateISO = (date) => {
-                const y = date.getFullYear();
-                const m = String(date.getMonth() + 1).padStart(2, '0');
-                const d = String(date.getDate()).padStart(2, '0');
-                return `${y}-${m}-${d}`;
-            };
-            const todayStr = formatDateISO(now);
-            const yesterdayDate = new Date(now);
-            yesterdayDate.setDate(now.getDate() - 1);
-            const yesterdayStr = formatDateISO(yesterdayDate);
-            const dayBeforeYesterdayDate = new Date(now);
-            dayBeforeYesterdayDate.setDate(now.getDate() - 2);
-            const dayBeforeYesterdayStr = formatDateISO(dayBeforeYesterdayDate);
-            const currentDay = now.getDay();
-            const daysToMonday = (currentDay + 6) % 7; 
-            const thisWeekStart = new Date(now);
-            thisWeekStart.setDate(now.getDate() - daysToMonday);
-            const thisWeekEnd = new Date(thisWeekStart);
-            thisWeekEnd.setDate(thisWeekStart.getDate() + 6);
-            const lastWeekStart = new Date(thisWeekStart);
-            lastWeekStart.setDate(thisWeekStart.getDate() - 7);
-            const lastWeekEnd = new Date(lastWeekStart);
-            lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
-            const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-            const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-            const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-            const monthBeforeLastStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
-            const monthBeforeLastEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0);
-            const thisYearStart = new Date(now.getFullYear(), 0, 1);
-            const thisYearEnd = new Date(now.getFullYear(), 11, 31);
-            
-            const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
-            const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31);
+            document.getElementById('finData').valueAsDate = now;
+            const hours = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('finHora').value = `${hours}:${mins}`;
+        }
 
-            const statsToday = calculatePeriodStats(todayStr, todayStr);
-            const statsYesterday = calculatePeriodStats(yesterdayStr, yesterdayStr);
-            const statsDayBeforeYesterday = calculatePeriodStats(dayBeforeYesterdayStr, dayBeforeYesterdayStr);
-            const statsThisWeek = calculatePeriodStats(formatDateISO(thisWeekStart), formatDateISO(thisWeekEnd));
-            const statsLastWeek = calculatePeriodStats(formatDateISO(lastWeekStart), formatDateISO(lastWeekEnd));
-            const statsThisMonth = calculatePeriodStats(formatDateISO(thisMonthStart), formatDateISO(thisMonthEnd));
-            const statsLastMonth = calculatePeriodStats(formatDateISO(lastMonthStart), formatDateISO(lastMonthEnd));
-            const statsMonthBeforeLast = calculatePeriodStats(formatDateISO(monthBeforeLastStart), formatDateISO(monthBeforeLastEnd));
-            const statsThisYear = calculatePeriodStats(formatDateISO(thisYearStart), formatDateISO(thisYearEnd));
-            const statsLastYear = calculatePeriodStats(formatDateISO(lastYearStart), formatDateISO(lastYearEnd));
+        function fecharModalFinanca() {
+            document.getElementById('modalFinanca').classList.add('hidden');
+            document.getElementById('modalFinanca').classList.remove('flex');
+        }
 
-            updateCard('cardToday', statsToday);
-            updateCard('cardYesterday', statsYesterday);
-            updateCard('cardDayBeforeYesterday', statsDayBeforeYesterday);
-            updateCard('cardWeek', statsThisWeek);
-            updateCard('cardLastWeek', statsLastWeek);
-            updateCard('cardMonth', statsThisMonth);
-            updateCard('cardLastMonth', statsLastMonth);
-            updateCard('cardMonthBeforeLast', statsMonthBeforeLast);
-            updateCard('cardYear', statsThisYear);
-            updateCard('cardLastYear', statsLastYear); 
+        function salvarTransacaoFinanca() {
+            try {
+                const tipo = document.getElementById('finTipo').value;
+                const valorRaw = document.getElementById('finValor').value;
+                const categoria = document.getElementById('finCategoria').value.trim();
+                const obs = document.getElementById('finObs').value.trim();
+                const data = document.getElementById('finData').value;
+                const hora = document.getElementById('finHora').value;
 
-            // ==========================================
-            // CÁLCULOS PRINCIPAIS
-            // ==========================================
-            const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-            const avgTicket = totalRevenue / appData.length;
-            
-            // CÁLCULO DE INVESTIMENTO EM ANÚNCIOS E DESPESAS GERAIS
-            let totalInvestimento = 0;
-            let countInvestimento = 0;
-            let totalDespesa = 0;
-            let countDespesa = 0;
+                if (!valorRaw || !categoria || !data || !hora) {
+                    alert("Por favor, preencha os campos obrigatórios (Valor, Categoria, Data e Hora).");
+                    return;
+                }
 
-            if (typeof financasData !== 'undefined') {
-                financasData.forEach(fin => {
-                    if (fin.tipo === 'saida') {
-                        // Soma TODAS as despesas
-                        totalDespesa += (parseFloat(fin.valor) || 0);
-                        countDespesa++;
+                const valor = parseFloat(valorRaw);
+                let timestampVal;
+                try {
+                    timestampVal = new Date(`${data}T${hora}:00`).getTime();
+                    if (isNaN(timestampVal)) timestampVal = Date.now();
+                } catch(e) { timestampVal = Date.now(); }
 
-                        // Verifica anúncios
-                        if (fin.categoria === 'Anúncio' || (fin.obs && fin.obs.toLowerCase().includes('anúncio'))) {
-                            totalInvestimento += (parseFloat(fin.valor) || 0);
-                            countInvestimento++;
-                        }
+                if (editandoFinanca && financaIdAtual) {
+                    const index = financasData.findIndex(f => f.id === financaIdAtual);
+                    if (index !== -1) {
+                        financasData[index] = { ...financasData[index], tipo, valor, categoria, obs, data, hora, timestamp: timestampVal };
                     }
-                });
-            }
-            
-            // CÁLCULO DO LUCRO (Faturamento - Investimento)
-            const lucro = totalRevenue - totalInvestimento;
+                } else {
+                    financasData.push({ id: gerarIdUnico('fin'), tipo, valor, categoria, obs, data, hora, timestamp: timestampVal });
+                }
 
-            const monthlyStats = {};
-            appData.forEach(item => {
-                if(!item.data) return;
-                const dateKey = item.data.substring(0, 7); 
-                if(!monthlyStats[dateKey]) monthlyStats[dateKey] = 0;
-                monthlyStats[dateKey] += (parseFloat(item.valor) || 0);
-            });
-            
-            let bestMonth = { key: '', val: -Infinity };
-            let worstMonth = { key: '', val: Infinity };
-            Object.entries(monthlyStats).forEach(([key, val]) => {
-                if(val > bestMonth.val) bestMonth = { key, val };
-                if(val < worstMonth.val) worstMonth = { key, val };
-            });
-
-            // ATUALIZANDO OS CARDS NO HTML
-            document.getElementById('kpiTotalRevenue').innerText = formatCurrency(totalRevenue); 
-            
-            const elInvestCount = document.getElementById('cardInvestimentoCount');
-            const elInvestVal = document.getElementById('cardInvestimentoValue');
-            if(elInvestCount) elInvestCount.innerText = countInvestimento;
-            if(elInvestVal) elInvestVal.innerText = formatCurrency(totalInvestimento);
-
-            // Atualizando o Novo Card: Total Despesas
-            const elDespesaCount = document.getElementById('cardDespesaCount');
-            const elDespesaVal = document.getElementById('cardDespesaValue');
-            if(elDespesaCount) elDespesaCount.innerText = countDespesa;
-            if(elDespesaVal) elDespesaVal.innerText = formatCurrency(totalDespesa);
-
-            const elLucro = document.getElementById('kpiLucro');
-            if(elLucro) elLucro.innerText = formatCurrency(lucro);
-
-            document.getElementById('kpiAvgTicket').innerText = formatCurrency(avgTicket);
-            if (Object.keys(monthlyStats).length > 0) {
-                document.getElementById('kpiBestMonth').innerText = formatDateToMonthYear(bestMonth.key);
-                document.getElementById('kpiBestMonthValue').innerText = formatCurrency(bestMonth.val);
-                document.getElementById('kpiWorstMonth').innerText = formatDateToMonthYear(worstMonth.key);
-                document.getElementById('kpiWorstMonthValue').innerText = formatCurrency(worstMonth.val);
+                saveFinancesToFirebase();
+                renderFinancesCardsAndTable();
+                fecharModalFinanca();
+            } catch (error) {
+                console.error("Erro inesperado:", error);
             }
         }
 
-        function updateCard(prefix, stats) {
-            document.getElementById(`${prefix}Count`).innerText = stats.count;
-            document.getElementById(`${prefix}Value`).innerText = formatCurrency(stats.total);
+        function editarFinanca(id) {
+            const financa = financasData.find(f => f.id === id);
+            if (financa) {
+                document.getElementById('finTipo').value = financa.tipo || 'entrada';
+                document.getElementById('finValor').value = financa.valor || '';
+                
+                const catSelect = document.getElementById('finCategoria');
+                if (!Array.from(catSelect.options).some(opt => opt.value === financa.categoria) && financa.categoria) {
+                    catSelect.add(new Option(financa.categoria, financa.categoria));
+                }
+                catSelect.value = financa.categoria || '';
+                
+                document.getElementById('finObs').value = financa.obs || '';
+                document.getElementById('finData').value = financa.data || '';
+                document.getElementById('finHora').value = financa.hora || '';
+
+                editandoFinanca = true;
+                financaIdAtual = id;
+                document.getElementById('tituloModalFinanca').innerText = 'Editar Transação';
+
+                const btn = document.getElementById('btnSalvarFinanca');
+                if(btn) {
+                    btn.innerHTML = 'Atualizar Registo';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
+                    btn.classList.add('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
+                }
+                
+                document.getElementById('modalFinanca').classList.remove('hidden');
+                document.getElementById('modalFinanca').classList.add('flex');
+            }
         }
 
-        function resetKPIs() {
-            const ids = ['cardToday', 'cardYesterday', 'cardDayBeforeYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear', 'cardLastYear'];
-            ids.forEach(id => updateCard(id, {count: 0, total: 0}));
-            document.getElementById('kpiTotalRevenue').innerText = "R$ 0,00";
-            document.getElementById('kpiLucro').innerText = "R$ 0,00"; 
-            document.getElementById('cardInvestimentoCount').innerText = "0"; 
-            document.getElementById('cardInvestimentoValue').innerText = "R$ 0,00"; 
-            document.getElementById('cardDespesaCount').innerText = "0"; 
-            document.getElementById('cardDespesaValue').innerText = "R$ 0,00"; 
-            document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
-            document.getElementById('kpiBestMonth').innerText = "---";
-            document.getElementById('kpiWorstMonth').innerText = "---";
+        function excluirFinanca(id) {
+            if(confirm("Deseja realmente excluir esta transação?")) {
+                financasData = financasData.filter(f => f.id !== id);
+                saveFinancesToFirebase();
+                renderFinancesCardsAndTable();
+            }
         }
 
-        // --- TABELA DASHBOARD ---
-        function renderTable() {
-            const tbody = document.getElementById('dataTableBody');
-            const searchTerm = document.getElementById('tableSearch').value.toLowerCase();
+        function renderFinancesCardsAndTable() {
+            let totalEntradas = 0;
+            let totalSaidas = 0;
+            const financasOrdenadas = [...financasData].sort((a, b) => b.timestamp - a.timestamp);
+            const tbody = document.getElementById('listaFinancasBody');
             tbody.innerHTML = '';
-            const filteredData = appData
-                .filter(item => {
-                    if(!searchTerm) return true;
-                    return (item.nome || '').toLowerCase().includes(searchTerm) ||
-                           (item.empresa || '').toLowerCase().includes(searchTerm) ||
-                           (item.tipo || '').toLowerCase().includes(searchTerm);
-                })
-                .sort((a, b) => new Date(b.data) - new Date(a.data));
-            const displayData = filteredData.slice(0, 50);
-            displayData.forEach(item => {
+
+            financasOrdenadas.forEach(fin => {
+                if(fin.tipo === 'entrada') totalEntradas += fin.valor;
+                if(fin.tipo === 'saida') totalSaidas += fin.valor;
+
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-800/50 transition-colors border-b border-[var(--border-color)] last:border-0";
-                const statusStyle = getStatusStyle(item.status);
-                const typeIcon = getTypeIcon(item.tipo);
-                const displayClient = item.empresa || item.nome || 'Sem Nome';
-                const subClient = item.empresa && item.nome && item.empresa !== item.nome ? item.nome : '';
+                
+                const isEntrada = fin.tipo === 'entrada';
+                const colorText = isEntrada ? 'text-green-400' : 'text-red-400';
+                const bgTag = isEntrada ? 'bg-green-900/50 text-green-400 border border-green-900' : 'bg-red-900/50 text-red-400 border border-red-900';
+                const sinal = isEntrada ? '+' : '-';
+                const obsText = fin.obs ? `<div class="text-xs text-gray-500 normal-case mt-0.5"><i class="fa-solid fa-comment-dots"></i> ${fin.obs}</div>` : '';
+
                 tr.innerHTML = `
-                    <td class="p-4 text-gray-400 whitespace-nowrap">${formatDate(item.data)}</td>
-                    <td class="p-4">
-                        <div class="font-medium text-brand-text">${displayClient}</div>
-                        ${subClient ? `<div class="text-xs text-gray-500">${subClient}</div>` : ''}
+                    <td class="p-4 text-gray-400 whitespace-nowrap text-xs">
+                        <i class="fa-regular fa-calendar mr-1"></i> ${formatDate(fin.data)} <br>
+                        <i class="fa-regular fa-clock mr-1"></i> ${fin.hora}
                     </td>
-                    <td class="p-4"><span class="flex items-center gap-2 capitalize">${typeIcon} ${item.tipo || 'Geral'}</span></td>
-                    <td class="p-4 text-xs font-mono text-gray-400">${item.contato || '-'}</td>
-                    <td class="p-4 font-mono font-bold text-gray-300">${formatCurrency(item.valor)}</td>
-                    <td class="p-4 text-center"><span class="text-xs px-2 py-1 rounded-full uppercase font-bold tracking-wide ${statusStyle}">${item.status || 'ND'}</span></td>
-                    <td class="p-4 text-right">
-                        <button onclick="deleteItem('${item.id}')" class="text-gray-600 hover:text-red-500 transition-colors p-2"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-4 font-medium text-brand-text capitalize">
+                        ${fin.categoria}
+                        ${obsText}
+                    </td>
+                    <td class="p-4"><span class="text-[10px] px-2 py-1 rounded-full uppercase font-bold tracking-wide ${bgTag}">${fin.tipo}</span></td>
+                    <td class="p-4 font-mono font-bold text-right ${colorText}">${sinal} ${formatCurrency(fin.valor)}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="editarFinanca('${fin.id}')" class="text-gray-600 hover:text-yellow-500 transition-colors p-2" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="excluirFinanca('${fin.id}')" class="text-gray-600 hover:text-red-500 transition-colors p-2" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            const saldo = totalEntradas - totalSaidas;
+            document.getElementById('totalEntradasDisplay').innerText = formatCurrency(totalEntradas);
+            document.getElementById('totalSaidasDisplay').innerText = formatCurrency(totalSaidas);
+            
+            const saldoEl = document.getElementById('saldoTotalDisplay');
+            saldoEl.innerText = formatCurrency(saldo);
+            if(saldo > 0) saldoEl.className = 'text-2xl font-bold text-green-400 mt-1';
+            else if(saldo < 0) saldoEl.className = 'text-2xl font-bold text-red-400 mt-1';
+            else saldoEl.className = 'text-2xl font-bold text-blue-400 mt-1';
+
+            updateFinancesCharts();
+            if(typeof updateKPIs === 'function') updateKPIs();
         }
 
-        function deleteItem(id) {
-            if(confirm('Tem certeza que deseja remover este registro?')) {
-                appData = appData.filter(i => i.id !== id);
-                saveDataToFirebase();
-            }
-        }
+        function updateFinancesCharts() {
+            if (!financasData) return;
+            const expenseCounts = {};
+            let totalExpensesAmount = 0;
 
-        function updateCharts() {
-            if(appData.length === 0) return;
-            const monthlyData = {};
-            appData.forEach(item => {
-                if(!item.data) return;
-                const key = item.data.substring(0, 7); 
-                if(!monthlyData[key]) monthlyData[key] = 0;
-                monthlyData[key] += parseFloat(item.valor) || 0;
-            });
-            const sortedKeys = Object.keys(monthlyData).sort();
-            const chartLabels = sortedKeys.map(k => formatDateToMonthYear(k));
-            const chartValues = sortedKeys.map(k => monthlyData[k]);
-            const ctxRev = document.getElementById('revenueChart').getContext('2d');
-            if(charts.revenue) charts.revenue.destroy();
-            const gradient = ctxRev.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
-            gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
-            charts.revenue = new Chart(ctxRev, {
-                type: 'line',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        label: 'Receita (R$)',
-                        data: chartValues,
-                        borderColor: '#ef4444',
-                        backgroundColor: gradient,
-                        borderWidth: 2,
-                        pointBackgroundColor: '#18181b',
-                        pointBorderColor: '#ef4444',
-                        pointRadius: 4,
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: '#27272a' }, ticks: { color: '#71717a', callback: (val) => 'R$ ' + val } },
-                        x: { grid: { display: false }, ticks: { color: '#71717a' } }
-                    }
+            financasData.forEach(fin => {
+                if (fin.tipo === 'saida') {
+                    const cat = (fin.categoria || 'Outros').toLowerCase();
+                    if(!expenseCounts[cat]) expenseCounts[cat] = 0;
+                    expenseCounts[cat] += fin.valor;
+                    totalExpensesAmount += fin.valor;
                 }
             });
-            const serviceCounts = {};
-            appData.forEach(item => {
-                const type = (item.tipo || 'Outros').toLowerCase();
-                if(!serviceCounts[type]) serviceCounts[type] = 0;
-                serviceCounts[type]++;
-            });
-            const sortedServices = Object.entries(serviceCounts).sort((a,b) => b[1] - a[1]).slice(0, 5); 
-            const labelsPie = sortedServices.map(s => s[0].charAt(0).toUpperCase() + s[0].slice(1));
-            const dataPie = sortedServices.map(s => s[1]);
-            const listContainer = document.getElementById('topServicesList');
-            listContainer.innerHTML = '';
-            sortedServices.forEach(([name, count]) => {
-                const percent = ((count / appData.length) * 100).toFixed(1);
-                listContainer.innerHTML += `<div class="flex justify-between items-center text-sm"><span class="text-gray-400 capitalize">${name}</span><span class="text-brand-text font-bold">${count} <span class="text-xs text-gray-600">(${percent}%)</span></span></div>`;
-            });
-            const ctxServ = document.getElementById('servicesChart').getContext('2d');
-            if(charts.services) charts.services.destroy();
-            charts.services = new Chart(ctxServ, {
+
+            const sortedExpenses = Object.entries(expenseCounts).sort((a,b) => b[1] - a[1]);
+            const labelsPie = sortedExpenses.map(s => s[0].charAt(0).toUpperCase() + s[0].slice(1));
+            const dataPie = sortedExpenses.map(s => s[1]);
+
+            const listContainer = document.getElementById('topExpensesList');
+            if (listContainer) {
+                listContainer.innerHTML = '';
+                if (sortedExpenses.length === 0) {
+                    listContainer.innerHTML = '<div class="text-gray-500 text-sm col-span-full">Nenhuma saída registada.</div>';
+                } else {
+                    sortedExpenses.forEach(([name, total]) => {
+                        const percent = totalExpensesAmount > 0 ? ((total / totalExpensesAmount) * 100).toFixed(1) : 0;
+                        listContainer.innerHTML += `<div class="flex justify-between items-center text-sm border-b border-gray-800 pb-1"><span class="text-gray-400 capitalize">${name}</span><span class="text-brand-text font-bold">${formatCurrency(total)} <span class="text-xs text-red-500">(${percent}%)</span></span></div>`;
+                    });
+                }
+            }
+
+            const ctxExp = document.getElementById('expensesChart');
+            if (!ctxExp) return;
+            if(charts.expenses) charts.expenses.destroy();
+            charts.expenses = new Chart(ctxExp.getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: labelsPie,
                     datasets: [{
                         data: dataPie,
-                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#64748b'],
                         borderWidth: 0,
                         hoverOffset: 4
                     }]
@@ -2124,7 +2284,18 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     cutout: '70%',
-                    plugins: { legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10 } } }
+                    plugins: { 
+                        legend: { position: 'right', labels: { color: '#9ca3af', boxWidth: 10 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label ? context.label + ': ' : '';
+                                    if (context.parsed !== null) label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed);
+                                    return label;
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
