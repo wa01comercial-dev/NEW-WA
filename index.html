@@ -136,14 +136,6 @@
 
         /* Tarefas concluídas */
         .tarefa-concluida { text-decoration: line-through; opacity: 0.5; }
-
-        /* Balões de Interação */
-        .balao-interacao { position: relative; }
-        .balao-interacao::after {
-            content: ''; position: absolute; top: 15px; left: -8px;
-            border-width: 8px 10px 8px 0; border-style: solid;
-            border-color: transparent var(--input-bg) transparent transparent;
-        }
     </style>
 </head>
 <body class="bg-brand-dark text-brand-text font-sans antialiased overflow-hidden transition-colors duration-300">
@@ -198,11 +190,6 @@
                 <button onclick="switchTab('briefings'); toggleSidebar()" id="btn-briefings" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
                     <i class="fa-solid fa-folder-open w-5 text-yellow-500"></i>
                     <span class="font-medium">Briefings & Links</span>
-                </button>
-
-                <button onclick="switchTab('interacoes'); toggleSidebar()" id="btn-interacoes" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
-                    <i class="fa-regular fa-comments w-5 text-sky-400"></i>
-                    <span class="font-medium">Interações</span>
                 </button>
 
                 <button onclick="switchTab('metas'); toggleSidebar()" id="btn-metas" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
@@ -285,6 +272,7 @@
                         </div>
                     </div>
 
+                    <!-- Cards Temporais -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-red-400/50 transition-all group">
                             <div class="flex justify-between items-start">
@@ -306,6 +294,16 @@
                                 <div class="p-2 bg-teal-500/10 rounded-lg text-teal-500 group-hover:bg-teal-500 group-hover:text-white transition-colors"><i class="fa-regular fa-calendar-minus"></i></div>
                             </div>
                         </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-pink-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Anteontem</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardDayBeforeYesterdayCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardDayBeforeYesterdayValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-pink-500/10 rounded-lg text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-colors"><i class="fa-solid fa-calendar-day"></i></div>
+                            </div>
+                        </div>
                         <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-emerald-400/50 transition-all group">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -324,6 +322,76 @@
                                     <p class="text-xs text-gray-500 mt-1" id="cardMonthValue">R$ 0,00</p>
                                 </div>
                                 <div class="p-2 bg-blue-500/10 rounded-lg text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors"><i class="fa-regular fa-calendar"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-yellow-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Semana Passada</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardLastWeekCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardLastWeekValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-yellow-500/10 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-colors"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-purple-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Mês Passado</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardLastMonthCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardLastMonthValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-purple-500/10 rounded-lg text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors"><i class="fa-regular fa-calendar-xmark"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-cyan-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Este Ano</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardYearCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardYearValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-cyan-500/10 rounded-lg text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-colors"><i class="fa-solid fa-earth-americas"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-indigo-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Ano Passado</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardLastYearCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardLastYearValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-colors"><i class="fa-solid fa-calendar-days"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-orange-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Mês Anterior</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardMonthBeforeLastCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardMonthBeforeLastValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-orange-500/10 rounded-lg text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors"><i class="fa-solid fa-backward"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-red-500/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Invest. Anúncios</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardInvestimentoCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardInvestimentoValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-red-500/10 rounded-lg text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors"><i class="fa-solid fa-bullhorn"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-brand-panel p-4 rounded-xl border border-[var(--border-color)] shadow hover:border-rose-400/50 transition-all group">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-400 text-xs font-semibold mb-1">Total Despesas</p>
+                                    <h3 class="text-2xl font-bold text-brand-text" id="cardDespesaCount">0</h3>
+                                    <p class="text-xs text-gray-500 mt-1" id="cardDespesaValue">R$ 0,00</p>
+                                </div>
+                                <div class="p-2 bg-rose-500/10 rounded-lg text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors"><i class="fa-solid fa-money-bill-wave"></i></div>
                             </div>
                         </div>
                     </div>
@@ -347,6 +415,18 @@
                             <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Ticket Médio</p>
                             <h3 class="text-2xl font-bold text-brand-text mt-1" id="kpiAvgTicket">R$ 0,00</h3>
                         </div>
+                        <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-trophy text-6xl text-yellow-500"></i></div>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Melhor Mês</p>
+                            <h3 class="text-lg font-bold text-brand-text mt-1 truncate" id="kpiBestMonth">---</h3>
+                            <p class="text-xs text-yellow-500 font-mono" id="kpiBestMonthValue">R$ 0,00</p>
+                        </div>
+                        <div class="bg-brand-panel p-5 rounded-xl border border-[var(--border-color)] shadow-lg relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><i class="fa-solid fa-arrow-trend-down text-6xl text-red-500"></i></div>
+                            <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Pior Mês</p>
+                            <h3 class="text-lg font-bold text-brand-text mt-1 truncate" id="kpiWorstMonth">---</h3>
+                            <p class="text-xs text-red-500 font-mono" id="kpiWorstMonthValue">R$ 0,00</p>
+                        </div>
                     </div>
 
                     <!-- Charts Section -->
@@ -354,6 +434,9 @@
                         <div class="lg:col-span-2 bg-brand-panel p-6 rounded-xl border border-[var(--border-color)] shadow-lg">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-bold text-brand-text">Evolução de Vendas</h3>
+                                <select id="yearFilter" onchange="window.updateCharts()" class="bg-gray-800 text-xs text-white border border-gray-700 rounded p-1">
+                                    <option value="all">Todo o Período</option>
+                                </select>
                             </div>
                             <div class="relative h-72 w-full">
                                 <canvas id="revenueChart"></canvas>
@@ -415,15 +498,33 @@
                             <p id="totalValor" class="text-2xl font-bold text-brand-text">R$ 0,00</p>
                         </div>
                     </div>
-                    
+
+                    <!-- Filtros -->
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-                        <input type="text" id="buscarCliente" placeholder="🔍 Procurar clientes..." onkeyup="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full md:w-1/3 text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-                        <div class="flex gap-2 w-full md:w-auto">
-                            <select id="filtroStatus" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg cursor-pointer flex-1 md:flex-none">
-                                <option value="">Estado (Todos)</option>
+                        <div class="flex items-center gap-2 w-full md:w-auto flex-1">
+                            <input type="text" id="buscarCliente" placeholder="🔍 Procurar clientes..." onkeyup="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                            <select id="filtroStatus" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                                <option value="">Estado</option>
                                 <option value="realizando">Em Realização</option>
                                 <option value="entregue">Entregue</option>
                             </select>
+                            <select id="filtroServico" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                                <option value="">Serviço</option>
+                                <option value="logotipo">Logótipo</option>
+                                <option value="site">Site</option>
+                                <option value="anuncio">Anúncio</option>
+                            </select>
+                            <select id="filtroPrioridade" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                                <option value="">Prioridade</option>
+                                <option value="baixa">Baixa</option>
+                                <option value="média">Média</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                            
+                            <input type="date" id="filtroData" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition" title="Filtrar por Data">
                         </div>
                     </div>
 
@@ -433,7 +534,7 @@
 
                 <!-- FINANÇAS -->
                 <div id="view-finances" class="tab-content space-y-6">
-                     <div class="flex justify-between items-end animate-fade-in mb-4">
+                    <div class="flex justify-between items-end animate-fade-in mb-4">
                         <div>
                             <h1 class="text-3xl font-bold text-brand-text mb-1">Finanças</h1>
                             <p class="text-brand-muted">Gestão de entradas e saídas.</p>
@@ -497,6 +598,7 @@
                             <p class="text-brand-muted">Últimos projetos entregues a aguardar publicação.</p>
                         </div>
                     </div>
+
                     <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg overflow-hidden flex flex-col">
                         <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center bg-gradient-to-r from-pink-500/10 to-transparent">
                             <h3 class="text-lg font-bold text-brand-text flex items-center gap-2">
@@ -512,12 +614,13 @@
 
                 <!-- TAREFAS DIÁRIAS -->
                 <div id="view-tarefas" class="tab-content space-y-6">
-                     <div class="flex justify-between items-end animate-fade-in mb-4">
+                    <div class="flex justify-between items-end animate-fade-in mb-4">
                         <div>
                             <h1 class="text-3xl font-bold text-brand-text mb-1">Tarefas Diárias</h1>
                             <p class="text-brand-muted">Organize a sua rotina e próximos passos.</p>
                         </div>
                     </div>
+
                     <div class="max-w-3xl mx-auto">
                         <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg p-4 mb-6 flex gap-3">
                             <input type="text" id="novaTarefaInput" placeholder="O que precisa de ser feito hoje?" class="flex-1 bg-gray-900 border border-gray-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" onkeypress="if(event.key === 'Enter') adicionarTarefa()">
@@ -525,64 +628,26 @@
                                 <i class="fa-solid fa-plus mr-1"></i> Adicionar
                             </button>
                         </div>
+
                         <div class="bg-brand-panel rounded-xl border border-[var(--border-color)] shadow-lg overflow-hidden">
                             <ul id="listaTarefas" class="divide-y divide-gray-800/50"></ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- BRIEFINGS E LINKS COM TELA DE BLOQUEIO -->
-                <div id="view-briefings" class="tab-content space-y-6 relative min-h-[500px]">
-                    
-                    <!-- TELA DE BLOQUEIO (COFRE) -->
-                    <div id="briefings-login-screen" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-brand-dark/95 backdrop-blur-xl rounded-xl border border-gray-800">
-                        <div class="bg-brand-panel p-8 rounded-2xl border border-gray-700 shadow-2xl w-full max-w-sm text-center transform transition-all hover:scale-[1.02]">
-                            <div class="w-20 h-20 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i class="fa-solid fa-lock text-4xl text-yellow-500"></i>
-                            </div>
-                            <h2 class="text-2xl font-bold text-white mb-2">Cofre de Acessos</h2>
-                            <p class="text-gray-400 text-sm mb-8">Área restrita. Insira a senha para visualizar links, senhas e ficheiros de clientes.</p>
-                            
-                            <div class="relative">
-                                <input type="password" id="briefingsPassword" placeholder="Senha de Acesso" class="bg-gray-900 border border-gray-700 text-white p-4 rounded-xl w-full mb-4 focus:ring-2 focus:ring-yellow-500 outline-none text-center tracking-[0.3em] font-mono text-lg" onkeypress="if(event.key === 'Enter') unlockBriefings()">
-                                <i class="fa-solid fa-key absolute left-4 top-5 text-gray-500"></i>
-                            </div>
-                            
-                            <button onclick="unlockBriefings()" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-yellow-900/30">
-                                Desbloquear Cofre
-                            </button>
-                            <p id="briefingsLoginError" class="text-red-500 text-xs mt-4 hidden font-bold animate-pulse">Senha incorreta. Tente novamente.</p>
-                            <p class="text-gray-600 text-[10px] mt-4">Dica: A senha padrão é <b>admin</b></p>
-                        </div>
-                    </div>
-
-                    <!-- CONTEÚDO REAL DA ABA BRIEFINGS -->
-                    <div id="briefings-content" class="opacity-0 pointer-events-none transition-opacity duration-500">
-                        <div class="flex justify-between items-end animate-fade-in mb-4">
-                            <div>
-                                <h1 class="text-3xl font-bold text-brand-text mb-1 flex items-center gap-3">
-                                    Briefings & Links <i class="fa-solid fa-lock-open text-yellow-500 text-lg" title="Cofre Desbloqueado"></i>
-                                </h1>
-                                <p class="text-brand-muted">Central de acessos, Google Drive e materiais de clientes.</p>
-                            </div>
-                        </div>
-
-                        <div id="gridBriefings" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"></div>
-                    </div>
-                </div>
-
-                <!-- NOVA ABA: INTERAÇÕES E SCRIPTS -->
-                <div id="view-interacoes" class="tab-content space-y-6">
+                <!-- BRIEFINGS E LINKS -->
+                <div id="view-briefings" class="tab-content space-y-6">
                     <div class="flex justify-between items-end animate-fade-in mb-4">
                         <div>
-                            <h1 class="text-3xl font-bold text-brand-text mb-1">Scripts & Interações</h1>
-                            <p class="text-brand-muted">Mensagens padrão e textos rápidos para copiar e colar.</p>
+                            <h1 class="text-3xl font-bold text-brand-text mb-1">Briefings & Links</h1>
+                            <p class="text-brand-muted">Central de acessos, Google Drive e materiais de clientes.</p>
                         </div>
+                        <button onclick="abrirModalBriefing()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md text-sm font-bold shadow-lg shadow-yellow-900/20 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-folder-plus"></i> Novo Acesso
+                        </button>
                     </div>
 
-                    <div id="gridInteracoes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6 mt-4">
-                        <!-- Injetado via JS -->
-                    </div>
+                    <div id="gridBriefings" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"></div>
                 </div>
 
                 <!-- METAS E COMISSÕES -->
@@ -664,7 +729,7 @@
     </div>
 
     <!-- MODAL: CLIENTE -->
-    <div id="modalCliente" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md items-center justify-center z-[60] p-4 transition-all duration-300">
+    <div id="modalCliente" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
         <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
                 <i class="fa-solid fa-user-pen text-blue-500"></i> Adicionar / Editar Cliente
@@ -724,14 +789,14 @@
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
-                <button type="button" onclick="fecharModal()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
-                <button type="button" onclick="salvarCliente()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Guardar Cliente</button>
+                <button type="button" onclick="window.fecharModal()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button type="button" onclick="window.salvarCliente()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Guardar Cliente</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL: FINANÇA -->
-    <div id="modalFinanca" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md items-center justify-center z-[60] p-4 transition-all duration-300">
+    <div id="modalFinanca" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
         <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
                 <i class="fa-solid fa-money-bill-transfer text-blue-500"></i> <span id="tituloModalFinanca">Nova Transação</span>
@@ -785,14 +850,14 @@
             </div>
 
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
-                <button type="button" onclick="fecharModalFinanca()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button type="button" onclick="window.fecharModalFinanca()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
                 <button type="button" id="btnSalvarFinanca" onclick="salvarTransacaoFinanca()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Registar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL: BRIEFINGS & LINKS -->
-    <div id="modalBriefing" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md items-center justify-center z-[60] p-4 transition-all duration-300">
+    <div id="modalBriefing" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
         <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
                 <i class="fa-solid fa-folder-plus text-yellow-500"></i> <span id="tituloModalBriefing">Novo Acesso / Link</span>
@@ -822,33 +887,8 @@
             </div>
 
             <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
-                <button type="button" onclick="fecharModalBriefing()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button type="button" onclick="window.fecharModalBriefing()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
                 <button type="button" id="btnSalvarBriefing" onclick="salvarBriefing()" class="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition font-bold shadow-lg shadow-yellow-900/40">Guardar Acesso</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL NOVA: INTERAÇÃO (SCRIPTS) -->
-    <div id="modalInteracao" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md items-center justify-center z-[60] p-4 transition-all duration-300">
-        <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
-            <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
-                <i class="fa-regular fa-comment-dots text-sky-400"></i> <span id="tituloModalInteracao">Novo Script</span>
-            </h2>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Título do Script (Ex: Boas Vindas)</label>
-                    <input id="interTitulo" type="text" placeholder="Dê um nome fácil de achar..." class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-sky-500 outline-none">
-                </div>
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Mensagem a ser copiada</label>
-                    <textarea id="interTexto" rows="8" placeholder="Olá! Tudo bem? Segue a proposta..." class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-sky-500 outline-none resize-y"></textarea>
-                </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
-                <button type="button" onclick="fecharModalInteracao()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
-                <button type="button" id="btnSalvarInteracao" onclick="salvarInteracao()" class="bg-sky-600 text-white px-6 py-2 rounded-lg hover:bg-sky-700 transition font-bold shadow-lg shadow-sky-900/40">Guardar Script</button>
             </div>
         </div>
     </div>
@@ -859,6 +899,7 @@
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+        // --- CONFIGURAÇÃO FIREBASE ---
         const firebaseConfig = {
           apiKey: "AIzaSyBnzLylJjDRIhAOxhH52MwFYe-sL9-NUb4",
           authDomain: "crm90-cb5e0.firebaseapp.com",
@@ -874,18 +915,18 @@
         const analytics = getAnalytics(app);
         const db = getDatabase(app);
         
+        // --- CONSTANTES DE CAMINHO ---
         const DB_PATH = 'wa_growth_data_v2'; 
         const DB_PATH_FINANCES = 'wa_finances_data'; 
         const DB_PATH_TAREFAS = 'wa_tarefas_data';
         const DB_PATH_BRIEFINGS = 'wa_briefings_data';
         const DB_PATH_METAS = 'wa_metas_data';
-        const DB_PATH_INTERACOES = 'wa_interacoes_data'; 
 
+        // --- ESTADO DA APLICAÇÃO ---
         let appData = []; 
         let financasData = []; 
         let tarefasData = [];
         let briefingsData = [];
-        let interacoesData = []; 
         let metasData = { valor: 10000, comissao: 0 };
 
         let editando = false;
@@ -894,11 +935,6 @@
         let financaIdAtual = null;
         let editandoBriefing = false;
         let briefingIdAtual = null;
-        let editandoInteracao = false; 
-        let interacaoIdAtual = null; 
-
-        let briefingsUnlocked = false;
-        const SENHA_COFRE = "admin";
 
         let currentPage = 1; 
         let currentPagePub = 1; 
@@ -911,6 +947,7 @@
             return prefixo + '-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
         }
 
+        // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
             initFirebaseListeners();
             initDate();
@@ -965,13 +1002,7 @@
             onValue(ref(db, DB_PATH_BRIEFINGS), (snapshot) => {
                 const data = snapshot.val();
                 briefingsData = data ? (Array.isArray(data) ? data : Object.values(data)).filter(Boolean) : [];
-                if(document.getElementById('view-briefings').classList.contains('active') && briefingsUnlocked) renderBriefings();
-            });
-
-            onValue(ref(db, DB_PATH_INTERACOES), (snapshot) => {
-                const data = snapshot.val();
-                interacoesData = data ? (Array.isArray(data) ? data : Object.values(data)).filter(Boolean) : [];
-                if(document.getElementById('view-interacoes').classList.contains('active')) renderInteracoes();
+                if(document.getElementById('view-briefings').classList.contains('active')) renderBriefings();
             });
 
             onValue(ref(db, DB_PATH_METAS), (snapshot) => {
@@ -985,261 +1016,37 @@
         function saveFinancesToFirebase() { set(ref(db, DB_PATH_FINANCES), financasData).catch(e => console.error(e)); }
         function saveTarefasToFirebase() { set(ref(db, DB_PATH_TAREFAS), tarefasData).catch(e => console.error(e)); }
         function saveBriefingsToFirebase() { set(ref(db, DB_PATH_BRIEFINGS), briefingsData).catch(e => console.error(e)); }
-        function saveInteracoesToFirebase() { set(ref(db, DB_PATH_INTERACOES), interacoesData).catch(e => console.error(e)); }
         function saveMetasToFirebase() { set(ref(db, DB_PATH_METAS), metasData).catch(e => console.error(e)); }
 
-
-        // --- FUNÇÕES IMPLEMENTADAS NA ÍNTEGRA ---
-
-        function initDate() {
-            const date = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = date.toLocaleDateString('pt-PT', options);
-            document.getElementById('currentDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-        }
-
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('themeIcon');
-            body.classList.toggle('light-mode');
-            if (body.classList.contains('light-mode')) { icon.classList.replace('fa-sun', 'fa-moon'); } 
-            else { icon.classList.replace('fa-moon', 'fa-sun'); }
-        }
+        // --- ATRIBUIÇÃO AO WINDOW PARA FUNÇÕES GLOBAIS ---
+        window.initDate = initDate;
+        window.toggleTheme = toggleTheme;
+        window.switchTab = switchTab;
+        window.resetData = resetData;
+        window.exportData = exportData;
+        window.handleFileImport = handleFileImport;
+        window.renderClientsCards = renderClientsCards;
+        window.renderPublicacoes = renderPublicacoes; 
         
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-            sidebar.classList.toggle('mobile-open');
-            if (sidebar.classList.contains('mobile-open')) overlay.classList.add('active');
-            else overlay.classList.remove('active');
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            
-            const btnClassDef = "w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left";
-            const btnClassAct = "w-full flex items-center gap-3 px-4 py-3 bg-brand-accent/10 text-brand-accent rounded-lg border-l-4 border-brand-accent transition-all text-left";
-            
-            ['dashboard', 'clients', 'finances', 'publicacoes', 'tarefas', 'briefings', 'interacoes', 'metas'].forEach(id => {
-                const btn = document.getElementById(`btn-${id}`);
-                if(btn) btn.className = btnClassDef;
-            });
-
-            const headerBtn = document.getElementById('btnNovoHeader');
-            const textHeaderBtn = document.getElementById('textBtnNovoHeader');
-            const fab = document.getElementById('mobileFab');
-            const fabText = document.getElementById('fabText');
-
-            document.getElementById(`view-${tabName}`).classList.add('active');
-            
-            const activeBtn = document.getElementById(`btn-${tabName}`);
-            if(activeBtn) {
-                if(tabName === 'tarefas') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 rounded-lg border-l-4 border-indigo-500 transition-all text-left";
-                else if(tabName === 'briefings') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-yellow-500/10 text-yellow-500 rounded-lg border-l-4 border-yellow-500 transition-all text-left";
-                else if(tabName === 'interacoes') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-sky-500/10 text-sky-400 rounded-lg border-l-4 border-sky-500 transition-all text-left";
-                else if(tabName === 'metas') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-500 rounded-lg border-l-4 border-emerald-500 transition-all text-left";
-                else if(tabName === 'publicacoes') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-pink-500/10 text-pink-500 rounded-lg border-l-4 border-pink-500 transition-all text-left";
-                else activeBtn.className = btnClassAct;
-            }
-
-            headerBtn.style.display = 'none'; 
-            fab.style.display = 'none';
-
-            if(tabName === 'clients') {
-                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Novo Cliente'; headerBtn.onclick = abrirModalNovoCliente; 
-                fab.style.display = 'flex'; fabText.innerText = 'Novo Cliente';
-                renderClientsCards(); 
-            } else if (tabName === 'finances') {
-                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Nova Transação'; headerBtn.onclick = abrirModalNovaFinanca; 
-                fab.style.display = 'flex'; fabText.innerText = 'Nova Transação';
-                renderFinancesCardsAndTable(); 
-            } else if (tabName === 'publicacoes') {
-                renderPublicacoes(true);
-            } else if (tabName === 'tarefas') {
-                renderTarefas();
-            } else if (tabName === 'briefings') {
-                if (briefingsUnlocked) {
-                    headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Novo Acesso'; headerBtn.onclick = abrirModalBriefing; 
-                    fab.style.display = 'flex'; fabText.innerText = 'Novo Acesso';
-                    renderBriefings();
-                }
-            } else if (tabName === 'interacoes') {
-                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Novo Script'; headerBtn.onclick = abrirModalInteracao; 
-                fab.style.display = 'flex'; fabText.innerText = 'Novo Script';
-                renderInteracoes();
-            } else if (tabName === 'metas') {
-                renderMetas();
-            }
-        }
-
-        function abrirModalContextual() {
-            if(document.getElementById('view-clients').classList.contains('active')) abrirModalNovoCliente();
-            else if(document.getElementById('view-finances').classList.contains('active')) abrirModalNovaFinanca();
-            else if(document.getElementById('view-briefings').classList.contains('active') && briefingsUnlocked) abrirModalBriefing();
-            else if(document.getElementById('view-interacoes').classList.contains('active')) abrirModalInteracao();
-        }
-
-        function resetData() {
-            if(confirm("Isto apagará TODOS os dados. Deseja continuar?")) {
-                Promise.all([
-                    set(ref(db, DB_PATH), []), set(ref(db, DB_PATH_FINANCES), []),
-                    set(ref(db, DB_PATH_TAREFAS), []), set(ref(db, DB_PATH_BRIEFINGS), []), set(ref(db, DB_PATH_INTERACOES), [])
-                ]).then(() => alert("Sistema resetado.")).catch(e => alert("Erro: " + e));
-            }
-        }
-
-        function exportData() {
-            const dataToExport = { clientes: appData, financas: financasData, tarefas: tarefasData, briefings: briefingsData, interacoes: interacoesData, metas: metasData };
-            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: "application/json" });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `backup_wa_completo_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        }
-
-        function handleFileImport(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if(confirm("Deseja importar e substituir todos os dados atuais?")) {
-                        if(parsed.clientes) appData = parsed.clientes;
-                        if(parsed.financas) financasData = parsed.financas;
-                        if(parsed.tarefas) tarefasData = parsed.tarefas;
-                        if(parsed.briefings) briefingsData = parsed.briefings;
-                        if(parsed.interacoes) interacoesData = parsed.interacoes;
-                        if(parsed.metas) metasData = parsed.metas;
-                        
-                        saveDataToFirebase(); saveFinancesToFirebase(); saveTarefasToFirebase(); saveBriefingsToFirebase(); saveInteracoesToFirebase(); saveMetasToFirebase();
-                        alert("Importação realizada com sucesso!");
-                    }
-                } catch(err) { alert("Erro ao ler JSON."); }
-            };
-            reader.readAsText(file); input.value = '';
-        }
-
-        function calculatePeriodStats(startDate, endDate) {
-            const parseLocal = (dateStr) => {
-                const [y, m, d] = dateStr.split('-').map(Number);
-                return new Date(y, m - 1, d, 0, 0, 0, 0);
-            };
-            const parseLocalEnd = (dateStr) => {
-                const [y, m, d] = dateStr.split('-').map(Number);
-                return new Date(y, m - 1, d, 23, 59, 59, 999);
-            };
-            const start = parseLocal(startDate);
-            const end = parseLocalEnd(endDate);
-            let count = 0;
-            let total = 0;
-            appData.forEach(item => {
-                if(!item.data) return;
-                const [y, m, d] = item.data.split('-').map(Number);
-                const itemDate = new Date(y, m - 1, d);
-                if (itemDate.getTime() >= start.getTime() && itemDate.getTime() <= end.getTime()) {
-                    count++;
-                    total += (parseFloat(item.valor) || 0);
-                }
-            });
-            return { count, total };
-        }
-
-        function updateKPIs() {
-            if (appData.length === 0) {
-                resetKPIs();
-                return;
-            }
-            const now = new Date();
-            const formatDateISO = (date) => {
-                const y = date.getFullYear();
-                const m = String(date.getMonth() + 1).padStart(2, '0');
-                const d = String(date.getDate()).padStart(2, '0');
-                return `${y}-${m}-${d}`;
-            };
-            const todayStr = formatDateISO(now);
-            const yesterdayDate = new Date(now); yesterdayDate.setDate(now.getDate() - 1);
-            const yesterdayStr = formatDateISO(yesterdayDate);
-            const dayBeforeYesterdayDate = new Date(now); dayBeforeYesterdayDate.setDate(now.getDate() - 2);
-            const dayBeforeYesterdayStr = formatDateISO(dayBeforeYesterdayDate);
-            
-            const currentDay = now.getDay(); const daysToMonday = (currentDay + 6) % 7; 
-            const thisWeekStart = new Date(now); thisWeekStart.setDate(now.getDate() - daysToMonday);
-            const thisWeekEnd = new Date(thisWeekStart); thisWeekEnd.setDate(thisWeekStart.getDate() + 6);
-            
-            const lastWeekStart = new Date(thisWeekStart); lastWeekStart.setDate(thisWeekStart.getDate() - 7);
-            const lastWeekEnd = new Date(lastWeekStart); lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
-            
-            const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-            const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-            const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-            const monthBeforeLastStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
-            const monthBeforeLastEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0);
-            const thisYearStart = new Date(now.getFullYear(), 0, 1);
-            const thisYearEnd = new Date(now.getFullYear(), 11, 31);
-            const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
-            const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31);
-
-            updateCard('cardToday', calculatePeriodStats(todayStr, todayStr));
-            updateCard('cardYesterday', calculatePeriodStats(yesterdayStr, yesterdayStr));
-            updateCard('cardDayBeforeYesterday', calculatePeriodStats(dayBeforeYesterdayStr, dayBeforeYesterdayStr));
-            updateCard('cardWeek', calculatePeriodStats(formatDateISO(thisWeekStart), formatDateISO(thisWeekEnd)));
-            updateCard('cardLastWeek', calculatePeriodStats(formatDateISO(lastWeekStart), formatDateISO(lastWeekEnd)));
-            updateCard('cardMonth', calculatePeriodStats(formatDateISO(thisMonthStart), formatDateISO(thisMonthEnd)));
-            updateCard('cardLastMonth', calculatePeriodStats(formatDateISO(lastMonthStart), formatDateISO(lastMonthEnd)));
-            updateCard('cardYear', calculatePeriodStats(formatDateISO(thisYearStart), formatDateISO(thisYearEnd)));
-            updateCard('cardLastYear', calculatePeriodStats(formatDateISO(lastYearStart), formatDateISO(lastYearEnd))); 
-
-            const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-            const avgTicket = totalRevenue / appData.length;
-            
-            let totalInvestimento = 0; let countInvestimento = 0;
-            let totalDespesa = 0; let countDespesa = 0;
-
-            if (typeof financasData !== 'undefined') {
-                financasData.forEach(fin => {
-                    if (fin.tipo === 'saida') {
-                        totalDespesa += (parseFloat(fin.valor) || 0); countDespesa++;
-                        if (fin.categoria === 'Anúncio' || (fin.obs && fin.obs.toLowerCase().includes('anúncio'))) {
-                            totalInvestimento += (parseFloat(fin.valor) || 0); countInvestimento++;
-                        }
-                    }
-                });
-            }
-            
-            const lucro = totalRevenue - totalInvestimento;
-            
-            if(document.getElementById('kpiTotalRevenue')) document.getElementById('kpiTotalRevenue').innerText = formatCurrency(totalRevenue); 
-            if(document.getElementById('kpiLucro')) document.getElementById('kpiLucro').innerText = formatCurrency(lucro);
-            if(document.getElementById('kpiAvgTicket')) document.getElementById('kpiAvgTicket').innerText = formatCurrency(avgTicket);
-        }
-
-        function updateCard(prefix, stats) {
-            if(document.getElementById(`${prefix}Count`)) document.getElementById(`${prefix}Count`).innerText = stats.count;
-            if(document.getElementById(`${prefix}Value`)) document.getElementById(`${prefix}Value`).innerText = formatCurrency(stats.total);
-        }
-
-        function resetKPIs() {
-            const ids = ['cardToday', 'cardYesterday', 'cardDayBeforeYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardYear', 'cardLastYear'];
-            ids.forEach(id => updateCard(id, {count: 0, total: 0}));
-            if(document.getElementById('kpiTotalRevenue')) document.getElementById('kpiTotalRevenue').innerText = "R$ 0,00";
-            if(document.getElementById('kpiLucro')) document.getElementById('kpiLucro').innerText = "R$ 0,00"; 
-            if(document.getElementById('kpiAvgTicket')) document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
-        }
-
-        function refreshDashboard() {
-            updateKPIs();
-            renderTable();
-            updateCharts();
-            document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Transações`;
-            
-            if(document.getElementById('view-clients').classList.contains('active')) renderClientsCards();
-            else if (document.getElementById('view-publicacoes').classList.contains('active')) renderPublicacoes();
-            else if (document.getElementById('view-metas').classList.contains('active')) renderMetas();
-        }
-
-        function renderTable() {
+        window.abrirModalNovoCliente = abrirModalNovoCliente;
+        window.fecharModal = fecharModal;
+        window.salvarCliente = salvarCliente;
+        window.editarCliente = editarCliente;
+        window.excluirCliente = excluirCliente;
+        window.changePage = changePage;
+        window.changePagePub = changePagePub;
+        
+        window.abrirModalNovaFinanca = abrirModalNovaFinanca;
+        window.fecharModalFinanca = fecharModalFinanca;
+        window.salvarTransacaoFinanca = salvarTransacaoFinanca;
+        window.excluirFinanca = excluirFinanca;
+        window.editarFinanca = editarFinanca;
+        
+        window.abrirModalContextual = abrirModalContextual;
+        window.toggleSidebar = toggleSidebar; 
+        
+        // Restauro e Implementação das Funções Restantes do Dashboard
+        window.renderTable = function() {
             const tbody = document.getElementById('dataTableBody');
             const searchInput = document.getElementById('tableSearch');
             const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
@@ -1280,16 +1087,16 @@
                 `;
                 tbody.appendChild(tr);
             });
-        }
+        };
 
-        function deleteItem(id) {
+        window.deleteItem = function(id) {
             if(confirm('Tem a certeza que deseja remover este registo?')) {
                 appData = appData.filter(i => i.id !== id);
                 saveDataToFirebase();
             }
-        }
+        };
 
-        function updateCharts() {
+        window.updateCharts = function() {
             if(appData.length === 0) return;
             const monthlyData = {};
             appData.forEach(item => {
@@ -1380,8 +1187,535 @@
                     }
                 });
             }
+        };
+
+        window.copiarInfoInstagram = function(nome, tipo) {
+            const texto = `Projeto: ${nome}\nServiço: ${tipo || 'Serviço Geral'}`;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(texto).then(() => alert('Copiado para a área de transferência!')).catch(err => console.log('Erro ao copiar', err));
+            } else {
+                let textArea = document.createElement("textarea");
+                textArea.value = texto;
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Copiado para a área de transferência!');
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+                document.body.removeChild(textArea);
+            }
+        };
+
+        // --- NOVAS FUNÇÕES: TAREFAS, BRIEFINGS E METAS ---
+        window.adicionarTarefa = function() {
+            const input = document.getElementById('novaTarefaInput');
+            const texto = input.value.trim();
+            if(!texto) return;
+            tarefasData.push({ id: gerarIdUnico('tar'), texto: texto, concluida: false, data: Date.now() });
+            saveTarefasToFirebase();
+            input.value = '';
+            renderTarefas();
+        };
+        window.toggleTarefa = function(id) {
+            const index = tarefasData.findIndex(t => t.id === id);
+            if(index !== -1) {
+                tarefasData[index].concluida = !tarefasData[index].concluida;
+                saveTarefasToFirebase();
+                renderTarefas();
+            }
+        };
+        window.excluirTarefa = function(id) {
+            tarefasData = tarefasData.filter(t => t.id !== id);
+            saveTarefasToFirebase();
+            renderTarefas();
+        };
+
+        window.abrirModalBriefing = function() {
+            document.getElementById('briefNome').value = '';
+            document.getElementById('briefDrive').value = '';
+            document.getElementById('briefDesign').value = '';
+            document.getElementById('briefOutro').value = '';
+            document.getElementById('briefObs').value = '';
+            editandoBriefing = false;
+            briefingIdAtual = null;
+            document.getElementById('tituloModalBriefing').innerText = 'Novo Acesso / Link';
+            
+            const modal = document.getElementById('modalBriefing');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+        window.fecharModalBriefing = function() {
+            const modal = document.getElementById('modalBriefing');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+        window.salvarBriefing = function() {
+            const nome = document.getElementById('briefNome').value.trim();
+            if(!nome) { alert('Informe o nome do cliente ou projeto.'); return; }
+            
+            const novoBrief = {
+                nome: nome,
+                drive: document.getElementById('briefDrive').value.trim(),
+                design: document.getElementById('briefDesign').value.trim(),
+                outro: document.getElementById('briefOutro').value.trim(),
+                obs: document.getElementById('briefObs').value.trim(),
+                timestamp: Date.now()
+            };
+
+            if(editandoBriefing && briefingIdAtual) {
+                const index = briefingsData.findIndex(b => b.id === briefingIdAtual);
+                if(index !== -1) briefingsData[index] = { ...briefingsData[index], ...novoBrief };
+            } else {
+                novoBrief.id = gerarIdUnico('bri');
+                briefingsData.push(novoBrief);
+            }
+            saveBriefingsToFirebase();
+            window.fecharModalBriefing();
+            renderBriefings();
+        };
+        window.editarBriefing = function(id) {
+            const b = briefingsData.find(x => x.id === id);
+            if(b) {
+                document.getElementById('briefNome').value = b.nome || '';
+                document.getElementById('briefDrive').value = b.drive || '';
+                document.getElementById('briefDesign').value = b.design || '';
+                document.getElementById('briefOutro').value = b.outro || '';
+                document.getElementById('briefObs').value = b.obs || '';
+                editandoBriefing = true;
+                briefingIdAtual = id;
+                document.getElementById('tituloModalBriefing').innerText = 'Editar Acessos';
+                document.getElementById('modalBriefing').classList.remove('hidden');
+                document.getElementById('modalBriefing').classList.add('flex');
+            }
+        };
+        window.excluirBriefing = function(id) {
+            if(confirm('Tem a certeza que deseja excluir esta pasta de acessos?')) {
+                briefingsData = briefingsData.filter(x => x.id !== id);
+                saveBriefingsToFirebase();
+                renderBriefings();
+            }
+        };
+
+        window.salvarMetasConfig = function() {
+            const val = parseFloat(document.getElementById('inputMetaValor').value) || 0;
+            const com = parseFloat(document.getElementById('inputMetaComissao').value) || 0;
+            if(val <= 0) { alert('A meta precisa ser maior que zero!'); return; }
+            
+            metasData = { valor: val, comissao: com };
+            saveMetasToFirebase();
+            alert('Meta atualizada com sucesso!');
+            renderMetas();
+        };
+
+        // --- SISTEMA DE NAVEGAÇÃO E TABS ---
+        function initDate() {
+            const date = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = date.toLocaleDateString('pt-PT', options);
+            document.getElementById('currentDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
         }
 
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) { icon.classList.replace('fa-sun', 'fa-moon'); } 
+            else { icon.classList.replace('fa-moon', 'fa-sun'); }
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('mobile-open');
+            if (sidebar.classList.contains('mobile-open')) overlay.classList.add('active');
+            else overlay.classList.remove('active');
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            
+            const btnClassDef = "w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left";
+            const btnClassAct = "w-full flex items-center gap-3 px-4 py-3 bg-brand-accent/10 text-brand-accent rounded-lg border-l-4 border-brand-accent transition-all text-left";
+            
+            ['dashboard', 'clients', 'finances', 'publicacoes', 'tarefas', 'briefings', 'metas'].forEach(id => {
+                const btn = document.getElementById(`btn-${id}`);
+                if(btn) btn.className = btnClassDef;
+            });
+
+            const headerBtn = document.getElementById('btnNovoHeader');
+            const textHeaderBtn = document.getElementById('textBtnNovoHeader');
+            const fab = document.getElementById('mobileFab');
+            const fabText = document.getElementById('fabText');
+
+            document.getElementById(`view-${tabName}`).classList.add('active');
+            
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            if(activeBtn) {
+                if(tabName === 'tarefas') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 rounded-lg border-l-4 border-indigo-500 transition-all text-left";
+                else if(tabName === 'briefings') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-yellow-500/10 text-yellow-500 rounded-lg border-l-4 border-yellow-500 transition-all text-left";
+                else if(tabName === 'metas') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-500 rounded-lg border-l-4 border-emerald-500 transition-all text-left";
+                else if(tabName === 'publicacoes') activeBtn.className = "w-full flex items-center gap-3 px-4 py-3 bg-pink-500/10 text-pink-500 rounded-lg border-l-4 border-pink-500 transition-all text-left";
+                else activeBtn.className = btnClassAct;
+            }
+
+            headerBtn.style.display = 'none'; 
+            fab.style.display = 'none';
+
+            if(tabName === 'clients') {
+                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Novo Cliente'; headerBtn.onclick = abrirModalNovoCliente; 
+                fab.style.display = 'flex'; fabText.innerText = 'Novo Cliente';
+                renderClientsCards(); 
+            } else if (tabName === 'finances') {
+                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Nova Transação'; headerBtn.onclick = abrirModalNovaFinanca; 
+                fab.style.display = 'flex'; fabText.innerText = 'Nova Transação';
+                renderFinancesCardsAndTable(); 
+            } else if (tabName === 'publicacoes') {
+                renderPublicacoes(true);
+            } else if (tabName === 'tarefas') {
+                renderTarefas();
+            } else if (tabName === 'briefings') {
+                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Novo Acesso'; headerBtn.onclick = abrirModalBriefing; 
+                fab.style.display = 'flex'; fabText.innerText = 'Novo Acesso';
+                renderBriefings();
+            } else if (tabName === 'metas') {
+                renderMetas();
+            }
+        }
+
+        function abrirModalContextual() {
+            if(document.getElementById('view-clients').classList.contains('active')) abrirModalNovoCliente();
+            else if(document.getElementById('view-finances').classList.contains('active')) abrirModalNovaFinanca();
+            else if(document.getElementById('view-briefings').classList.contains('active')) abrirModalBriefing();
+        }
+
+        function resetData() {
+            if(confirm("Isto apagará TODOS os dados (Clientes, Finanças, Tarefas, etc). Deseja continuar?")) {
+                Promise.all([
+                    set(ref(db, DB_PATH), []), set(ref(db, DB_PATH_FINANCES), []),
+                    set(ref(db, DB_PATH_TAREFAS), []), set(ref(db, DB_PATH_BRIEFINGS), [])
+                ]).then(() => alert("Sistema resetado.")).catch(e => alert("Erro: " + e));
+            }
+        }
+
+        function exportData() {
+            const dataToExport = { clientes: appData, financas: financasData, tarefas: tarefasData, briefings: briefingsData, metas: metasData };
+            const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: "application/json" });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `backup_wa_completo_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        function handleFileImport(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if(confirm("Deseja importar e substituir todos os dados atuais?")) {
+                        if(parsed.clientes) appData = parsed.clientes;
+                        if(parsed.financas) financasData = parsed.financas;
+                        if(parsed.tarefas) tarefasData = parsed.tarefas;
+                        if(parsed.briefings) briefingsData = parsed.briefings;
+                        if(parsed.metas) metasData = parsed.metas;
+                        
+                        saveDataToFirebase(); saveFinancesToFirebase(); saveTarefasToFirebase(); saveBriefingsToFirebase(); saveMetasToFirebase();
+                        alert("Importação realizada com sucesso!");
+                    }
+                } catch(err) { alert("Erro ao ler JSON."); }
+            };
+            reader.readAsText(file); input.value = '';
+        }
+
+        // --- RENDERIZAÇÃO DAS NOVAS ABAS ---
+        function renderTarefas() {
+            const ul = document.getElementById('listaTarefas');
+            ul.innerHTML = '';
+            
+            if(tarefasData.length === 0) {
+                ul.innerHTML = `<li class="p-6 text-center text-gray-500"><i class="fa-solid fa-mug-hot mb-2 text-2xl"></i><br>Tudo limpo por aqui! Nenhuma tarefa pendente.</li>`;
+                return;
+            }
+
+            const ordenadas = [...tarefasData].sort((a, b) => {
+                if(a.concluida === b.concluida) return b.data - a.data;
+                return a.concluida ? 1 : -1;
+            });
+
+            ordenadas.forEach(tar => {
+                const li = document.createElement('li');
+                li.className = `p-4 flex items-center justify-between group hover:bg-gray-800/30 transition-colors ${tar.concluida ? 'tarefa-concluida' : ''}`;
+                li.innerHTML = `
+                    <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="toggleTarefa('${tar.id}')">
+                        <div class="w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${tar.concluida ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-gray-600 text-transparent'}">
+                            <i class="fa-solid fa-check text-sm"></i>
+                        </div>
+                        <span class="text-gray-200 select-none flex-1 font-medium">${tar.texto}</span>
+                    </div>
+                    <button onclick="excluirTarefa('${tar.id}')" class="text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-2">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                ul.appendChild(li);
+            });
+        }
+
+        function renderBriefings() {
+            const grid = document.getElementById('gridBriefings');
+            grid.innerHTML = '';
+            
+            if(briefingsData.length === 0) {
+                grid.innerHTML = `<div class="col-span-full p-10 text-center text-gray-500 border border-dashed border-gray-700 rounded-xl"><i class="fa-solid fa-folder-open mb-3 text-4xl opacity-50"></i><p>Nenhum briefing ou acesso guardado ainda.</p></div>`;
+                return;
+            }
+
+            const ordenados = [...briefingsData].sort((a,b) => b.timestamp - a.timestamp);
+
+            ordenados.forEach(b => {
+                const card = document.createElement('div');
+                card.className = "bg-brand-panel border border-[var(--border-color)] rounded-xl p-5 shadow-lg group hover:border-yellow-500/50 transition-colors flex flex-col";
+                
+                let linksHTML = '';
+                if(b.drive) linksHTML += `<a href="${b.drive}" target="_blank" class="bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2"><i class="fa-brands fa-google-drive"></i> Drive</a>`;
+                if(b.design) linksHTML += `<a href="${b.design}" target="_blank" class="bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2"><i class="fa-solid fa-pen-nib"></i> Design</a>`;
+                if(b.outro) linksHTML += `<a href="${b.outro}" target="_blank" class="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2"><i class="fa-solid fa-link"></i> Link</a>`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                                <i class="fa-solid fa-folder"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-lg truncate max-w-[180px]" title="${b.nome}">${b.nome}</h3>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="editarBriefing('${b.id}')" class="text-gray-500 hover:text-white p-1 transition-colors"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="excluirBriefing('${b.id}')" class="text-gray-500 hover:text-red-500 p-1 transition-colors"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${linksHTML || '<span class="text-xs text-gray-600 italic">Nenhum link guardado</span>'}
+                    </div>
+
+                    <div class="mt-auto bg-gray-900/50 p-3 rounded-lg border border-gray-800">
+                        <p class="text-xs text-gray-400 font-mono whitespace-pre-wrap">${b.obs ? b.obs : 'Nenhuma anotação.'}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderMetas() {
+            document.getElementById('inputMetaValor').value = metasData.valor || 10000;
+            document.getElementById('inputMetaComissao').value = metasData.comissao || 0;
+
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            let faturamentoMesAtual = 0;
+
+            financasData.forEach(fin => {
+                if(fin.tipo === 'entrada' && fin.data) {
+                    const [y, m, d] = fin.data.split('-').map(Number);
+                    if(m - 1 === currentMonth && y === currentYear) {
+                        faturamentoMesAtual += parseFloat(fin.valor) || 0;
+                    }
+                }
+            });
+
+            const metaValor = parseFloat(metasData.valor) || 1; 
+            let progresso = (faturamentoMesAtual / metaValor) * 100;
+            if(progresso > 100) progresso = 100;
+
+            let falta = metaValor - faturamentoMesAtual;
+            if(falta < 0) falta = 0;
+
+            const comissaoPercent = parseFloat(metasData.comissao) || 0;
+            const comissaoReais = (faturamentoMesAtual * comissaoPercent) / 100;
+
+            document.getElementById('displayFaturamentoMes').innerText = formatCurrency(faturamentoMesAtual);
+            document.getElementById('displayMetaMes').innerText = formatCurrency(metaValor);
+            document.getElementById('displayPorcentagemMeta').innerText = progresso.toFixed(1).replace('.0','') + '%';
+            
+            setTimeout(() => {
+                const barra = document.getElementById('barraProgressoMeta');
+                if(barra) barra.style.width = `${progresso}%`;
+            }, 100);
+
+            document.getElementById('displayFaltaMeta').innerText = formatCurrency(falta);
+            document.getElementById('displayComissaoMes').innerText = formatCurrency(comissaoReais);
+            
+            if(progresso >= 100) {
+                document.getElementById('displayPorcentagemMeta').classList.replace('text-emerald-400', 'text-yellow-400');
+                document.getElementById('displayPorcentagemMeta').innerHTML = `<i class="fa-solid fa-crown text-yellow-500 mr-1"></i> 100%`;
+                document.getElementById('displayFaltaMeta').innerText = "Meta Batida! 🚀";
+                document.getElementById('displayFaltaMeta').classList.replace('text-yellow-500', 'text-emerald-500');
+            } else {
+                document.getElementById('displayPorcentagemMeta').classList.replace('text-yellow-400', 'text-emerald-400');
+                document.getElementById('displayFaltaMeta').classList.replace('text-emerald-500', 'text-yellow-500');
+            }
+        }
+
+        // --- DASHBOARD PRINCIPAL, CLIENTES, FINANÇAS E PUBLICAÇÕES ---
+        function refreshDashboard() {
+            updateKPIs();
+            renderTable();
+            updateCharts();
+            document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Transações`;
+            
+            if(document.getElementById('view-clients').classList.contains('active')) renderClientsCards();
+            else if (document.getElementById('view-publicacoes').classList.contains('active')) renderPublicacoes();
+            else if (document.getElementById('view-metas').classList.contains('active')) renderMetas();
+        }
+
+        function calculatePeriodStats(startDate, endDate) {
+            const parseLocal = (dateStr) => {
+                const [y, m, d] = dateStr.split('-').map(Number);
+                return new Date(y, m - 1, d, 0, 0, 0, 0);
+            };
+            const parseLocalEnd = (dateStr) => {
+                const [y, m, d] = dateStr.split('-').map(Number);
+                return new Date(y, m - 1, d, 23, 59, 59, 999);
+            };
+            const start = parseLocal(startDate);
+            const end = parseLocalEnd(endDate);
+            let count = 0;
+            let total = 0;
+            appData.forEach(item => {
+                if(!item.data) return;
+                const [y, m, d] = item.data.split('-').map(Number);
+                const itemDate = new Date(y, m - 1, d);
+                if (itemDate.getTime() >= start.getTime() && itemDate.getTime() <= end.getTime()) {
+                    count++;
+                    total += (parseFloat(item.valor) || 0);
+                }
+            });
+            return { count, total };
+        }
+
+        function updateKPIs() {
+            if (appData.length === 0) {
+                resetKPIs();
+                return;
+            }
+            const now = new Date();
+            const formatDateISO = (date) => {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            };
+            const todayStr = formatDateISO(now);
+            const yesterdayDate = new Date(now); yesterdayDate.setDate(now.getDate() - 1);
+            const yesterdayStr = formatDateISO(yesterdayDate);
+            const dayBeforeYesterdayDate = new Date(now); dayBeforeYesterdayDate.setDate(now.getDate() - 2);
+            const dayBeforeYesterdayStr = formatDateISO(dayBeforeYesterdayDate);
+            
+            const currentDay = now.getDay(); const daysToMonday = (currentDay + 6) % 7; 
+            const thisWeekStart = new Date(now); thisWeekStart.setDate(now.getDate() - daysToMonday);
+            const thisWeekEnd = new Date(thisWeekStart); thisWeekEnd.setDate(thisWeekStart.getDate() + 6);
+            
+            const lastWeekStart = new Date(thisWeekStart); lastWeekStart.setDate(thisWeekStart.getDate() - 7);
+            const lastWeekEnd = new Date(lastWeekStart); lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
+            
+            const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+            const monthBeforeLastStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+            const monthBeforeLastEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0);
+            const thisYearStart = new Date(now.getFullYear(), 0, 1);
+            const thisYearEnd = new Date(now.getFullYear(), 11, 31);
+            const lastYearStart = new Date(now.getFullYear() - 1, 0, 1);
+            const lastYearEnd = new Date(now.getFullYear() - 1, 11, 31);
+
+            updateCard('cardToday', calculatePeriodStats(todayStr, todayStr));
+            updateCard('cardYesterday', calculatePeriodStats(yesterdayStr, yesterdayStr));
+            updateCard('cardDayBeforeYesterday', calculatePeriodStats(dayBeforeYesterdayStr, dayBeforeYesterdayStr));
+            updateCard('cardWeek', calculatePeriodStats(formatDateISO(thisWeekStart), formatDateISO(thisWeekEnd)));
+            updateCard('cardLastWeek', calculatePeriodStats(formatDateISO(lastWeekStart), formatDateISO(lastWeekEnd)));
+            updateCard('cardMonth', calculatePeriodStats(formatDateISO(thisMonthStart), formatDateISO(thisMonthEnd)));
+            updateCard('cardLastMonth', calculatePeriodStats(formatDateISO(lastMonthStart), formatDateISO(lastMonthEnd)));
+            updateCard('cardMonthBeforeLast', calculatePeriodStats(formatDateISO(monthBeforeLastStart), formatDateISO(monthBeforeLastEnd)));
+            updateCard('cardYear', calculatePeriodStats(formatDateISO(thisYearStart), formatDateISO(thisYearEnd)));
+            updateCard('cardLastYear', calculatePeriodStats(formatDateISO(lastYearStart), formatDateISO(lastYearEnd))); 
+
+            const totalRevenue = appData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+            const avgTicket = totalRevenue / appData.length;
+            
+            let totalInvestimento = 0; let countInvestimento = 0;
+            let totalDespesa = 0; let countDespesa = 0;
+
+            if (typeof financasData !== 'undefined') {
+                financasData.forEach(fin => {
+                    if (fin.tipo === 'saida') {
+                        totalDespesa += (parseFloat(fin.valor) || 0); countDespesa++;
+                        if (fin.categoria === 'Anúncio' || (fin.obs && fin.obs.toLowerCase().includes('anúncio'))) {
+                            totalInvestimento += (parseFloat(fin.valor) || 0); countInvestimento++;
+                        }
+                    }
+                });
+            }
+            
+            const lucro = totalRevenue - totalInvestimento;
+            const monthlyStats = {};
+            appData.forEach(item => {
+                if(!item.data) return;
+                const dateKey = item.data.substring(0, 7); 
+                if(!monthlyStats[dateKey]) monthlyStats[dateKey] = 0;
+                monthlyStats[dateKey] += (parseFloat(item.valor) || 0);
+            });
+            
+            let bestMonth = { key: '', val: -Infinity }; let worstMonth = { key: '', val: Infinity };
+            Object.entries(monthlyStats).forEach(([key, val]) => {
+                if(val > bestMonth.val) bestMonth = { key, val };
+                if(val < worstMonth.val) worstMonth = { key, val };
+            });
+
+            document.getElementById('kpiTotalRevenue').innerText = formatCurrency(totalRevenue); 
+            
+            if(document.getElementById('cardInvestimentoCount')) document.getElementById('cardInvestimentoCount').innerText = countInvestimento;
+            if(document.getElementById('cardInvestimentoValue')) document.getElementById('cardInvestimentoValue').innerText = formatCurrency(totalInvestimento);
+            if(document.getElementById('cardDespesaCount')) document.getElementById('cardDespesaCount').innerText = countDespesa;
+            if(document.getElementById('cardDespesaValue')) document.getElementById('cardDespesaValue').innerText = formatCurrency(totalDespesa);
+
+            if(document.getElementById('kpiLucro')) document.getElementById('kpiLucro').innerText = formatCurrency(lucro);
+            document.getElementById('kpiAvgTicket').innerText = formatCurrency(avgTicket);
+            if (Object.keys(monthlyStats).length > 0) {
+                document.getElementById('kpiBestMonth').innerText = formatDateToMonthYear(bestMonth.key);
+                document.getElementById('kpiBestMonthValue').innerText = formatCurrency(bestMonth.val);
+                document.getElementById('kpiWorstMonth').innerText = formatDateToMonthYear(worstMonth.key);
+                document.getElementById('kpiWorstMonthValue').innerText = formatCurrency(worstMonth.val);
+            }
+        }
+
+        function updateCard(prefix, stats) {
+            document.getElementById(`${prefix}Count`).innerText = stats.count;
+            document.getElementById(`${prefix}Value`).innerText = formatCurrency(stats.total);
+        }
+
+        function resetKPIs() {
+            const ids = ['cardToday', 'cardYesterday', 'cardDayBeforeYesterday', 'cardWeek', 'cardLastWeek', 'cardMonth', 'cardLastMonth', 'cardMonthBeforeLast', 'cardYear', 'cardLastYear'];
+            ids.forEach(id => updateCard(id, {count: 0, total: 0}));
+            document.getElementById('kpiTotalRevenue').innerText = "R$ 0,00";
+            document.getElementById('kpiLucro').innerText = "R$ 0,00"; 
+            document.getElementById('cardInvestimentoCount').innerText = "0"; 
+            document.getElementById('cardInvestimentoValue').innerText = "R$ 0,00"; 
+            document.getElementById('cardDespesaCount').innerText = "0"; 
+            document.getElementById('cardDespesaValue').innerText = "R$ 0,00"; 
+            document.getElementById('kpiAvgTicket').innerText = "R$ 0,00";
+            document.getElementById('kpiBestMonth').innerText = "---";
+            document.getElementById('kpiWorstMonth').innerText = "---";
+        }
+
+        // --- MANIPULAÇÃO DE DADOS DE CLIENTES E FINANÇAS ---
         function abrirModalNovoCliente() {
             limparFormulario();
             editando = false;
@@ -1469,20 +1803,28 @@
             if (resetPage) currentPage = 1;
 
             const listaClientes = document.getElementById('listaClientes');
-            if(!listaClientes) return;
             listaClientes.innerHTML = '';
 
-            const busca = document.getElementById('buscarCliente') ? document.getElementById('buscarCliente').value.toLowerCase().trim() : '';
-            const fs = document.getElementById('filtroStatus') ? document.getElementById('filtroStatus').value.toLowerCase() : '';
-            
+            const busca = document.getElementById('buscarCliente').value.toLowerCase().trim();
+            const fs = document.getElementById('filtroStatus').value.toLowerCase();
+            const ft = document.getElementById('filtroServico').value.toLowerCase();
+            const fp = document.getElementById('filtroPrioridade').value.toLowerCase();
+            const fd = document.getElementById('filtroData').value; 
+
             let totalValor = 0, totalRealizando = 0, totalEntregue = 0, totalExibido = 0;
 
             let filtrados = appData.filter(cliente => {
                 const s = (cliente.status || '').toLowerCase();
+                const t = (cliente.tipo || '').toLowerCase();
+                const p = (cliente.prioridade || 'média').toLowerCase();
                 const n = (cliente.nome || '').toLowerCase();
                 const e = (cliente.empresa || '').toLowerCase();
+                const d = cliente.data || ''; 
 
                 if (fs && s !== fs) return false;
+                if (ft && !t.includes(ft)) return false; 
+                if (fp && p !== fp) return false;
+                if (fd && d !== fd) return false; 
                 if (busca && !n.includes(busca) && !e.includes(busca)) return false;
                 
                 return true;
@@ -1559,114 +1901,87 @@
                 listaClientes.appendChild(card);
             });
 
-            if(document.getElementById('totalRealizando')) document.getElementById('totalRealizando').innerText = totalRealizando;
-            if(document.getElementById('totalEntregue')) document.getElementById('totalEntregue').innerText = totalEntregue;
-            if(document.getElementById('totalClientes')) document.getElementById('totalClientes').innerText = totalExibido;
-            if(document.getElementById('totalValor')) document.getElementById('totalValor').innerText = formatCurrency(totalValor);
+            document.getElementById('totalRealizando').innerText = totalRealizando;
+            document.getElementById('totalEntregue').innerText = totalEntregue;
+            document.getElementById('totalClientes').innerText = totalExibido;
+            document.getElementById('totalValor').innerText = formatCurrency(totalValor);
 
             const paginationContainer = document.getElementById('paginationControls');
-            if(paginationContainer) {
-                paginationContainer.innerHTML = '';
-                const totalPages = Math.ceil(totalItems / itemsPerPage);
+            paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-                if (totalPages > 1) {
-                    const prevBtn = document.createElement('button');
-                    prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
-                    prevBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
-                    prevBtn.onclick = () => { if(currentPage > 1) changePage(currentPage - 1); };
-                    paginationContainer.appendChild(prevBtn);
+            if (totalPages > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+                prevBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+                prevBtn.onclick = () => { if(currentPage > 1) changePage(currentPage - 1); };
+                paginationContainer.appendChild(prevBtn);
 
-                    let startPage = Math.max(1, currentPage - 2);
-                    let endPage = Math.min(totalPages, startPage + 4);
-                    if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, startPage + 4);
+                if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
 
-                    for (let i = startPage; i <= endPage; i++) {
-                        const pageBtn = document.createElement('button');
-                        pageBtn.innerText = i;
-                        if (i === currentPage) {
-                            pageBtn.className = "w-8 h-8 rounded-lg bg-brand-accent text-white font-bold shadow-lg shadow-red-900/40";
-                        } else {
-                            pageBtn.className = "w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors";
-                            pageBtn.onclick = () => changePage(i);
-                        }
-                        paginationContainer.appendChild(pageBtn);
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.innerText = i;
+                    if (i === currentPage) {
+                        pageBtn.className = "w-8 h-8 rounded-lg bg-brand-accent text-white font-bold shadow-lg shadow-red-900/40";
+                    } else {
+                        pageBtn.className = "w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors";
+                        pageBtn.onclick = () => changePage(i);
                     }
-
-                    const nextBtn = document.createElement('button');
-                    nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
-                    nextBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
-                    nextBtn.onclick = () => { if(currentPage < totalPages) changePage(currentPage + 1); };
-                    paginationContainer.appendChild(nextBtn);
+                    paginationContainer.appendChild(pageBtn);
                 }
+
+                const nextBtn = document.createElement('button');
+                nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+                nextBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+                nextBtn.onclick = () => { if(currentPage < totalPages) changePage(currentPage + 1); };
+                paginationContainer.appendChild(nextBtn);
             }
 
             if (!sortableInstance) {
                 const el = document.getElementById('listaClientes');
-                if(el && typeof Sortable !== 'undefined') {
-                    sortableInstance = Sortable.create(el, {
-                        animation: 150,
-                        handle: '.card-animado',
-                        ghostClass: 'sortable-ghost',
-                        dragClass: 'sortable-drag',
-                        onEnd: function (evt) {
-                            const itemEl = evt.item;
-                            const newIndex = evt.newIndex;
-                            const movedId = itemEl.getAttribute('data-id');
-                            const visibleIds = Array.from(el.children).map(child => child.getAttribute('data-id'));
-                            
-                            const originalIndex = appData.findIndex(i => i.id === movedId);
-                            if (originalIndex > -1) {
-                                const movedItem = appData[originalIndex];
-                                appData.splice(originalIndex, 1);
-                                let targetId, insertAfter = false;
+                sortableInstance = Sortable.create(el, {
+                    animation: 150,
+                    handle: '.card-animado',
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    onEnd: function (evt) {
+                        const itemEl = evt.item;
+                        const newIndex = evt.newIndex;
+                        const movedId = itemEl.getAttribute('data-id');
+                        const visibleIds = Array.from(el.children).map(child => child.getAttribute('data-id'));
+                        
+                        const originalIndex = appData.findIndex(i => i.id === movedId);
+                        if (originalIndex > -1) {
+                            const movedItem = appData[originalIndex];
+                            appData.splice(originalIndex, 1);
+                            let targetId, insertAfter = false;
 
-                                if (visibleIds.length > 1) {
-                                    if (newIndex === visibleIds.length - 1) { targetId = visibleIds[newIndex - 1]; insertAfter = true; } 
-                                    else { targetId = visibleIds[newIndex + 1]; insertAfter = false; }
-                                    
-                                    const targetGlobalIndex = appData.findIndex(i => i.id === targetId);
-                                    if (targetGlobalIndex !== -1) {
-                                        const insertPos = insertAfter ? targetGlobalIndex + 1 : targetGlobalIndex;
-                                        appData.splice(insertPos, 0, movedItem);
-                                    } else {
-                                        appData.unshift(movedItem);
-                                    }
+                            if (visibleIds.length > 1) {
+                                if (newIndex === visibleIds.length - 1) { targetId = visibleIds[newIndex - 1]; insertAfter = true; } 
+                                else { targetId = visibleIds[newIndex + 1]; insertAfter = false; }
+                                
+                                const targetGlobalIndex = appData.findIndex(i => i.id === targetId);
+                                if (targetGlobalIndex !== -1) {
+                                    const insertPos = insertAfter ? targetGlobalIndex + 1 : targetGlobalIndex;
+                                    appData.splice(insertPos, 0, movedItem);
                                 } else {
                                     appData.unshift(movedItem);
                                 }
-                                saveDataToFirebase(); 
+                            } else {
+                                appData.unshift(movedItem);
                             }
+                            saveDataToFirebase(); 
                         }
-                    });
-                }
+                    }
+                });
             }
         }
-        
+
         function changePage(newPage) { currentPage = newPage; renderClientsCards(false); }
         function changePagePub(newPage) { currentPagePub = newPage; renderPublicacoes(false); }
-
-        function copiarInfoInstagram(nome, tipo) {
-            const texto = `Projeto: ${nome}\nServiço: ${tipo || 'Serviço Geral'}`;
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(texto)
-                    .then(() => alert('Copiado para a área de transferência!'))
-                    .catch(err => console.log('Erro ao copiar', err));
-            } else {
-                let textArea = document.createElement("textarea");
-                textArea.value = texto;
-                textArea.style.position = "fixed";
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    alert('Copiado para a área de transferência!');
-                } catch (err) {
-                    console.error('Fallback: Oops, unable to copy', err);
-                }
-                document.body.removeChild(textArea);
-            }
-        }
 
         function renderPublicacoes(resetPage = false) {
             if (resetPage) currentPagePub = 1;
@@ -1872,7 +2187,6 @@
             let totalSaidas = 0;
             const financasOrdenadas = [...financasData].sort((a, b) => b.timestamp - a.timestamp);
             const tbody = document.getElementById('listaFinancasBody');
-            if(!tbody) return;
             tbody.innerHTML = '';
 
             financasOrdenadas.forEach(fin => {
@@ -1908,16 +2222,14 @@
             });
 
             const saldo = totalEntradas - totalSaidas;
-            if(document.getElementById('totalEntradasDisplay')) document.getElementById('totalEntradasDisplay').innerText = formatCurrency(totalEntradas);
-            if(document.getElementById('totalSaidasDisplay')) document.getElementById('totalSaidasDisplay').innerText = formatCurrency(totalSaidas);
+            document.getElementById('totalEntradasDisplay').innerText = formatCurrency(totalEntradas);
+            document.getElementById('totalSaidasDisplay').innerText = formatCurrency(totalSaidas);
             
             const saldoEl = document.getElementById('saldoTotalDisplay');
-            if(saldoEl) {
-                saldoEl.innerText = formatCurrency(saldo);
-                if(saldo > 0) saldoEl.className = 'text-2xl font-bold text-green-400 mt-1';
-                else if(saldo < 0) saldoEl.className = 'text-2xl font-bold text-red-400 mt-1';
-                else saldoEl.className = 'text-2xl font-bold text-blue-400 mt-1';
-            }
+            saldoEl.innerText = formatCurrency(saldo);
+            if(saldo > 0) saldoEl.className = 'text-2xl font-bold text-green-400 mt-1';
+            else if(saldo < 0) saldoEl.className = 'text-2xl font-bold text-red-400 mt-1';
+            else saldoEl.className = 'text-2xl font-bold text-blue-400 mt-1';
 
             updateFinancesCharts();
             if(typeof updateKPIs === 'function') updateKPIs();
@@ -1988,463 +2300,11 @@
             });
         }
 
-        // --- SISTEMA DE TAREFAS ---
-        function adicionarTarefa() {
-            const input = document.getElementById('novaTarefaInput');
-            const texto = input.value.trim();
-            if(!texto) return;
-            tarefasData.push({ id: gerarIdUnico('tar'), texto: texto, concluida: false, data: Date.now() });
-            saveTarefasToFirebase();
-            input.value = '';
-            renderTarefas();
-        }
-
-        function toggleTarefa(id) {
-            const index = tarefasData.findIndex(t => t.id === id);
-            if(index !== -1) {
-                tarefasData[index].concluida = !tarefasData[index].concluida;
-                saveTarefasToFirebase();
-                renderTarefas();
-            }
-        }
-
-        function excluirTarefa(id) {
-            tarefasData = tarefasData.filter(t => t.id !== id);
-            saveTarefasToFirebase();
-            renderTarefas();
-        }
-
-        function renderTarefas() {
-            const lista = document.getElementById('listaTarefas');
-            if(!lista) return;
-            lista.innerHTML = '';
-            
-            if(tarefasData.length === 0) {
-                lista.innerHTML = '<li class="p-6 text-center text-gray-500">Nenhuma tarefa pendente. Boas vendas!</li>';
-                return;
-            }
-
-            const ordenadas = [...tarefasData].sort((a,b) => {
-                if(a.concluida === b.concluida) return b.data - a.data;
-                return a.concluida ? 1 : -1;
-            });
-
-            ordenadas.forEach(t => {
-                const li = document.createElement('li');
-                li.className = "flex items-center justify-between p-4 hover:bg-gray-800/30 transition-colors group border-b border-[var(--border-color)] last:border-0";
-                const textClass = t.concluida ? "text-gray-500 line-through" : "text-gray-200";
-                const checkClass = t.concluida ? "bg-indigo-500 border-indigo-500" : "bg-transparent border-gray-600";
-                
-                li.innerHTML = `
-                    <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="toggleTarefa('${t.id}')">
-                        <div class="w-5 h-5 rounded border ${checkClass} flex items-center justify-center transition-colors">
-                            ${t.concluida ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}
-                        </div>
-                        <span class="${textClass} flex-1 select-none transition-all">${t.texto}</span>
-                    </div>
-                    <button onclick="excluirTarefa('${t.id}')" class="text-gray-600 hover:text-red-500 p-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                `;
-                lista.appendChild(li);
-            });
-        }
-
-        // --- SISTEMA DE BRIEFINGS E TELA DE BLOQUEIO ---
-        function unlockBriefings() {
-            const input = document.getElementById('briefingsPassword');
-            const errorMsg = document.getElementById('briefingsLoginError');
-            
-            if (input.value === SENHA_COFRE) {
-                briefingsUnlocked = true;
-                
-                document.getElementById('briefings-login-screen').classList.add('hidden');
-                
-                const content = document.getElementById('briefings-content');
-                content.classList.remove('opacity-0', 'pointer-events-none');
-                
-                const headerBtn = document.getElementById('btnNovoHeader');
-                const fab = document.getElementById('mobileFab');
-                const textHeaderBtn = document.getElementById('textBtnNovoHeader');
-                const fabText = document.getElementById('fabText');
-                
-                headerBtn.style.display = 'flex'; textHeaderBtn.innerText = 'Novo Acesso'; headerBtn.onclick = abrirModalBriefing; 
-                fab.style.display = 'flex'; fabText.innerText = 'Novo Acesso';
-
-                input.value = ''; 
-                errorMsg.classList.add('hidden');
-                
-                renderBriefings(); 
-            } else {
-                errorMsg.classList.remove('hidden');
-                input.value = '';
-                input.focus();
-            }
-        }
-
-        function abrirModalBriefing() {
-            document.getElementById('briefNome').value = '';
-            document.getElementById('briefDrive').value = '';
-            document.getElementById('briefDesign').value = '';
-            document.getElementById('briefOutro').value = '';
-            document.getElementById('briefObs').value = '';
-            editandoBriefing = false;
-            briefingIdAtual = null;
-            document.getElementById('tituloModalBriefing').innerText = 'Novo Acesso / Link';
-            
-            const modal = document.getElementById('modalBriefing');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function fecharModalBriefing() {
-            const modal = document.getElementById('modalBriefing');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function salvarBriefing() {
-            const nome = document.getElementById('briefNome').value.trim();
-            if(!nome) { alert('Informe o nome do cliente ou projeto.'); return; }
-            
-            const novoBrief = {
-                nome: nome,
-                drive: document.getElementById('briefDrive').value.trim(),
-                design: document.getElementById('briefDesign').value.trim(),
-                outro: document.getElementById('briefOutro').value.trim(),
-                obs: document.getElementById('briefObs').value.trim(),
-                timestamp: Date.now()
-            };
-
-            if(editandoBriefing && briefingIdAtual) {
-                const index = briefingsData.findIndex(b => b.id === briefingIdAtual);
-                if(index !== -1) briefingsData[index] = { ...briefingsData[index], ...novoBrief };
-            } else {
-                novoBrief.id = gerarIdUnico('bri');
-                briefingsData.push(novoBrief);
-            }
-            saveBriefingsToFirebase();
-            fecharModalBriefing();
-            renderBriefings();
-        }
-
-        function editarBriefing(id) {
-            const b = briefingsData.find(x => x.id === id);
-            if(b) {
-                document.getElementById('briefNome').value = b.nome || '';
-                document.getElementById('briefDrive').value = b.drive || '';
-                document.getElementById('briefDesign').value = b.design || '';
-                document.getElementById('briefOutro').value = b.outro || '';
-                document.getElementById('briefObs').value = b.obs || '';
-                editandoBriefing = true;
-                briefingIdAtual = id;
-                document.getElementById('tituloModalBriefing').innerText = 'Editar Acessos';
-                document.getElementById('modalBriefing').classList.remove('hidden');
-                document.getElementById('modalBriefing').classList.add('flex');
-            }
-        }
-
-        function excluirBriefing(id) {
-            if(confirm('Tem a certeza que deseja excluir esta pasta de acessos?')) {
-                briefingsData = briefingsData.filter(x => x.id !== id);
-                saveBriefingsToFirebase();
-                renderBriefings();
-            }
-        }
-
-        function renderBriefings() {
-            const grid = document.getElementById('gridBriefings');
-            if(!grid) return;
-            grid.innerHTML = '';
-            
-            if(briefingsData.length === 0) {
-                grid.innerHTML = `<div class="col-span-full p-10 text-center text-gray-500 border border-dashed border-gray-700 rounded-xl"><i class="fa-solid fa-folder-open mb-3 text-4xl opacity-50"></i><p>Nenhum acesso guardado. Crie o primeiro!</p></div>`;
-                return;
-            }
-
-            const ordenados = [...briefingsData].sort((a,b) => b.timestamp - a.timestamp);
-
-            ordenados.forEach(b => {
-                const card = document.createElement('div');
-                card.className = "bg-brand-panel border border-[var(--border-color)] rounded-xl p-5 shadow-lg flex flex-col hover:border-yellow-500/50 transition-colors group";
-                
-                let linksHTML = '';
-                if(b.drive) linksHTML += `<a href="${b.drive}" target="_blank" class="flex items-center gap-2 text-sm text-gray-300 hover:text-blue-400 p-2 rounded hover:bg-gray-800 transition-colors"><i class="fa-brands fa-google-drive w-4 text-center"></i> Google Drive</a>`;
-                if(b.design) linksHTML += `<a href="${b.design}" target="_blank" class="flex items-center gap-2 text-sm text-gray-300 hover:text-purple-400 p-2 rounded hover:bg-gray-800 transition-colors"><i class="fa-solid fa-pen-nib w-4 text-center"></i> Design (Canva/Figma)</a>`;
-                if(b.outro) linksHTML += `<a href="${b.outro}" target="_blank" class="flex items-center gap-2 text-sm text-gray-300 hover:text-green-400 p-2 rounded hover:bg-gray-800 transition-colors"><i class="fa-solid fa-globe w-4 text-center"></i> Outro Link</a>`;
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4 border-b border-gray-800 pb-3">
-                        <div class="flex items-center gap-3 pr-2 overflow-hidden">
-                            <div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-500 shrink-0">
-                                <i class="fa-solid fa-folder"></i>
-                            </div>
-                            <h3 class="font-bold text-white text-base truncate" title="${b.nome}">${b.nome}</h3>
-                        </div>
-                        <div class="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                            <button onclick="editarBriefing('${b.id}')" class="text-gray-500 hover:text-white p-2 transition-colors"><i class="fa-solid fa-pen text-xs"></i></button>
-                            <button onclick="excluirBriefing('${b.id}')" class="text-gray-500 hover:text-red-500 p-2 transition-colors"><i class="fa-solid fa-trash text-xs"></i></button>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-1 mb-4 flex-1">
-                        ${linksHTML || '<p class="text-xs text-gray-600 italic px-2">Nenhum link adicionado</p>'}
-                    </div>
-
-                    ${b.obs ? `
-                        <div class="mt-auto bg-gray-900/50 p-3 rounded-lg border border-gray-800">
-                            <p class="text-xs text-gray-500 font-bold uppercase mb-1">Anotações</p>
-                            <p class="text-sm text-gray-300 whitespace-pre-wrap">${b.obs}</p>
-                        </div>
-                    ` : ''}
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // --- SISTEMA DE INTERAÇÕES ---
-        function abrirModalInteracao() {
-            document.getElementById('interTitulo').value = '';
-            document.getElementById('interTexto').value = '';
-            editandoInteracao = false;
-            interacaoIdAtual = null;
-            document.getElementById('tituloModalInteracao').innerText = 'Novo Script';
-            
-            const modal = document.getElementById('modalInteracao');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-        
-        function fecharModalInteracao() {
-            const modal = document.getElementById('modalInteracao');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function salvarInteracao() {
-            const titulo = document.getElementById('interTitulo').value.trim();
-            const texto = document.getElementById('interTexto').value.trim();
-            
-            if(!titulo || !texto) { alert('Informe o Título e a Mensagem do script.'); return; }
-            
-            const novaInteracao = {
-                titulo: titulo,
-                texto: texto,
-                timestamp: Date.now()
-            };
-
-            if(editandoInteracao && interacaoIdAtual) {
-                const index = interacoesData.findIndex(i => i.id === interacaoIdAtual);
-                if(index !== -1) interacoesData[index] = { ...interacoesData[index], ...novaInteracao };
-            } else {
-                novaInteracao.id = gerarIdUnico('int');
-                interacoesData.push(novaInteracao);
-            }
-            saveInteracoesToFirebase();
-            fecharModalInteracao();
-            renderInteracoes();
-        }
-
-        function editarInteracao(id) {
-            const i = interacoesData.find(x => x.id === id);
-            if(i) {
-                document.getElementById('interTitulo').value = i.titulo || '';
-                document.getElementById('interTexto').value = i.texto || '';
-                editandoInteracao = true;
-                interacaoIdAtual = id;
-                document.getElementById('tituloModalInteracao').innerText = 'Editar Script';
-                document.getElementById('modalInteracao').classList.remove('hidden');
-                document.getElementById('modalInteracao').classList.add('flex');
-            }
-        }
-
-        function excluirInteracao(id) {
-            if(confirm('Tem a certeza que deseja excluir este script de interação?')) {
-                interacoesData = interacoesData.filter(x => x.id !== id);
-                saveInteracoesToFirebase();
-                renderInteracoes();
-            }
-        }
-
-        function copiarInteracaoTexto(id) {
-            const item = interacoesData.find(i => i.id === id);
-            if(!item || !item.texto) return;
-            
-            const texto = item.texto;
-            
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(texto).then(() => alert('Texto copiado com sucesso!')).catch(err => console.log('Erro ao copiar', err));
-            } else {
-                let textArea = document.createElement("textarea");
-                textArea.value = texto;
-                textArea.style.position = "fixed";
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    alert('Texto copiado com sucesso!');
-                } catch (err) {
-                    console.error('Fallback: Oops, unable to copy', err);
-                }
-                document.body.removeChild(textArea);
-            }
-        }
-
-        function renderInteracoes() {
-            const grid = document.getElementById('gridInteracoes');
-            if(!grid) return;
-            grid.innerHTML = '';
-            
-            if(interacoesData.length === 0) {
-                grid.innerHTML = `<div class="col-span-full p-10 text-center text-gray-500 border border-dashed border-gray-700 rounded-xl"><i class="fa-regular fa-comment-dots mb-3 text-4xl opacity-50"></i><p>Nenhum script guardado. Crie o primeiro!</p></div>`;
-                return;
-            }
-
-            const ordenados = [...interacoesData].sort((a,b) => b.timestamp - a.timestamp);
-
-            ordenados.forEach(i => {
-                const card = document.createElement('div');
-                card.className = "bg-brand-panel border border-[var(--border-color)] rounded-xl p-5 shadow-lg flex flex-col hover:border-sky-500/50 transition-colors group";
-                
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-sky-500/10 flex items-center justify-center text-sky-400">
-                                <i class="fa-solid fa-bolt"></i>
-                            </div>
-                            <h3 class="font-bold text-white text-base truncate max-w-[180px]" title="${i.titulo}">${i.titulo}</h3>
-                        </div>
-                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onclick="editarInteracao('${i.id}')" class="text-gray-500 hover:text-white p-1 transition-colors"><i class="fa-solid fa-pen text-xs"></i></button>
-                            <button onclick="excluirInteracao('${i.id}')" class="text-gray-500 hover:text-red-500 p-1 transition-colors"><i class="fa-solid fa-trash text-xs"></i></button>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-900/80 p-4 rounded-xl rounded-tl-none border border-gray-800 flex-1 balao-interacao">
-                        <p class="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">${i.texto}</p>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-t border-[var(--border-color)] flex justify-end">
-                        <button onclick="copiarInteracaoTexto('${i.id}')" class="bg-sky-500/10 text-sky-400 hover:bg-sky-500 hover:text-white w-full py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 active:scale-95">
-                            <i class="fa-regular fa-copy"></i> Copiar Mensagem
-                        </button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // --- SISTEMA DE METAS ---
-        function salvarMetasConfig() {
-            const val = parseFloat(document.getElementById('inputMetaValor').value) || 0;
-            const com = parseFloat(document.getElementById('inputMetaComissao').value) || 0;
-            if(val <= 0) { alert('A meta precisa ser maior que zero!'); return; }
-            
-            metasData = { valor: val, comissao: com };
-            saveMetasToFirebase();
-            alert('Meta atualizada com sucesso!');
-            renderMetas();
-        }
-
-        function renderMetas() {
-            if(document.getElementById('inputMetaValor')) document.getElementById('inputMetaValor').value = metasData.valor || 10000;
-            if(document.getElementById('inputMetaComissao')) document.getElementById('inputMetaComissao').value = metasData.comissao || 0;
-
-            let faturamentoMes = 0;
-            const now = new Date();
-            const currentMonthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-            appData.forEach(cliente => {
-                if(cliente.data && cliente.data.startsWith(currentMonthPrefix)) {
-                    faturamentoMes += parseFloat(cliente.valor) || 0;
-                }
-            });
-
-            const metaVal = parseFloat(metasData.valor) || 1;
-            let pct = (faturamentoMes / metaVal) * 100;
-            if(pct > 100) pct = 100;
-
-            if(document.getElementById('displayFaturamentoMes')) document.getElementById('displayFaturamentoMes').innerText = formatCurrency(faturamentoMes);
-            if(document.getElementById('displayMetaMes')) document.getElementById('displayMetaMes').innerText = formatCurrency(metaVal);
-            if(document.getElementById('displayPorcentagemMeta')) document.getElementById('displayPorcentagemMeta').innerText = pct.toFixed(1) + '%';
-            if(document.getElementById('barraProgressoMeta')) document.getElementById('barraProgressoMeta').style.width = pct + '%';
-
-            const falta = metaVal - faturamentoMes;
-            if(document.getElementById('displayFaltaMeta')) document.getElementById('displayFaltaMeta').innerText = falta > 0 ? formatCurrency(falta) : 'Meta Batida!';
-
-            let percComissao = parseFloat(metasData.comissao) || 0;
-            let comissaoVal = faturamentoMes;
-            if (percComissao > 0) {
-                comissaoVal = faturamentoMes * (percComissao / 100);
-            }
-            
-            if(document.getElementById('displayComissaoMes')) document.getElementById('displayComissaoMes').innerText = formatCurrency(comissaoVal);
-        }
-
-        // FUNÇÕES UTILITÁRIAS
         function formatCurrency(val) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0); }
         function formatDate(dateStr) { if(!dateStr) return '-'; const [y, m, d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
         function formatDateToMonthYear(yyyy_mm) { if(!yyyy_mm) return '-'; const [y, m] = yyyy_mm.split('-'); const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']; return `${months[parseInt(m)-1]} ${y}`; }
         function getStatusStyle(status) { status = (status || '').toLowerCase(); if(status === 'entregue') return 'bg-green-900/50 text-green-400 border border-green-900'; if(status === 'realizando') return 'bg-blue-900/50 text-blue-400 border border-blue-900'; if(status === 'pendente') return 'bg-yellow-900/50 text-yellow-400 border border-yellow-900'; if(status === 'cancelado') return 'bg-red-900/50 text-red-400 border border-red-900'; return 'bg-gray-700 text-gray-300'; }
         function getTypeIcon(type) { type = (type || '').toLowerCase(); if(type.includes('logo')) return '<i class="fa-solid fa-pen-nib text-purple-400"></i>'; if(type.includes('site') || type.includes('web')) return '<i class="fa-solid fa-globe text-blue-400"></i>'; if(type.includes('anuncio') || type.includes('traffic')) return '<i class="fa-solid fa-bullhorn text-red-400"></i>'; if(type.includes('video')) return '<i class="fa-solid fa-video text-pink-400"></i>'; return '<i class="fa-solid fa-box text-gray-400"></i>'; }
-
-
-        // --- ATRIBUIÇÃO AO WINDOW PARA ACESSO PELO HTML ---
-        window.initDate = initDate;
-        window.toggleTheme = toggleTheme;
-        window.toggleSidebar = toggleSidebar;
-        window.switchTab = switchTab;
-        window.abrirModalContextual = abrirModalContextual;
-        window.resetData = resetData;
-        window.exportData = exportData;
-        window.handleFileImport = handleFileImport;
-        
-        window.refreshDashboard = refreshDashboard;
-        window.renderTable = renderTable;
-        window.deleteItem = deleteItem;
-        window.updateCharts = updateCharts;
-        window.copiarInfoInstagram = copiarInfoInstagram;
-        
-        window.abrirModalNovoCliente = abrirModalNovoCliente;
-        window.fecharModal = fecharModal;
-        window.salvarCliente = salvarCliente;
-        window.editarCliente = editarCliente;
-        window.excluirCliente = excluirCliente;
-        
-        window.renderClientsCards = renderClientsCards;
-        window.changePage = changePage;
-        
-        window.renderPublicacoes = renderPublicacoes;
-        window.changePagePub = changePagePub;
-
-        window.abrirModalNovaFinanca = abrirModalNovaFinanca;
-        window.fecharModalFinanca = fecharModalFinanca;
-        window.salvarTransacaoFinanca = salvarTransacaoFinanca;
-        window.editarFinanca = editarFinanca;
-        window.excluirFinanca = excluirFinanca;
-
-        window.adicionarTarefa = adicionarTarefa;
-        window.toggleTarefa = toggleTarefa;
-        window.excluirTarefa = excluirTarefa;
-        window.renderTarefas = renderTarefas; // Adicionado
-
-        window.unlockBriefings = unlockBriefings;
-        window.abrirModalBriefing = abrirModalBriefing;
-        window.fecharModalBriefing = fecharModalBriefing;
-        window.salvarBriefing = salvarBriefing;
-        window.editarBriefing = editarBriefing;
-        window.excluirBriefing = excluirBriefing;
-        window.renderBriefings = renderBriefings; // Adicionado
-
-        window.abrirModalInteracao = abrirModalInteracao;
-        window.fecharModalInteracao = fecharModalInteracao;
-        window.salvarInteracao = salvarInteracao;
-        window.editarInteracao = editarInteracao;
-        window.excluirInteracao = excluirInteracao;
-        window.copiarInteracaoTexto = copiarInteracaoTexto;
-
-        window.salvarMetasConfig = salvarMetasConfig;
 
     </script>
 </body>
