@@ -138,13 +138,92 @@
 </head>
 <body class="bg-brand-dark text-brand-text font-sans antialiased overflow-hidden transition-colors duration-300">
 
+    <!-- SCRIPT DE LOGIN -->
+    <script>
+        // --- CREDENCIAIS DE ACESSO ---
+        const LOGIN_USER = 'admin';
+        const LOGIN_PASS = 'admin123';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('wa_logged_in') === 'true') {
+                showApp();
+            }
+        });
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const errorMsg = document.getElementById('loginError');
+
+            if (user === LOGIN_USER && pass === LOGIN_PASS) {
+                sessionStorage.setItem('wa_logged_in', 'true');
+                errorMsg.classList.add('hidden');
+                showApp();
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function showApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('app-container').classList.add('flex');
+            
+            // Garantir que os dados do dashboard renderizem corretamente após exibir o container
+            if (typeof window.updateCharts === 'function') {
+                setTimeout(() => {
+                    window.updateCharts();
+                }, 100);
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('wa_logged_in');
+            location.reload();
+        }
+    </script>
+
+    <!-- TELA DE LOGIN -->
+    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-brand-dark transition-opacity duration-500">
+        <div class="bg-brand-panel p-8 rounded-xl shadow-2xl border border-[var(--border-color)] w-full max-w-md m-4">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-accent/10 text-brand-accent mb-4">
+                    <i class="fa-solid fa-rocket text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-brand-text">WA<span class="text-white">COMERCIAL</span></h2>
+                <p class="text-gray-500 text-sm mt-1">Growth Command Center</p>
+            </div>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Usuário</label>
+                        <input type="text" id="username" required class="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="Digite seu usuário">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Senha</label>
+                        <input type="password" id="password" required class="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="••••••••">
+                    </div>
+                    <div id="loginError" class="hidden text-red-500 text-sm text-center font-medium bg-red-500/10 py-2 rounded border border-red-500/20">
+                        Usuário ou senha incorretos.
+                    </div>
+                    <button type="submit" class="w-full bg-brand-accent hover:bg-brand-accentHover text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-red-900/20 transition-all transform hover:-translate-y-0.5 mt-4">
+                        Acessar Sistema
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Input Invisível para Importação -->
     <input type="file" id="fileInput" accept=".json" class="hidden" onchange="handleFileImport(this)">
 
     <!-- Overlay Mobile -->
     <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden glass"></div>
 
-    <div class="flex h-screen">
+    <!-- WRAPPER DO APLICATIVO (Oculto inicialmente pelo login) -->
+    <div id="app-container" class="hidden h-screen w-full">
 
         <!-- Sidebar -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-brand-panel border-r border-[var(--border-color)] flex flex-col shadow-xl transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300">
@@ -191,20 +270,26 @@
             </nav>
 
             <div class="p-4 border-t border-[var(--border-color)]">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-accent to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-purple-900/50">
-                        WA
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-accent to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-purple-900/50">
+                            WA
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-brand-text">Administrador</p>
+                            <p class="text-xs text-green-400">● Online</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm font-medium text-brand-text">Administrador</p>
-                        <p class="text-xs text-green-400">● Online</p>
-                    </div>
+                    <!-- Botão de Logout -->
+                    <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-500/10" title="Sair do sistema">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
                 </div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col h-screen overflow-hidden relative bg-brand-dark transition-colors duration-300">
+        <main class="flex-1 flex flex-col h-screen overflow-hidden relative bg-brand-dark transition-colors duration-300 w-full">
             
             <!-- Header -->
             <header class="h-16 bg-brand-panel/80 backdrop-blur-md border-b border-[var(--border-color)] flex items-center justify-between px-6 sticky top-0 z-10 transition-colors duration-300">
@@ -591,16 +676,16 @@
             </div> <!-- Fim do Container de Scroll -->
 
             <!-- MOBILE FLOATING ACTION BUTTON (FAB) -->
-            <button type="button" id="mobileFab" onclick="abrirModalContextual()" class="md:hidden fixed bottom-6 right-6 bg-brand-accent text-white px-4 py-4 rounded-full shadow-2xl flex items-center justify-center gap-2 group overflow-hidden fab-expanded">
+            <button type="button" id="mobileFab" onclick="abrirModalContextual()" class="md:hidden fixed bottom-6 right-6 bg-brand-accent text-white px-4 py-4 rounded-full shadow-2xl items-center justify-center gap-2 group overflow-hidden fab-expanded" style="display: none;">
                 <i class="fa-solid fa-plus text-xl"></i>
                 <span id="fabText" class="font-bold text-sm">Novo</span>
             </button>
 
         </main>
-    </div>
+    </div> <!-- FIM DO WRAPPER DO APLICATIVO -->
 
     <!-- MODAL: CLIENTE -->
-    <div id="modalCliente" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
+    <div id="modalCliente" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md items-center justify-center z-[60] p-4 transition-all duration-300">
         <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
                 <i class="fa-solid fa-user-pen text-blue-500"></i> Adicionar / Editar Cliente
@@ -667,7 +752,7 @@
     </div>
 
     <!-- MODAL: FINANÇA -->
-    <div id="modalFinanca" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 transition-all duration-300">
+    <div id="modalFinanca" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md items-center justify-center z-[60] p-4 transition-all duration-300">
         <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
                 <i class="fa-solid fa-money-bill-transfer text-blue-500"></i> <span id="tituloModalFinanca">Nova Transação</span>
@@ -1046,7 +1131,10 @@
         function refreshDashboard() {
             updateKPIs();
             renderTable();
-            updateCharts();
+            // Evitar erro se o chart tentar atualizar em um canvas escondido (antes do login)
+            if(document.getElementById('app-container').classList.contains('hidden') === false) {
+                updateCharts();
+            }
             document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Transações`;
             
             if(document.getElementById('view-clients').classList.contains('active')) {
@@ -1868,6 +1956,9 @@
         }
 
         function updateCharts() {
+            // Evita atualizar o canvas se ele não estiver visível ainda
+            if(document.getElementById('app-container').classList.contains('hidden')) return;
+
             if(appData.length === 0) return;
             const monthlyData = {};
             appData.forEach(item => {
