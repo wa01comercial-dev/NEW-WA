@@ -233,6 +233,12 @@
                     <i class="fa-solid fa-wallet w-5"></i>
                     <span class="font-medium">Finanças</span>
                 </button>
+
+                <!-- NOVA ABA: SCRIPTS -->
+                <button onclick="switchTab('scripts'); toggleSidebar()" id="btn-scripts" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
+                    <i class="fa-solid fa-code w-5"></i>
+                    <span class="font-medium">Scripts</span>
+                </button>
                 
                 <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-2">Dados</p>
                 <button onclick="document.getElementById('fileInput').click(); toggleSidebar()" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg transition-all text-left">
@@ -588,7 +594,7 @@
                     </div>
                 </div>
 
-                <!-- NOVA ABA: FINANÇAS -->
+                <!-- FINANÇAS -->
                 <div id="view-finances" class="tab-content space-y-6">
                     <div class="flex justify-between items-end animate-fade-in mb-4">
                         <div>
@@ -649,6 +655,21 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- NOVA ABA: SCRIPTS -->
+                <div id="view-scripts" class="tab-content space-y-6">
+                    <div class="flex justify-between items-end animate-fade-in mb-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-brand-text mb-1">Scripts de Vendas</h1>
+                            <p class="text-brand-muted">Gerencie e copie textos rápidos para abordagem.</p>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Scripts em Grid -->
+                    <div id="listaScripts" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fade-in pb-10">
+                        <!-- Scripts injetados via JS -->
                     </div>
                 </div>
 
@@ -794,6 +815,31 @@
         </div>
     </div>
 
+    <!-- MODAL: SCRIPT -->
+    <div id="modalScript" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md items-center justify-center z-[60] p-4 transition-all duration-300">
+        <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
+                <i class="fa-solid fa-code text-blue-500"></i> <span id="tituloModalScript">Novo Script</span>
+            </h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Título do Script</label>
+                    <input id="scriptTitulo" type="text" placeholder="Ex: Abordagem Fria WhatsApp" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Conteúdo do Script</label>
+                    <textarea id="scriptTexto" rows="8" placeholder="Olá, tudo bem? Vi que sua empresa..." class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
+                <button type="button" onclick="window.fecharModalScript()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button type="button" id="btnSalvarScript" onclick="window.salvarScript()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Salvar Script</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPT TIPO MODULE PARA IMPORTAÇÃO DO FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -822,14 +868,20 @@
         
         const DB_PATH = 'wa_growth_data_v2'; 
         const DB_PATH_FINANCES = 'wa_finances_data'; 
+        const DB_PATH_SCRIPTS = 'wa_scripts_data'; // NOVO PATH
 
         // --- CONSTANTES E ESTADO ---
         let appData = []; 
         let financasData = []; 
+        let scriptsData = []; // NOVO ARRAY
+        
         let editando = false;
         let clienteIdAtual = null;
         let editandoFinanca = false;
         let financaIdAtual = null;
+        let editandoScript = false; // ESTADO NOVO
+        let scriptIdAtual = null;   // ESTADO NOVO
+        
         let currentPage = 1; 
         const itemsPerPage = 15; 
         let dbListenersActive = false; // Controle para não criar ouvintes duplicados
@@ -865,6 +917,7 @@
                 if (!dbListenersActive) {
                     initFirebaseListener();
                     initFirebaseFinancesListener(); 
+                    initFirebaseScriptsListener(); // NOVO LISTENER
                     dbListenersActive = true;
                 }
             } else {
@@ -991,6 +1044,30 @@
                 .catch((error) => console.error("Erro ao salvar finanças no Firebase:", error));
         }
 
+        // NOVO: Firebase Scripts
+        function initFirebaseScriptsListener() {
+            const scriptsRef = ref(db, DB_PATH_SCRIPTS);
+            onValue(scriptsRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data && Array.isArray(data)) {
+                    scriptsData = data.filter(Boolean); 
+                } else if (data) {
+                    scriptsData = Object.values(data).filter(Boolean);
+                } else {
+                    scriptsData = [];
+                }
+                if(document.getElementById('view-scripts').classList.contains('active')) {
+                    renderScripts();
+                }
+            });
+        }
+
+        function saveScriptsToFirebase() {
+            set(ref(db, DB_PATH_SCRIPTS), scriptsData)
+                .catch((error) => console.error("Erro ao salvar scripts no Firebase:", error));
+        }
+
+
         // --- FUNÇÕES GLOBAIS (ATTACH WINDOW) ---
         window.initDate = initDate;
         window.toggleTheme = toggleTheme;
@@ -1012,13 +1089,22 @@
         window.toggleSidebar = toggleSidebar; 
         window.changePage = changePage;
         
-        // Novas funções finanças globais (Modal de Finanças)
+        // Funções finanças globais
         window.abrirModalNovaFinanca = abrirModalNovaFinanca;
         window.fecharModalFinanca = fecharModalFinanca;
         window.salvarTransacaoFinanca = salvarTransacaoFinanca;
         window.excluirFinanca = excluirFinanca;
         window.editarFinanca = editarFinanca;
         window.abrirModalContextual = abrirModalContextual;
+
+        // NOVAS Funções Scripts Globais
+        window.abrirModalNovoScript = abrirModalNovoScript;
+        window.fecharModalScript = fecharModalScript;
+        window.salvarScript = salvarScript;
+        window.editarScript = editarScript;
+        window.excluirScript = excluirScript;
+        window.copiarScript = copiarScript;
+
 
         function initDate() {
             const date = new Date();
@@ -1062,6 +1148,7 @@
             document.getElementById('btn-dashboard').className = btnClassDef;
             document.getElementById('btn-clients').className = btnClassDef;
             document.getElementById('btn-finances').className = btnClassDef;
+            document.getElementById('btn-scripts').className = btnClassDef; // NOVO
 
             const headerBtn = document.getElementById('btnNovoHeader');
             const textHeaderBtn = document.getElementById('textBtnNovoHeader');
@@ -1076,7 +1163,7 @@
                 document.getElementById('view-clients').classList.add('active');
                 document.getElementById('btn-clients').className = btnClassAct;
                 
-                headerBtn.style.display = ''; // Limpando estilo inline para as classes (hidden md:flex) do Tailwind voltarem a funcionar
+                headerBtn.style.display = ''; 
                 textHeaderBtn.innerText = 'Novo Cliente';
                 headerBtn.onclick = abrirModalNovoCliente; 
                 
@@ -1088,7 +1175,7 @@
                 document.getElementById('view-finances').classList.add('active');
                 document.getElementById('btn-finances').className = btnClassAct;
                 
-                headerBtn.style.display = ''; // Limpando estilo inline para as classes (hidden md:flex) do Tailwind voltarem a funcionar
+                headerBtn.style.display = ''; 
                 textHeaderBtn.innerText = 'Nova Transação';
                 headerBtn.onclick = abrirModalNovaFinanca; 
                 
@@ -1096,6 +1183,18 @@
                 fabText.innerText = 'Nova Transação';
                 
                 renderFinancesCardsAndTable(); 
+            } else if (tabName === 'scripts') {
+                document.getElementById('view-scripts').classList.add('active');
+                document.getElementById('btn-scripts').className = btnClassAct;
+                
+                headerBtn.style.display = ''; 
+                textHeaderBtn.innerText = 'Novo Script';
+                headerBtn.onclick = abrirModalNovoScript; 
+                
+                document.getElementById('mobileFab').style.display = 'flex'; 
+                fabText.innerText = 'Novo Script';
+                
+                renderScripts(); 
             }
         }
 
@@ -1104,15 +1203,18 @@
                 abrirModalNovoCliente();
             } else if(document.getElementById('view-finances').classList.contains('active')) {
                 abrirModalNovaFinanca();
+            } else if(document.getElementById('view-scripts').classList.contains('active')) {
+                abrirModalNovoScript();
             }
         }
 
         // --- GESTÃO DE DADOS ---
         function resetData() {
-            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do sistema (Clientes e Finanças) permanentemente no Firebase. Deseja continuar?")) {
+            if(confirm("ATENÇÃO: Isso apagará TODOS os dados do sistema permanentemente no Firebase. Deseja continuar?")) {
                 Promise.all([
                     set(ref(db, DB_PATH), []),
-                    set(ref(db, DB_PATH_FINANCES), [])
+                    set(ref(db, DB_PATH_FINANCES), []),
+                    set(ref(db, DB_PATH_SCRIPTS), [])
                 ]).then(() => alert("Sistema resetado com sucesso."))
                   .catch((err) => alert("Erro ao resetar: " + err));
             }
@@ -1121,7 +1223,8 @@
         function exportData() {
             const dataToExport = {
                 clientes: appData,
-                financas: financasData
+                financas: financasData,
+                scripts: scriptsData
             };
             const dataStr = JSON.stringify(dataToExport, null, 2);
             const blob = new Blob([dataStr], { type: "application/json" });
@@ -1145,10 +1248,12 @@
                     
                     let clientesImportados = [];
                     let financasImportadas = [];
+                    let scriptsImportados = [];
 
-                    if (importedData.clientes || importedData.financas) {
+                    if (importedData.clientes || importedData.financas || importedData.scripts) {
                         clientesImportados = importedData.clientes || [];
                         financasImportadas = importedData.financas || [];
+                        scriptsImportados = importedData.scripts || [];
                     } else if (Array.isArray(importedData)) {
                         clientesImportados = importedData;
                     } else {
@@ -1159,6 +1264,7 @@
                     if(confirm(`Arquivo lido. Deseja SUBSTITUIR os dados atuais (OK) ou MESCLAR (Cancelar)?`)) {
                         appData = clientesImportados;
                         financasData = financasImportadas;
+                        scriptsData = scriptsImportados;
                     } else {
                         const currentIds = new Set(appData.map(i => i.id));
                         clientesImportados.forEach(item => {
@@ -1168,9 +1274,14 @@
                         financasImportadas.forEach(item => {
                             if(!currentFinIds.has(item.id)) financasData.push(item);
                         });
+                        const currentScriptIds = new Set(scriptsData.map(i => i.id));
+                        scriptsImportados.forEach(item => {
+                            if(!currentScriptIds.has(item.id)) scriptsData.push(item);
+                        });
                     }
                     saveDataToFirebase();
                     saveFinancesToFirebase();
+                    saveScriptsToFirebase();
                     alert("Importação concluída e sincronizada!");
                 } catch (err) {
                     console.error(err);
@@ -1189,11 +1300,179 @@
             if(document.getElementById('app-container').classList.contains('hidden') === false) {
                 updateCharts();
             }
-            document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Transações`;
+            document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Trans. | ${scriptsData.length} Scripts`;
             
             if(document.getElementById('view-clients').classList.contains('active')) {
                 renderClientsCards();
             }
+        }
+
+        // --- MODAL E LÓGICA DA ABA SCRIPTS ---
+        function abrirModalNovoScript() {
+            document.getElementById('scriptTitulo').value = '';
+            document.getElementById('scriptTexto').value = '';
+            editandoScript = false;
+            scriptIdAtual = null;
+            
+            document.getElementById('tituloModalScript').innerText = 'Novo Script';
+            
+            const btn = document.getElementById('btnSalvarScript');
+            if(btn) {
+                btn.innerHTML = 'Salvar Script';
+                btn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
+                btn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
+            }
+
+            const modal = document.getElementById('modalScript');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function fecharModalScript() {
+            const modal = document.getElementById('modalScript');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function salvarScript() {
+            const titulo = document.getElementById('scriptTitulo').value.trim();
+            const texto = document.getElementById('scriptTexto').value.trim();
+
+            if (!titulo || !texto) {
+                alert("Preencha o título e o conteúdo do script.");
+                return;
+            }
+
+            if (editandoScript && scriptIdAtual) {
+                const index = scriptsData.findIndex(s => s.id === scriptIdAtual);
+                if (index !== -1) {
+                    scriptsData[index] = {
+                        ...scriptsData[index],
+                        titulo: titulo,
+                        texto: texto
+                    };
+                }
+            } else {
+                scriptsData.push({
+                    id: gerarIdUnico('script'),
+                    titulo: titulo,
+                    texto: texto
+                });
+            }
+
+            saveScriptsToFirebase();
+            renderScripts();
+            fecharModalScript();
+        }
+
+        function editarScript(id) {
+            const script = scriptsData.find(s => s.id === id);
+            if (script) {
+                document.getElementById('scriptTitulo').value = script.titulo || '';
+                document.getElementById('scriptTexto').value = script.texto || '';
+                
+                editandoScript = true;
+                scriptIdAtual = id;
+                document.getElementById('tituloModalScript').innerText = 'Editar Script';
+
+                const btn = document.getElementById('btnSalvarScript');
+                if(btn) {
+                    btn.innerHTML = 'Atualizar Script';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'shadow-blue-900/40');
+                    btn.classList.add('bg-yellow-600', 'hover:bg-yellow-700', 'shadow-yellow-900/40');
+                }
+                
+                const modal = document.getElementById('modalScript');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function excluirScript(id) {
+            if(confirm("Deseja realmente excluir este script?")) {
+                scriptsData = scriptsData.filter(s => s.id !== id);
+                saveScriptsToFirebase();
+                renderScripts();
+            }
+        }
+
+        function renderScripts() {
+            const container = document.getElementById('listaScripts');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            if (!scriptsData || scriptsData.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10">Nenhum script salvo ainda.</div>';
+                return;
+            }
+
+            scriptsData.forEach(script => {
+                const card = document.createElement('div');
+                card.className = "bg-brand-panel border border-gray-800 rounded-xl p-5 relative group shadow-sm hover:border-brand-accent/50 transition-colors flex flex-col h-full max-h-[350px]";
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-lg font-bold text-white truncate pr-2">${script.titulo}</h3>
+                        <div class="flex gap-1 shrink-0">
+                            <button onclick="editarScript('${script.id}')" class="w-8 h-8 rounded bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors" title="Editar">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button onclick="excluirScript('${script.id}')" class="w-8 h-8 rounded bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center text-red-500 transition-colors" title="Excluir">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 bg-gray-900/50 rounded-lg p-3 border border-gray-800/50 overflow-y-auto mb-4 custom-scroll">
+                        <p class="text-sm text-gray-300 whitespace-pre-wrap">${script.texto}</p>
+                    </div>
+                    <button onclick="copiarScript(this, '${script.id}')" class="w-full bg-gray-800 hover:bg-gray-700 text-brand-accent font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mt-auto border border-gray-700 group-hover:bg-brand-accent group-hover:text-white group-hover:border-brand-accent">
+                        <i class="fa-regular fa-copy"></i> <span>Copiar Texto</span>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+            document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Trans. | ${scriptsData.length} Scripts`;
+        }
+
+        function copiarScript(btnElement, id) {
+            const script = scriptsData.find(s => s.id === id);
+            if(script && script.texto) {
+                // Clipboard API Moderno
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(script.texto).then(() => {
+                        feedbackCopiaVisual(btnElement);
+                    });
+                } else {
+                    // Fallback
+                    const textArea = document.createElement("textarea");
+                    textArea.value = script.texto;
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-999999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        feedbackCopiaVisual(btnElement);
+                    } catch (err) {
+                        console.error('Erro ao copiar: ', err);
+                    }
+                    textArea.remove();
+                }
+            }
+        }
+
+        function feedbackCopiaVisual(btn) {
+            const originalHTML = btn.innerHTML;
+            const originalClasses = btn.className;
+            
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Copiado!</span>';
+            btn.className = "w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mt-auto shadow-lg shadow-green-900/40";
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.className = originalClasses;
+            }, 2000);
         }
 
         // --- MODAL E LÓGICA DA ABA FINANÇAS ---
