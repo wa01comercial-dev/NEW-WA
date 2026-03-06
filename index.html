@@ -140,12 +140,15 @@
 
     <!-- SCRIPT DE LOGIN -->
     <script>
-        // ---  ---
-        const LOGIN_USER = 'blocked';
-        const LOGIN_PASS = 'blocked';
+        // --- SENHA E USUÁRIO OFUSCADOS (Base64) ---
+        // O valor 'YmxvY2tlZA==' corresponde à palavra 'blocked'.
+        // Assim, quem ler o código não verá a senha diretamente.
+        const U_HASH = 'YmxvY2tlZA==';
+        const P_HASH = 'YmxvY2tlZA==';
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('wa_logged_in') === 'true') {
+            // Usa localStorage em vez de sessionStorage para manter logado permanentemente
+            if (localStorage.getItem('wa_logged_in') === 'true') {
                 showApp();
             }
         });
@@ -156,8 +159,10 @@
             const pass = document.getElementById('password').value;
             const errorMsg = document.getElementById('loginError');
 
-            if (user === LOGIN_USER && pass === LOGIN_PASS) {
-                sessionStorage.setItem('wa_logged_in', 'true');
+            // Converte o que foi digitado e compara com as credenciais ocultas
+            if (btoa(user) === U_HASH && btoa(pass) === P_HASH) {
+                // Salva no localStorage para não deslogar ao fechar o navegador
+                localStorage.setItem('wa_logged_in', 'true');
                 errorMsg.classList.add('hidden');
                 showApp();
             } else {
@@ -179,7 +184,8 @@
         }
 
         function logout() {
-            sessionStorage.removeItem('wa_logged_in');
+            // Remove do localStorage e recarrega a página para sair
+            localStorage.removeItem('wa_logged_in');
             location.reload();
         }
     </script>
@@ -2048,4 +2054,3 @@
     </script>
 </body>
 </html>
-
