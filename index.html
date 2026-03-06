@@ -14,6 +14,9 @@
     <!-- SortableJS (Adicionado para Drag and Drop) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
+    <!-- SHA-256 Library (Adicionado para criptografia da senha) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -140,11 +143,11 @@
 
     <!-- SCRIPT DE LOGIN -->
     <script>
-        // --- SENHA E USUÁRIO OFUSCADOS (Base64) ---
-        // O valor 'YmxvY2tlZA==' corresponde à palavra 'blocked'.
-        // Assim, quem ler o código não verá a senha diretamente.
+        // --- SENHA E USUÁRIO OFUSCADOS ---
+        // Usuário em Base64 (YmxvY2tlZA== corresponde a 'blocked')
         const U_HASH = 'YmxvY2tlZA==';
-        const P_HASH = 'YmxvY2tlZA==';
+        // Nova Senha em formato SHA-256
+        const P_HASH = '6973dddd3ef9cb6a2932702f31777faad9c9bf3124d147a84f31aadb6d139546';
 
         document.addEventListener('DOMContentLoaded', () => {
             // Usa localStorage em vez de sessionStorage para manter logado permanentemente
@@ -159,8 +162,8 @@
             const pass = document.getElementById('password').value;
             const errorMsg = document.getElementById('loginError');
 
-            // Converte o que foi digitado e compara com as credenciais ocultas
-            if (btoa(user) === U_HASH && btoa(pass) === P_HASH) {
+            // Converte o usuário para Base64 e converte a senha para SHA-256
+            if (btoa(user) === U_HASH && sha256(pass) === P_HASH) {
                 // Salva no localStorage para não deslogar ao fechar o navegador
                 localStorage.setItem('wa_logged_in', 'true');
                 errorMsg.classList.add('hidden');
