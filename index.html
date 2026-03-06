@@ -14,9 +14,6 @@
     <!-- SortableJS (Adicionado para Drag and Drop) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
-    <!-- SHA-256 Library (Adicionado para criptografia da senha) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
-
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -141,44 +138,13 @@
 </head>
 <body class="bg-brand-dark text-brand-text font-sans antialiased overflow-hidden transition-colors duration-300">
 
-    <!-- SCRIPT DE LOGIN -->
+    <!-- SCRIPT DE TRANSIÇÃO UI (Autenticação no fim do arquivo) -->
     <script>
-        // --- SENHA E USUÁRIO OFUSCADOS ---
-        // Usuário (YmxvY2tlZA== corresponde)
-        const U_HASH = 'YmxvY2tlZA==';
-        // Nova Senha em formato SHA-256
-        const P_HASH = '6973dddd3ef9cb6a2932702f31777faad9c9bf3124d147a84f31aadb6d139546';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Usa localStorage em vez de sessionStorage para manter logado permanentemente
-            if (localStorage.getItem('wa_logged_in') === 'true') {
-                showApp();
-            }
-        });
-
-        function handleLogin(event) {
-            event.preventDefault();
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            const errorMsg = document.getElementById('loginError');
-
-            // Converte o usuário para Base64 e converte a senha para SHA-256
-            if (btoa(user) === U_HASH && sha256(pass) === P_HASH) {
-                // Salva no localStorage para não deslogar ao fechar o navegador
-                localStorage.setItem('wa_logged_in', 'true');
-                errorMsg.classList.add('hidden');
-                showApp();
-            } else {
-                errorMsg.classList.remove('hidden');
-            }
-        }
-
         function showApp() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
             document.getElementById('app-container').classList.add('flex');
             
-            // Garantir que os dados do dashboard renderizem corretamente após exibir o container
             if (typeof window.updateCharts === 'function') {
                 setTimeout(() => {
                     window.updateCharts();
@@ -186,17 +152,24 @@
             }
         }
 
-        function logout() {
-            // Remove do localStorage e recarrega a página para sair
-            localStorage.removeItem('wa_logged_in');
-            location.reload();
+        function showLoginScreen() {
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('flex');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
         }
     </script>
 
     <!-- TELA DE LOGIN -->
     <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-brand-dark transition-opacity duration-500">
-        <div class="bg-brand-panel p-8 rounded-xl shadow-2xl border border-[var(--border-color)] w-full max-w-md m-4">
-            <div class="text-center mb-8">
+        <div class="bg-brand-panel p-8 rounded-xl shadow-2xl border border-[var(--border-color)] w-full max-w-md m-4 relative overflow-hidden">
+            <!-- Indicador de carregamento invisível no início -->
+            <div id="authLoading" class="absolute inset-0 bg-brand-panel/80 backdrop-blur-sm z-10 hidden flex-col items-center justify-center">
+                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-brand-accent mb-4"></i>
+                <p class="text-sm font-semibold text-gray-300 tracking-wider animate-pulse">VERIFICANDO...</p>
+            </div>
+
+            <div class="text-center mb-8 relative z-0">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-accent/10 text-brand-accent mb-4">
                     <i class="fa-solid fa-rocket text-3xl"></i>
                 </div>
@@ -204,20 +177,20 @@
                 <p class="text-gray-500 text-sm mt-1">Growth Command Center</p>
             </div>
             
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <form id="loginForm" class="relative z-0">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Usuário</label>
-                        <input type="text" id="username" required class="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="Digite seu usuário">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">E-mail</label>
+                        <input type="email" id="email" required class="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="seu@email.com">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Senha</label>
                         <input type="password" id="password" required class="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="••••••••">
                     </div>
                     <div id="loginError" class="hidden text-red-500 text-sm text-center font-medium bg-red-500/10 py-2 rounded border border-red-500/20">
-                        Usuário ou senha incorretos.
+                        E-mail ou senha incorretos.
                     </div>
-                    <button type="submit" class="w-full bg-brand-accent hover:bg-brand-accentHover text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-red-900/20 transition-all transform hover:-translate-y-0.5 mt-4">
+                    <button type="submit" id="submitBtn" class="w-full bg-brand-accent hover:bg-brand-accentHover text-white font-bold py-3 px-4 rounded-lg shadow-lg shadow-red-900/20 transition-all transform hover:-translate-y-0.5 mt-4">
                         Acessar Sistema
                     </button>
                 </div>
@@ -285,12 +258,12 @@
                             WA
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-brand-text">Administrador</p>
+                            <p class="text-sm font-medium text-brand-text" id="userDisplayName">Administrador</p>
                             <p class="text-xs text-green-400">● Online</p>
                         </div>
                     </div>
                     <!-- Botão de Logout -->
-                    <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-500/10" title="Sair do sistema">
+                    <button onclick="window.logout()" class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-500/10" title="Sair do sistema">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
                 </div>
@@ -338,7 +311,7 @@
                             <p class="text-brand-muted">Indicadores em tempo real.</p>
                         </div>
                         <div class="text-xs text-gray-500 font-mono">
-                            <i class="fa-solid fa-database text-brand-accent"></i> Conectado: Firebase Realtime
+                            <i class="fa-solid fa-database text-brand-accent"></i> Conectado: Firebase Auth & DB
                         </div>
                     </div>
 
@@ -826,6 +799,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
         import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        // NOVO: Importando Firebase Authentication
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         // --- CONFIGURAÇÃO FIREBASE ---
         const firebaseConfig = {
@@ -843,6 +818,7 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getDatabase(app);
+        const auth = getAuth(app); // Inicializando a Autenticação
         
         const DB_PATH = 'wa_growth_data_v2'; 
         const DB_PATH_FINANCES = 'wa_finances_data'; 
@@ -856,6 +832,7 @@
         let financaIdAtual = null;
         let currentPage = 1; 
         const itemsPerPage = 15; 
+        let dbListenersActive = false; // Controle para não criar ouvintes duplicados
 
         let charts = { revenue: null, services: null, expenses: null };
         let sortableInstance = null; 
@@ -864,13 +841,81 @@
             return prefixo + '-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
         }
 
-        // --- INICIALIZAÇÃO ---
+        // --- INICIALIZAÇÃO BASE (Acontece logo que a página carrega) ---
         document.addEventListener('DOMContentLoaded', () => {
-            initFirebaseListener();
-            initFirebaseFinancesListener(); 
             initDate();
             initMobileScrollBehavior(); 
+            document.getElementById('authLoading').classList.remove('hidden');
+            document.getElementById('authLoading').classList.add('flex');
         });
+
+        // --- AUTENTICAÇÃO FIREBASE (Lógica de Login e Sessão) ---
+
+        // Fica observando o estado do usuário
+        onAuthStateChanged(auth, (user) => {
+            document.getElementById('authLoading').classList.add('hidden');
+            document.getElementById('authLoading').classList.remove('flex');
+
+            if (user) {
+                // Usuário está logado
+                showApp();
+                document.getElementById('userDisplayName').innerText = user.email.split('@')[0];
+                
+                // Só inicia a leitura dos dados do banco SE estiver logado
+                if (!dbListenersActive) {
+                    initFirebaseListener();
+                    initFirebaseFinancesListener(); 
+                    dbListenersActive = true;
+                }
+            } else {
+                // Usuário não está logado
+                showLoginScreen();
+            }
+        });
+
+        // Evento de Login (Quando clica no botão "Acessar Sistema")
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const errorMsg = document.getElementById('loginError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            try {
+                // Estado de carregamento no botão
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Autenticando...';
+                
+                // Tenta logar via Firebase
+                await signInWithEmailAndPassword(auth, email, pass);
+                errorMsg.classList.add('hidden');
+            } catch (error) {
+                errorMsg.classList.remove('hidden');
+                
+                // Tratar os erros de digitação mais comuns de forma amigável
+                if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMsg.innerText = 'E-mail ou senha incorretos.';
+                } else {
+                    errorMsg.innerText = 'Erro ao logar. Tente novamente mais tarde.';
+                }
+                console.error("Erro Auth:", error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Acessar Sistema';
+            }
+        });
+
+        // Função de Logout Global
+        window.logout = async () => {
+            try {
+                await signOut(auth);
+                // O onAuthStateChanged vai capturar a saída automaticamente
+                location.reload(); // Recarrega a página para limpar o estado em memória (appData e financasData)
+            } catch (error) {
+                console.error("Erro ao fazer logout:", error);
+            }
+        };
+
 
         // --- COMPORTAMENTO SCROLL MOBILE (FAB) ---
         function initMobileScrollBehavior() {
@@ -2057,4 +2102,3 @@
     </script>
 </body>
 </html>
-
