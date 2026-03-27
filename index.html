@@ -229,12 +229,17 @@
                     <span class="font-medium">Gerenciar Clientes</span>
                 </button>
 
+                <!-- NOVA ABA NO SIDEBAR: TAREFAS -->
+                <button onclick="switchTab('tarefas'); toggleSidebar()" id="btn-tarefas" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
+                    <i class="fa-solid fa-list-check w-5"></i>
+                    <span class="font-medium">Tarefas</span>
+                </button>
+
                 <button onclick="switchTab('finances'); toggleSidebar()" id="btn-finances" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
                     <i class="fa-solid fa-wallet w-5"></i>
                     <span class="font-medium">Finanças</span>
                 </button>
 
-                <!-- NOVA ABA: SCRIPTS -->
                 <button onclick="switchTab('scripts'); toggleSidebar()" id="btn-scripts" class="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-brand-text hover:bg-gray-800/20 rounded-lg border-l-4 border-transparent transition-all text-left">
                     <i class="fa-solid fa-code w-5"></i>
                     <span class="font-medium">Scripts</span>
@@ -598,6 +603,74 @@
                     </div>
                 </div>
 
+                <!-- NOVA ABA: TAREFAS -->
+                <div id="view-tarefas" class="tab-content space-y-6">
+                    
+                    <!-- Dashboard Resumo Tarefas -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-brand-panel border-l-4 border-blue-500 p-4 rounded-lg shadow-lg">
+                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total Realizando</h3>
+                            <p id="tarefasTotalRealizando" class="text-2xl font-bold text-blue-400">0</p>
+                        </div>
+                        <div class="bg-brand-panel border-l-4 border-green-500 p-4 rounded-lg shadow-lg">
+                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total Entregues</h3>
+                            <p id="tarefasTotalEntregue" class="text-2xl font-bold text-green-400">0</p>
+                        </div>
+                        <div class="bg-brand-panel border-l-4 border-gray-500 p-4 rounded-lg shadow-lg">
+                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total de Tarefas</h3>
+                            <p id="tarefasTotal" class="text-2xl font-bold text-brand-text">0</p>
+                        </div>
+                        <div class="bg-brand-panel border-l-4 border-brand-accent p-4 rounded-lg shadow-lg">
+                            <h3 class="text-xs uppercase text-gray-400 font-bold">Total em Valor</h3>
+                            <p id="tarefasTotalValor" class="text-2xl font-bold text-brand-text">R$ 0,00</p>
+                        </div>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                        <div class="flex items-center gap-2 w-full md:w-auto flex-1">
+                            <input type="text" id="buscarTarefa" placeholder="🔍 Buscar tarefas..." onkeyup="window.renderTarefasCards(true)" class="p-3 bg-gray-900 border border-gray-700 rounded-lg w-full text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                            <select id="filtroStatusTarefa" onchange="window.renderTarefasCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                                <option value="">Situação</option>
+                                <option value="realizando">Realizando</option>
+                                <option value="entregue">Entregue</option>
+                            </select>
+                            <select id="filtroServicoTarefa" onchange="window.renderTarefasCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                                <option value="">Serviço</option>
+                                <option value="logotipo">Logotipo</option>
+                                <option value="site">Site</option>
+                                <option value="anuncio">Anúncio</option>
+                            </select>
+                            <select id="filtroPrioridadeTarefa" onchange="window.renderTarefasCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition">
+                                <option value="">Prioridade</option>
+                                <option value="baixa">Baixa</option>
+                                <option value="média">Média</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                            
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <input type="date" id="filtroDataInicioTarefa" onchange="window.renderTarefasCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition" title="Data Inicial">
+                                <span class="text-gray-500 text-sm font-medium">até</span>
+                                <input type="date" id="filtroDataFimTarefa" onchange="window.renderTarefasCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition" title="Data Final">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cards Grid -->
+                    <div id="listaTarefas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
+                        <!-- Cards injetados via JS -->
+                    </div>
+
+                    <!-- Controles de Paginação -->
+                    <div id="paginationControlsTarefas" class="flex justify-center items-center gap-2 pb-20 pt-4">
+                        <!-- Botões de paginação injetados via JS -->
+                    </div>
+                </div>
+
+
                 <!-- FINANÇAS -->
                 <div id="view-finances" class="tab-content space-y-6">
                     <div class="flex justify-between items-end animate-fade-in mb-4">
@@ -662,7 +735,7 @@
                     </div>
                 </div>
 
-                <!-- NOVA ABA: SCRIPTS -->
+                <!-- SCRIPTS -->
                 <div id="view-scripts" class="tab-content space-y-6">
                     <div class="flex justify-between items-end animate-fade-in mb-4">
                         <div>
@@ -758,6 +831,73 @@
         </div>
     </div>
 
+    <!-- MODAL: TAREFA -->
+    <div id="modalTarefa" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md items-center justify-center z-[60] p-4 transition-all duration-300">
+        <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-brand-text flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-blue-500"></i> Adicionar / Editar Tarefa
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Título da Tarefa</label>
+                    <input id="nomeTarefa" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="text" placeholder="Ex: Criar arte para feed">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Projeto / Empresa</label>
+                    <input id="empresaTarefa" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="text" placeholder="Ex: Padaria X">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Responsável / Contato</label>
+                    <input id="contatoTarefa" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="text" placeholder="Nome ou Setor">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Valor (Opcional)</label>
+                    <input id="valorTarefa" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="number" step="0.01" placeholder="0.00">
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Serviço / Categoria</label>
+                    <select id="tipoServicoTarefa" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="">Selecione...</option>
+                        <option value="logotipo">Logotipo</option>
+                        <option value="site">Site</option>
+                        <option value="anuncio">Anúncio</option>
+                        <option value="flyer">Flyer</option>
+                        <option value="video">Vídeo</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Prioridade</label>
+                    <select id="prioridadeTarefa" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="baixa">Baixa</option>
+                        <option value="média" selected>Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Status</label>
+                    <select id="statusTarefa" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="realizando">Realizando</option>
+                        <option value="entregue">Entregue</option>
+                        <option value="pendente">Pendente</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Data Prevista</label>
+                    <input id="dataCriacaoTarefa" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" type="date">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="text-xs text-gray-500 uppercase font-bold ml-1">Observações da Tarefa</label>
+                    <textarea id="obsTarefa" class="bg-gray-900 border border-gray-700 text-white p-3 rounded-lg w-full focus:ring-2 focus:ring-blue-500 outline-none" rows="3" placeholder="Detalhes da execução..."></textarea>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
+                <button type="button" onclick="window.fecharModalTarefa()" class="bg-transparent border border-gray-600 text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-800 transition">Cancelar</button>
+                <button type="button" onclick="window.salvarTarefa()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-900/40">Salvar Tarefa</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: FINANÇA -->
     <div id="modalFinanca" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md items-center justify-center z-[60] p-4 transition-all duration-300">
         <div class="bg-brand-panel border border-gray-700 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all scale-100 max-h-[90vh] overflow-y-auto">
@@ -849,7 +989,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
         import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-        // NOVO: Importando Firebase Authentication
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         // --- CONFIGURAÇÃO FIREBASE ---
@@ -868,30 +1007,39 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getDatabase(app);
-        const auth = getAuth(app); // Inicializando a Autenticação
+        const auth = getAuth(app); 
         
         const DB_PATH = 'wa_growth_data_v2'; 
         const DB_PATH_FINANCES = 'wa_finances_data'; 
-        const DB_PATH_SCRIPTS = 'wa_scripts_data'; // NOVO PATH
+        const DB_PATH_SCRIPTS = 'wa_scripts_data'; 
+        const DB_PATH_TAREFAS = 'wa_tarefas_data'; // NOVO PATH
 
         // --- CONSTANTES E ESTADO ---
         let appData = []; 
         let financasData = []; 
-        let scriptsData = []; // NOVO ARRAY
+        let scriptsData = []; 
+        let tarefasData = []; // NOVO ARRAY
         
         let editando = false;
         let clienteIdAtual = null;
+        
         let editandoFinanca = false;
         let financaIdAtual = null;
-        let editandoScript = false; // ESTADO NOVO
-        let scriptIdAtual = null;   // ESTADO NOVO
+        
+        let editandoScript = false; 
+        let scriptIdAtual = null;   
+        
+        let editandoTarefa = false; // ESTADO NOVO
+        let tarefaIdAtual = null;   // ESTADO NOVO
         
         let currentPage = 1; 
+        let currentPageTarefas = 1; // PAGINAÇÃO TAREFAS
         const itemsPerPage = 15; 
-        let dbListenersActive = false; // Controle para não criar ouvintes duplicados
+        let dbListenersActive = false; 
 
         let charts = { revenue: null, services: null, expenses: null };
         let sortableInstance = null; 
+        let sortableTarefasInstance = null; // SORTABLE TAREFAS
 
         function gerarIdUnico(prefixo) {
             return prefixo + '-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
@@ -913,24 +1061,21 @@
             document.getElementById('authLoading').classList.remove('flex');
 
             if (user) {
-                // Usuário está logado
                 showApp();
                 document.getElementById('userDisplayName').innerText = user.email.split('@')[0];
                 
-                // Só inicia a leitura dos dados do banco SE estiver logado
                 if (!dbListenersActive) {
                     initFirebaseListener();
                     initFirebaseFinancesListener(); 
-                    initFirebaseScriptsListener(); // NOVO LISTENER
+                    initFirebaseScriptsListener(); 
+                    initFirebaseTarefasListener(); // NOVO LISTENER
                     dbListenersActive = true;
                 }
             } else {
-                // Usuário não está logado
                 showLoginScreen();
             }
         });
 
-        // Evento de Login (Quando clica no botão "Acessar Sistema")
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -939,17 +1084,12 @@
             const submitBtn = document.getElementById('submitBtn');
 
             try {
-                // Estado de carregamento no botão
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Autenticando...';
-                
-                // Tenta logar via Firebase
                 await signInWithEmailAndPassword(auth, email, pass);
                 errorMsg.classList.add('hidden');
             } catch (error) {
                 errorMsg.classList.remove('hidden');
-                
-                // Tratar os erros de digitação mais comuns de forma amigável
                 if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     errorMsg.innerText = 'E-mail ou senha incorretos.';
                 } else {
@@ -962,19 +1102,15 @@
             }
         });
 
-        // Função de Logout Global
         window.logout = async () => {
             try {
                 await signOut(auth);
-                // O onAuthStateChanged vai capturar a saída automaticamente
-                location.reload(); // Recarrega a página para limpar o estado em memória (appData e financasData)
+                location.reload(); 
             } catch (error) {
                 console.error("Erro ao fazer logout:", error);
             }
         };
 
-
-        // --- COMPORTAMENTO SCROLL MOBILE (FAB) ---
         function initMobileScrollBehavior() {
             const scrollContainer = document.getElementById('main-content-scroll');
             const fab = document.getElementById('mobileFab');
@@ -1048,7 +1184,6 @@
                 .catch((error) => console.error("Erro ao salvar finanças no Firebase:", error));
         }
 
-        // NOVO: Firebase Scripts
         function initFirebaseScriptsListener() {
             const scriptsRef = ref(db, DB_PATH_SCRIPTS);
             onValue(scriptsRef, (snapshot) => {
@@ -1071,6 +1206,34 @@
                 .catch((error) => console.error("Erro ao salvar scripts no Firebase:", error));
         }
 
+        // NOVO: Firebase Tarefas
+        function initFirebaseTarefasListener() {
+            const tarefasRef = ref(db, DB_PATH_TAREFAS);
+            onValue(tarefasRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data && Array.isArray(data)) {
+                    tarefasData = data.filter(Boolean); 
+                } else if (data) {
+                    tarefasData = Object.values(data).filter(Boolean);
+                } else {
+                    tarefasData = [];
+                }
+                if(document.getElementById('view-tarefas').classList.contains('active')) {
+                    renderTarefasCards();
+                }
+                refreshBadges();
+            });
+        }
+
+        function saveTarefasToFirebase() {
+            set(ref(db, DB_PATH_TAREFAS), tarefasData)
+                .catch((error) => console.error("Erro ao salvar tarefas no Firebase:", error));
+        }
+
+        function refreshBadges() {
+            document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Trans. | ${scriptsData.length} Scripts | ${tarefasData.length} Tarefas`;
+        }
+
 
         // --- FUNÇÕES GLOBAIS (ATTACH WINDOW) ---
         window.initDate = initDate;
@@ -1079,21 +1242,29 @@
         window.resetData = resetData;
         window.exportData = exportData;
         window.handleFileImport = handleFileImport;
-        window.renderClientsCards = renderClientsCards;
         
+        window.renderClientsCards = renderClientsCards;
         window.abrirModalNovoCliente = abrirModalNovoCliente;
         window.fecharModal = fecharModal;
         window.salvarCliente = salvarCliente;
         window.editarCliente = editarCliente;
         window.excluirCliente = excluirCliente;
         
+        // NOVAS Funções Tarefas
+        window.renderTarefasCards = renderTarefasCards;
+        window.abrirModalNovaTarefa = abrirModalNovaTarefa;
+        window.fecharModalTarefa = fecharModalTarefa;
+        window.salvarTarefa = salvarTarefa;
+        window.editarTarefa = editarTarefa;
+        window.excluirTarefa = excluirTarefa;
+        window.changePageTarefas = changePageTarefas;
+
         window.renderTable = renderTable;
         window.deleteItem = deleteItem;
         window.updateCharts = updateCharts;
         window.toggleSidebar = toggleSidebar; 
         window.changePage = changePage;
         
-        // Funções finanças globais
         window.abrirModalNovaFinanca = abrirModalNovaFinanca;
         window.fecharModalFinanca = fecharModalFinanca;
         window.salvarTransacaoFinanca = salvarTransacaoFinanca;
@@ -1101,7 +1272,6 @@
         window.editarFinanca = editarFinanca;
         window.abrirModalContextual = abrirModalContextual;
 
-        // NOVAS Funções Scripts Globais
         window.abrirModalNovoScript = abrirModalNovoScript;
         window.fecharModalScript = fecharModalScript;
         window.salvarScript = salvarScript;
@@ -1152,7 +1322,8 @@
             document.getElementById('btn-dashboard').className = btnClassDef;
             document.getElementById('btn-clients').className = btnClassDef;
             document.getElementById('btn-finances').className = btnClassDef;
-            document.getElementById('btn-scripts').className = btnClassDef; // NOVO
+            document.getElementById('btn-scripts').className = btnClassDef; 
+            document.getElementById('btn-tarefas').className = btnClassDef; // NOVO
 
             const headerBtn = document.getElementById('btnNovoHeader');
             const textHeaderBtn = document.getElementById('textBtnNovoHeader');
@@ -1175,6 +1346,18 @@
                 fabText.innerText = 'Novo Cliente';
                 
                 renderClientsCards(); 
+            } else if (tabName === 'tarefas') {
+                document.getElementById('view-tarefas').classList.add('active');
+                document.getElementById('btn-tarefas').className = btnClassAct;
+                
+                headerBtn.style.display = ''; 
+                textHeaderBtn.innerText = 'Nova Tarefa';
+                headerBtn.onclick = abrirModalNovaTarefa; 
+                
+                document.getElementById('mobileFab').style.display = 'flex';
+                fabText.innerText = 'Nova Tarefa';
+                
+                renderTarefasCards(); 
             } else if (tabName === 'finances') {
                 document.getElementById('view-finances').classList.add('active');
                 document.getElementById('btn-finances').className = btnClassAct;
@@ -1209,6 +1392,8 @@
                 abrirModalNovaFinanca();
             } else if(document.getElementById('view-scripts').classList.contains('active')) {
                 abrirModalNovoScript();
+            } else if(document.getElementById('view-tarefas').classList.contains('active')) {
+                abrirModalNovaTarefa();
             }
         }
 
@@ -1218,7 +1403,8 @@
                 Promise.all([
                     set(ref(db, DB_PATH), []),
                     set(ref(db, DB_PATH_FINANCES), []),
-                    set(ref(db, DB_PATH_SCRIPTS), [])
+                    set(ref(db, DB_PATH_SCRIPTS), []),
+                    set(ref(db, DB_PATH_TAREFAS), []) // NOVO
                 ]).then(() => alert("Sistema resetado com sucesso."))
                   .catch((err) => alert("Erro ao resetar: " + err));
             }
@@ -1228,7 +1414,8 @@
             const dataToExport = {
                 clientes: appData,
                 financas: financasData,
-                scripts: scriptsData
+                scripts: scriptsData,
+                tarefas: tarefasData // NOVO
             };
             const dataStr = JSON.stringify(dataToExport, null, 2);
             const blob = new Blob([dataStr], { type: "application/json" });
@@ -1253,11 +1440,13 @@
                     let clientesImportados = [];
                     let financasImportadas = [];
                     let scriptsImportados = [];
+                    let tarefasImportadas = [];
 
-                    if (importedData.clientes || importedData.financas || importedData.scripts) {
+                    if (importedData.clientes || importedData.financas || importedData.scripts || importedData.tarefas) {
                         clientesImportados = importedData.clientes || [];
                         financasImportadas = importedData.financas || [];
                         scriptsImportados = importedData.scripts || [];
+                        tarefasImportadas = importedData.tarefas || [];
                     } else if (Array.isArray(importedData)) {
                         clientesImportados = importedData;
                     } else {
@@ -1269,6 +1458,7 @@
                         appData = clientesImportados;
                         financasData = financasImportadas;
                         scriptsData = scriptsImportados;
+                        tarefasData = tarefasImportadas;
                     } else {
                         const currentIds = new Set(appData.map(i => i.id));
                         clientesImportados.forEach(item => {
@@ -1282,10 +1472,15 @@
                         scriptsImportados.forEach(item => {
                             if(!currentScriptIds.has(item.id)) scriptsData.push(item);
                         });
+                        const currentTarefaIds = new Set(tarefasData.map(i => i.id));
+                        tarefasImportadas.forEach(item => {
+                            if(!currentTarefaIds.has(item.id)) tarefasData.push(item);
+                        });
                     }
                     saveDataToFirebase();
                     saveFinancesToFirebase();
                     saveScriptsToFirebase();
+                    saveTarefasToFirebase();
                     alert("Importação concluída e sincronizada!");
                 } catch (err) {
                     console.error(err);
@@ -1296,20 +1491,327 @@
             input.value = '';
         }
 
-        // --- LÓGICA DO DASHBOARD ---
         function refreshDashboard() {
             updateKPIs();
             renderTable();
-            // Evitar erro se o chart tentar atualizar em um canvas escondido (antes do login)
             if(document.getElementById('app-container').classList.contains('hidden') === false) {
                 updateCharts();
             }
-            document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Trans. | ${scriptsData.length} Scripts`;
+            refreshBadges();
             
             if(document.getElementById('view-clients').classList.contains('active')) {
                 renderClientsCards();
             }
         }
+
+
+        // ==========================================
+        // ABA: TAREFAS (CLONE DE CLIENTES)
+        // ==========================================
+
+        function renderTarefasCards(resetPage = false) {
+            if (resetPage) currentPageTarefas = 1;
+
+            const listaTarefas = document.getElementById('listaTarefas');
+            listaTarefas.innerHTML = '';
+
+            const busca = document.getElementById('buscarTarefa').value.toLowerCase().trim();
+            const fs = document.getElementById('filtroStatusTarefa').value.toLowerCase();
+            const ft = document.getElementById('filtroServicoTarefa').value.toLowerCase();
+            const fp = document.getElementById('filtroPrioridadeTarefa').value.toLowerCase();
+            
+            const fdInicio = document.getElementById('filtroDataInicioTarefa').value; 
+            const fdFim = document.getElementById('filtroDataFimTarefa').value; 
+
+            let totalValor = 0;
+            let totalRealizando = 0;
+            let totalEntregue = 0;
+            let totalExibido = 0;
+
+            let filtrados = tarefasData.filter(tarefa => {
+                const s = (tarefa.status || '').toLowerCase();
+                const t = (tarefa.tipo || '').toLowerCase();
+                const p = (tarefa.prioridade || 'média').toLowerCase();
+                const n = (tarefa.nome || '').toLowerCase();
+                const e = (tarefa.empresa || '').toLowerCase();
+                const d = tarefa.data || ''; 
+
+                if (fs && s !== fs) return false;
+                if (ft && !t.includes(ft)) return false; 
+                if (fp && p !== fp) return false;
+                
+                if (fdInicio && d < fdInicio) return false; 
+                if (fdFim && d > fdFim) return false; 
+                
+                if (busca && !n.includes(busca) && !e.includes(busca)) return false;
+                
+                return true;
+            });
+
+            const totalItems = filtrados.length;
+            const startIndex = (currentPageTarefas - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedItems = filtrados.slice(startIndex, endIndex);
+
+            tarefasData.forEach(tarefa => {
+                totalValor += (parseFloat(tarefa.valor) || 0);
+                totalExibido++;
+                const st = (tarefa.status || '').toLowerCase();
+                if (st === 'realizando') totalRealizando++;
+                if (st === 'entregue') totalEntregue++;
+            });
+
+            paginatedItems.forEach(tarefa => {
+                const st = (tarefa.status || '').toLowerCase();
+                const fundoStatus = st === 'entregue' ? 'bg-entregue' :
+                                    st === 'realizando' ? 'bg-realizando' : 'bg-gray-800 text-gray-300';
+                
+                let prioridadeClasse = 'borda-status-neutro';
+                if (st === 'realizando') prioridadeClasse = 'borda-status-realizando';
+                else if (st === 'entregue') prioridadeClasse = 'borda-status-entregue';
+                
+                const card = document.createElement('div');
+                card.setAttribute('data-id', tarefa.id);
+                
+                card.className = `bg-brand-panel border border-gray-800 border-l-[6px] ${prioridadeClasse} rounded-lg p-3 card-animado relative group shadow-sm hover:shadow-md flex flex-col justify-between h-auto`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-1 min-w-0 pr-2">
+                            <h3 class="text-base font-bold text-white truncate" title="${tarefa.nome}">${tarefa.nome || 'Sem Nome'}</h3>
+                            <div class="flex items-center gap-2 text-brand-accent text-xs">
+                                <i class="fa-regular fa-building"></i>
+                                <span class="truncate max-w-[150px]" title="${tarefa.empresa}">${tarefa.empresa || 'Sem Projeto'}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-white">${formatCurrency(tarefa.valor)}</p>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider">${tarefa.tipo || 'Geral'}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-1">
+                        <div class="flex items-center gap-3 text-xs text-gray-400">
+                             <div class="flex items-center gap-1" title="Responsável/Contato">
+                                <i class="fa-solid fa-user-astronaut text-blue-400"></i>
+                                <span class="font-mono max-w-[80px] truncate">${tarefa.contato || '-'}</span>
+                             </div>
+                             <span class="text-gray-600">|</span>
+                             <span title="Data Prevista">${formatDate(tarefa.data)}</span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                             <span class="${fundoStatus} text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wide border border-opacity-20 flex items-center gap-1">
+                                ${st === 'realizando' ? '' : ''} 
+                                ${st === 'entregue' ? '<i class="fa-solid fa-check"></i>' : ''}
+                                ${tarefa.status || 'ND'}
+                             </span>
+                             
+                             <div class="flex gap-1 ml-1">
+                                <button onclick="editarTarefa('${tarefa.id}')" class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                                    <i class="fa-solid fa-pen text-[10px]"></i>
+                                </button>
+                                <button onclick="excluirTarefa('${tarefa.id}')" class="w-6 h-6 rounded bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center text-red-500 transition-colors">
+                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                </button>
+                             </div>
+                        </div>
+                    </div>
+                `;
+
+                listaTarefas.appendChild(card);
+            });
+
+            document.getElementById('tarefasTotalRealizando').innerText = totalRealizando;
+            document.getElementById('tarefasTotalEntregue').innerText = totalEntregue;
+            document.getElementById('tarefasTotal').innerText = totalExibido;
+            document.getElementById('tarefasTotalValor').innerText = formatCurrency(totalValor);
+
+            renderPaginationTarefas(totalItems);
+
+            if (!sortableTarefasInstance) {
+                const el = document.getElementById('listaTarefas');
+                sortableTarefasInstance = Sortable.create(el, {
+                    animation: 150,
+                    handle: '.card-animado',
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    onEnd: function (evt) {
+                        const itemEl = evt.item;
+                        const newIndex = evt.newIndex;
+                        const movedId = itemEl.getAttribute('data-id');
+                        
+                        const visibleIds = Array.from(el.children).map(child => child.getAttribute('data-id'));
+                        
+                        const originalIndex = tarefasData.findIndex(i => i.id === movedId);
+                        if (originalIndex > -1) {
+                            const movedItem = tarefasData[originalIndex];
+                            tarefasData.splice(originalIndex, 1);
+
+                            let targetId;
+                            let insertAfter = false;
+
+                            if (visibleIds.length > 1) {
+                                if (newIndex === visibleIds.length - 1) {
+                                    targetId = visibleIds[newIndex - 1]; 
+                                    insertAfter = true;
+                                } else {
+                                    targetId = visibleIds[newIndex + 1]; 
+                                    insertAfter = false; 
+                                }
+                                
+                                const targetGlobalIndex = tarefasData.findIndex(i => i.id === targetId);
+                                if (targetGlobalIndex !== -1) {
+                                    const insertPos = insertAfter ? targetGlobalIndex + 1 : targetGlobalIndex;
+                                    tarefasData.splice(insertPos, 0, movedItem);
+                                } else {
+                                    tarefasData.unshift(movedItem);
+                                }
+                            } else {
+                                tarefasData.unshift(movedItem);
+                            }
+
+                            saveTarefasToFirebase(); 
+                        }
+                    }
+                });
+            }
+        }
+
+        function renderPaginationTarefas(totalItems) {
+            const paginationContainer = document.getElementById('paginationControlsTarefas');
+            paginationContainer.innerHTML = '';
+
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            if (totalPages <= 1) return;
+
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            prevBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPageTarefas === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+            prevBtn.onclick = () => { if(currentPageTarefas > 1) changePageTarefas(currentPageTarefas - 1); };
+            paginationContainer.appendChild(prevBtn);
+
+            let startPage = Math.max(1, currentPageTarefas - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.innerText = i;
+                if (i === currentPageTarefas) {
+                    pageBtn.className = "w-8 h-8 rounded-lg bg-brand-accent text-white font-bold shadow-lg shadow-red-900/40";
+                } else {
+                    pageBtn.className = "w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors";
+                    pageBtn.onclick = () => changePageTarefas(i);
+                }
+                paginationContainer.appendChild(pageBtn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            nextBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${currentPageTarefas === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
+            nextBtn.onclick = () => { if(currentPageTarefas < totalPages) changePageTarefas(currentPageTarefas + 1); };
+            paginationContainer.appendChild(nextBtn);
+        }
+
+        function changePageTarefas(newPage) {
+            currentPageTarefas = newPage;
+            renderTarefasCards(false);
+        }
+
+        function abrirModalNovaTarefa() {
+            limparFormularioTarefa();
+            editandoTarefa = false;
+            tarefaIdAtual = null;
+            const modal = document.getElementById('modalTarefa');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('dataCriacaoTarefa').valueAsDate = new Date();
+        }
+
+        function fecharModalTarefa() {
+            const modal = document.getElementById('modalTarefa');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function salvarTarefa() {
+            const novaTarefa = obterDadosFormularioTarefa();
+            
+            if (!novaTarefa.nome && !novaTarefa.empresa) {
+                alert("Por favor, preencha o Título ou o Projeto.");
+                return;
+            }
+
+            if (editandoTarefa && tarefaIdAtual) {
+                const index = tarefasData.findIndex(c => c.id === tarefaIdAtual);
+                if (index !== -1) {
+                    tarefasData[index] = { ...tarefasData[index], ...novaTarefa };
+                }
+            } else {
+                novaTarefa.id = gerarIdUnico('tar'); 
+                tarefasData.push(novaTarefa); 
+            }
+
+            saveTarefasToFirebase();
+            fecharModalTarefa();
+        }
+
+        function editarTarefa(id) {
+            const tarefa = tarefasData.find(c => c.id === id);
+            if (tarefa) {
+                preencherFormularioTarefa(tarefa);
+                editandoTarefa = true;
+                tarefaIdAtual = id;
+                const modal = document.getElementById('modalTarefa');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function excluirTarefa(id) {
+            if (confirm("Tem certeza que deseja remover esta tarefa?")) {
+                tarefasData = tarefasData.filter(c => c.id !== id);
+                saveTarefasToFirebase();
+            }
+        }
+
+        function obterDadosFormularioTarefa() {
+            return {
+                nome: document.getElementById('nomeTarefa').value,
+                empresa: document.getElementById('empresaTarefa').value,
+                contato: document.getElementById('contatoTarefa').value,
+                valor: parseFloat(document.getElementById('valorTarefa').value) || 0,
+                tipo: document.getElementById('tipoServicoTarefa').value,
+                prioridade: document.getElementById('prioridadeTarefa').value,
+                status: document.getElementById('statusTarefa').value,
+                data: document.getElementById('dataCriacaoTarefa').value,
+                obs: document.getElementById('obsTarefa').value
+            };
+        }
+
+        function preencherFormularioTarefa(tarefa) {
+            document.getElementById('nomeTarefa').value = tarefa.nome || '';
+            document.getElementById('empresaTarefa').value = tarefa.empresa || '';
+            document.getElementById('contatoTarefa').value = tarefa.contato || '';
+            document.getElementById('valorTarefa').value = tarefa.valor || '';
+            document.getElementById('tipoServicoTarefa').value = tarefa.tipo || '';
+            document.getElementById('prioridadeTarefa').value = tarefa.prioridade || 'média';
+            document.getElementById('statusTarefa').value = tarefa.status || 'realizando';
+            document.getElementById('dataCriacaoTarefa').value = tarefa.data || '';
+            document.getElementById('obsTarefa').value = tarefa.obs || '';
+        }
+
+        function limparFormularioTarefa() {
+            document.querySelectorAll('#modalTarefa input, #modalTarefa select, #modalTarefa textarea')
+                .forEach(el => el.value = '');
+            document.getElementById('prioridadeTarefa').value = 'média';
+            document.getElementById('statusTarefa').value = 'realizando';
+        }
+
 
         // --- MODAL E LÓGICA DA ABA SCRIPTS ---
         function abrirModalNovoScript() {
@@ -1435,7 +1937,7 @@
                 `;
                 container.appendChild(card);
             });
-            document.getElementById('totalRecordsBadge').textContent = `${appData.length} Clientes | ${financasData.length} Trans. | ${scriptsData.length} Scripts`;
+            refreshBadges();
         }
 
         function copiarScript(btnElement, id) {
@@ -1775,7 +2277,6 @@
             const ft = document.getElementById('filtroServico').value.toLowerCase();
             const fp = document.getElementById('filtroPrioridade').value.toLowerCase();
             
-            // --- MODIFICAÇÃO DE FILTRO DE DATA AQUI ---
             const fdInicio = document.getElementById('filtroDataInicio').value; 
             const fdFim = document.getElementById('filtroDataFim').value; 
 
@@ -1796,7 +2297,6 @@
                 if (ft && !t.includes(ft)) return false; 
                 if (fp && p !== fp) return false;
                 
-                // Validação Data Início e Fim (Formato string YYYY-MM-DD permite comparação direta)
                 if (fdInicio && d < fdInicio) return false; 
                 if (fdFim && d > fdFim) return false; 
                 
@@ -2086,7 +2586,7 @@
             let count = 0;
             let total = 0;
             appData.forEach(item => {
-                if(!item.data) return;
+                if(!item.data || typeof item.data !== 'string' || !item.data.includes('-')) return;
                 const [y, m, d] = item.data.split('-').map(Number);
                 const itemDate = new Date(y, m - 1, d);
                 if (itemDate.getTime() >= start.getTime() && itemDate.getTime() <= end.getTime()) {
@@ -2170,7 +2670,7 @@
             let totalInvestimento = 0;
             let countInvestimento = 0;
             
-            // NOVO: CÁLCULO TOTAL DE DESPESAS (Todas as Saídas)
+            // CÁLCULO TOTAL DE DESPESAS (Todas as Saídas)
             let totalDespesa = 0;
             let countDespesa = 0;
 
@@ -2195,7 +2695,7 @@
 
             const monthlyStats = {};
             appData.forEach(item => {
-                if(!item.data) return;
+                if(!item.data || typeof item.data !== 'string' || !item.data.includes('-')) return;
                 const dateKey = item.data.substring(0, 7); 
                 if(!monthlyStats[dateKey]) monthlyStats[dateKey] = 0;
                 monthlyStats[dateKey] += (parseFloat(item.valor) || 0);
@@ -2306,7 +2806,7 @@
             if(appData.length === 0) return;
             const monthlyData = {};
             appData.forEach(item => {
-                if(!item.data) return;
+                if(!item.data || typeof item.data !== 'string' || !item.data.includes('-')) return;
                 const key = item.data.substring(0, 7); 
                 if(!monthlyData[key]) monthlyData[key] = 0;
                 monthlyData[key] += parseFloat(item.valor) || 0;
@@ -2384,8 +2884,41 @@
         }
 
         function formatCurrency(val) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0); }
-        function formatDate(dateStr) { if(!dateStr) return '-'; const [y, m, d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
-        function formatDateToMonthYear(yyyy_mm) { if(!yyyy_mm) return '-'; const [y, m] = yyyy_mm.split('-'); const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']; return `${months[parseInt(m)-1]} ${y}`; }
+        
+        // --- FUNÇÕES DE FORMATAÇÃO DE DATA CORRIGIDAS PARA PREVENIR TYPEERRORS ---
+        function formatDate(dateStr) { 
+            if(!dateStr) return '-'; 
+            
+            // Se por acaso vier como número/timestamp
+            if (typeof dateStr === 'number') {
+                const d = new Date(dateStr);
+                return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+            }
+
+            // Se for string com traço (formato esperado)
+            if (typeof dateStr === 'string' && dateStr.includes('-')) {
+                const parts = dateStr.split('-'); 
+                if (parts.length >= 3) {
+                    const [y, m, d] = parts;
+                    return `${d.substring(0,2)}/${m}/${y}`; // Pega só os 2 primeiros chars de 'd' pra evitar conflitos de horário caso exista
+                }
+            }
+            
+            // Retorno padrão em último caso
+            return String(dateStr); 
+        }
+
+        function formatDateToMonthYear(yyyy_mm) { 
+            if(!yyyy_mm || typeof yyyy_mm !== 'string' || !yyyy_mm.includes('-')) return '-'; 
+            const parts = yyyy_mm.split('-'); 
+            if (parts.length >= 2) {
+                const [y, m] = parts; 
+                const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']; 
+                return `${months[parseInt(m)-1]} ${y}`;
+            }
+            return yyyy_mm;
+        }
+
         function getStatusStyle(status) { status = (status || '').toLowerCase(); if(status === 'entregue') return 'bg-green-900/50 text-green-400 border border-green-900'; if(status === 'realizando') return 'bg-blue-900/50 text-blue-400 border border-blue-900'; if(status === 'pendente') return 'bg-yellow-900/50 text-yellow-400 border border-yellow-900'; if(status === 'cancelado') return 'bg-red-900/50 text-red-400 border border-red-900'; return 'bg-gray-700 text-gray-300'; }
         function getTypeIcon(type) { type = (type || '').toLowerCase(); if(type.includes('logo')) return '<i class="fa-solid fa-pen-nib text-purple-400"></i>'; if(type.includes('site') || type.includes('web')) return '<i class="fa-solid fa-globe text-blue-400"></i>'; if(type.includes('anuncio') || type.includes('traffic')) return '<i class="fa-solid fa-bullhorn text-red-400"></i>'; if(type.includes('video')) return '<i class="fa-solid fa-video text-pink-400"></i>'; return '<i class="fa-solid fa-box text-gray-400"></i>'; }
 
