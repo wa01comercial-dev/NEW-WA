@@ -579,7 +579,11 @@
                                 <option value="alta">Alta</option>
                             </select>
                             
-                            <input type="date" id="filtroData" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition" title="Filtrar por Data">
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <input type="date" id="filtroDataInicio" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition" title="Data Inicial">
+                                <span class="text-gray-500 text-sm font-medium">até</span>
+                                <input type="date" id="filtroDataFim" onchange="window.renderClientsCards(true)" class="p-3 bg-gray-900 border border-gray-700 text-white rounded-lg w-full md:w-auto cursor-pointer hover:bg-gray-800 transition" title="Data Final">
+                            </div>
                         </div>
                     </div>
 
@@ -1770,7 +1774,10 @@
             const fs = document.getElementById('filtroStatus').value.toLowerCase();
             const ft = document.getElementById('filtroServico').value.toLowerCase();
             const fp = document.getElementById('filtroPrioridade').value.toLowerCase();
-            const fd = document.getElementById('filtroData').value; 
+            
+            // --- MODIFICAÇÃO DE FILTRO DE DATA AQUI ---
+            const fdInicio = document.getElementById('filtroDataInicio').value; 
+            const fdFim = document.getElementById('filtroDataFim').value; 
 
             let totalValor = 0;
             let totalRealizando = 0;
@@ -1788,7 +1795,11 @@
                 if (fs && s !== fs) return false;
                 if (ft && !t.includes(ft)) return false; 
                 if (fp && p !== fp) return false;
-                if (fd && d !== fd) return false; 
+                
+                // Validação Data Início e Fim (Formato string YYYY-MM-DD permite comparação direta)
+                if (fdInicio && d < fdInicio) return false; 
+                if (fdFim && d > fdFim) return false; 
+                
                 if (busca && !n.includes(busca) && !e.includes(busca)) return false;
                 
                 return true;
