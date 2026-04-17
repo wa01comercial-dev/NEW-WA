@@ -93,9 +93,15 @@
         .sortable-ghost { opacity: 0.4; }
         .sortable-drag { cursor: grabbing; }
 
+        /* Classes antigas mantidas para compatibilidade se necessário, mas as de prioridade estão abaixo */
         .borda-status-realizando { border-left-color: #ef4444 !important; }
         .borda-status-entregue { border-left-color: #10b981 !important; }
         .borda-status-neutro { border-left-color: #3b82f6 !important; }
+
+        /* NOVAS CLASSES DE CORES PARA BORDAS DE PRIORIDADE */
+        .borda-prioridade-baixa { border-left-color: #f97316 !important; } /* Laranja */
+        .borda-prioridade-media { border-left-color: #3b82f6 !important; } /* Azul */
+        .borda-prioridade-alta { border-left-color: #ef4444 !important; } /* Vermelho */
 
         .bg-entregue { background-color: rgba(16, 185, 129, 0.1) !important; border: 1px solid rgba(16, 185, 129, 0.2); color: #10b981 !important; }
         .bg-realizando { background-color: rgba(239, 68, 68, 0.1) !important; border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444 !important; }
@@ -1566,9 +1572,11 @@
                 const fundoStatus = st === 'entregue' ? 'bg-entregue' :
                                     st === 'realizando' ? 'bg-realizando' : 'bg-gray-800 text-gray-300';
                 
-                let prioridadeClasse = 'borda-status-neutro';
-                if (st === 'realizando') prioridadeClasse = 'borda-status-realizando';
-                else if (st === 'entregue') prioridadeClasse = 'borda-status-entregue';
+                // LÓGICA DE CORES DA BORDA COM BASE NA PRIORIDADE
+                const pr = (tarefa.prioridade || 'média').toLowerCase();
+                let prioridadeClasse = 'borda-prioridade-media';
+                if (pr === 'baixa') prioridadeClasse = 'borda-prioridade-baixa';
+                else if (pr === 'alta') prioridadeClasse = 'borda-prioridade-alta';
                 
                 const card = document.createElement('div');
                 card.setAttribute('data-id', tarefa.id);
@@ -2323,9 +2331,11 @@
                 const fundoStatus = st === 'entregue' ? 'bg-entregue' :
                                     st === 'realizando' ? 'bg-realizando' : 'bg-gray-800 text-gray-300';
                 
-                let prioridadeClasse = 'borda-status-neutro';
-                if (st === 'realizando') prioridadeClasse = 'borda-status-realizando';
-                else if (st === 'entregue') prioridadeClasse = 'borda-status-entregue';
+                // LÓGICA DE CORES DA BORDA COM BASE NA PRIORIDADE
+                const pr = (cliente.prioridade || 'média').toLowerCase();
+                let prioridadeClasse = 'borda-prioridade-media';
+                if (pr === 'baixa') prioridadeClasse = 'borda-prioridade-baixa';
+                else if (pr === 'alta') prioridadeClasse = 'borda-prioridade-alta';
                 
                 const card = document.createElement('div');
                 card.setAttribute('data-id', cliente.id);
